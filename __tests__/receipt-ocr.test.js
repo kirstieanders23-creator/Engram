@@ -1,7 +1,46 @@
-import { parseReceipt } from '../utils/receipt-ocr';
 
-// Mock expo-file-system
-jest.mock('expo-file-system');
+
+// Explicitly mock expo-file-system with a factory to ensure compatibility with all import styles
+jest.mock('expo-file-system', () => {
+  const mockEncodingType = { Base64: 'base64', base64: 'base64' };
+  const mockReadAsStringAsync = jest.fn(async (uri, opts) => {
+    if (opts && (opts.encoding === 'base64' || opts.encoding === mockEncodingType.Base64)) {
+      return 'base64data';
+    }
+    return JSON.stringify({ products: [], rooms: [], settings: {}, user: null, exportedAt: Date.now() });
+  });
+  const mockModule = {
+    documentDirectory: 'file:///tmp/',
+    readAsStringAsync: mockReadAsStringAsync,
+    writeAsStringAsync: jest.fn(async () => {}),
+    copyAsync: jest.fn(async () => {}),
+    EncodingType: mockEncodingType,
+  };
+  mockModule.EncodingType = mockEncodingType;
+  return mockModule;
+});
+
+// Explicitly mock tesseract.js with a factory to ensure compatibility with all import styles
+jest.mock('tesseract.js', () => {
+  const mockOcrText = `HOME DEPOT\n11/12/2025\nKitchenAid Stand Mixer $394.39\nTotal: $394.39`;
+  const mockWorker = {
+    loadLanguage: jest.fn(() => Promise.resolve()),
+    initialize: jest.fn(() => Promise.resolve()),
+    recognize: jest.fn(() => Promise.resolve({
+      data: {
+        text: mockOcrText,
+        confidence: 85,
+      },
+    })),
+    terminate: jest.fn(() => Promise.resolve()),
+  };
+  return {
+    createWorker: jest.fn(() => mockWorker),
+    __mockWorker: mockWorker,
+  };
+});
+
+import { parseReceipt } from '../utils/receipt-ocr';
 
 // tesseract.js mock will be auto-discovered from __mocks__/tesseract.js
 

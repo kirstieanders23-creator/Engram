@@ -15,7 +15,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "y",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.kirstieanders.Engram",
@@ -32,7 +36,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "7cf5d08b-a481-4232-88ba-98f0318ddd89"
+        "projectId": "b9164248-306b-40a1-bc89-324a1de437c8"
       }
     }
   }

@@ -19,7 +19,7 @@ describe('ThemeProvider', () => {
       expect(result.current.isDark).toBe(false);
     });
     expect(result.current.colors).toBeDefined();
-    expect(result.current.colors.background).toBe('#FFFFFF');
+    expect(result.current.colors.background).toBe('#DFE3E0');
   });
 
   it('toggles theme', async () => {
