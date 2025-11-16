@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import Toast from '../components/Toast';
+import Banner from '../components/Banner';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,22 +21,59 @@ export const QuickAddScreen = ({ navigation, route }) => {
   const { addProduct, updateProduct, rooms, products } = useDatabase();
   const { checkProductLimit } = usePremium();
   const [currentRoom, setCurrentRoom] = useState(route.params?.room || null);
+  const [quickAddPrefs, setQuickAddPrefs] = useState({ defaultRoom: '', alwaysPrompt: true });
   const [lastProductId, setLastProductId] = useState(null);
   const [lastProductRoom, setLastProductRoom] = useState(null);
   const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('info');
   const [toastTimeout, setToastTimeout] = useState(null);
+  const [showBanner, setShowBanner] = useState(false);
+  const [bannerMessage, setBannerMessage] = useState('');
+  const [bannerType, setBannerType] = useState('info');
 
-  // Smart room guessing: use last used room or default to 'Put Away'
+
+
+  // Smart room guessing: use last used room, then default, then fallback
   useEffect(() => {
-    if (!currentRoom && rooms && rooms.length > 0) {
-      setCurrentRoom(rooms[0]);
-    }
+    const loadPrefs = async () => {
+      const prefsRaw = await AsyncStorage.getItem('quickAddPrefs');
+      let lastRoom = null;
+      try {
+        lastRoom = await AsyncStorage.getItem('quickAddLastRoom');
+      } catch {}
+      if (prefsRaw) {
+        const prefs = JSON.parse(prefsRaw);
+        setQuickAddPrefs(prefs);
+        if (!route.params?.room && lastRoom && rooms.includes(lastRoom)) {
+          setCurrentRoom(lastRoom);
+        } else if (!route.params?.room && prefs.defaultRoom && rooms.includes(prefs.defaultRoom)) {
+          setCurrentRoom(prefs.defaultRoom);
+        } else if (!route.params?.room && rooms && rooms.length > 0) {
+          setCurrentRoom(rooms[0]);
+        }
+      } else if (!route.params?.room && lastRoom && rooms.includes(lastRoom)) {
+        setCurrentRoom(lastRoom);
+      } else if (!route.params?.room && rooms && rooms.length > 0) {
+        setCurrentRoom(rooms[0]);
+      }
+    };
+    loadPrefs();
   }, [rooms]);
 
+
   useEffect(() => {
-    rapidSnapLoop();
+    // If alwaysPrompt is true, keep current behavior. If false and defaultRoom is set, skip prompt.
+    if (quickAddPrefs.alwaysPrompt) {
+      rapidSnapLoop();
+    } else if (quickAddPrefs.defaultRoom && rooms.includes(quickAddPrefs.defaultRoom)) {
+      setCurrentRoom(quickAddPrefs.defaultRoom);
+      rapidSnapLoop();
+    } else {
+      rapidSnapLoop();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [quickAddPrefs, rooms]);
 
   // Rapid snap: after each photo, add to inventory and prompt for next
   const rapidSnapLoop = async () => {
@@ -43,7 +83,10 @@ export const QuickAddScreen = ({ navigation, route }) => {
         // Request camera permission
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== 'granted') {
-          Alert.alert('Permission Required', 'Camera access is needed for Quick Add');
+          setBannerMessage('Camera access is needed for Quick Add');
+          setBannerType('error');
+          setShowBanner(true);
+          setTimeout(() => setShowBanner(false), 3000);
           navigation.goBack();
           return;
         }
@@ -55,6 +98,10 @@ export const QuickAddScreen = ({ navigation, route }) => {
         });
         if (result.canceled || !result.assets || !result.assets[0]) {
           // User cancelled, exit quick add
+          setBannerMessage('Quick Add cancelled');
+          setBannerType('info');
+          setShowBanner(true);
+          setTimeout(() => setShowBanner(false), 2000);
           navigation.goBack();
           return;
         }
@@ -65,6 +112,10 @@ export const QuickAddScreen = ({ navigation, route }) => {
         // Check product limit before adding
         const canAdd = await checkProductLimit(products.length + 1, navigation);
         if (!canAdd) {
+          setBannerMessage('Product limit reached. Upgrade for more.');
+          setBannerType('error');
+          setShowBanner(true);
+          setTimeout(() => setShowBanner(false), 3000);
           navigation.goBack();
           return;
         }
@@ -89,11 +140,18 @@ export const QuickAddScreen = ({ navigation, route }) => {
         const newId = await addProduct(productData);
         setLastProductId(newId);
         setLastProductRoom(roomToUse);
+        // Save last used room for smart guessing
+        try {
+          await AsyncStorage.setItem('quickAddLastRoom', roomToUse);
+        } catch {}
         showMoveUndoToast();
         // Continue loop for next snap
       } catch (error) {
         console.error('Quick Add photo failed:', error);
-        Alert.alert('Error', 'Failed to capture or save photo');
+        setBannerMessage('Failed to capture or save photo');
+        setBannerType('error');
+        setShowBanner(true);
+        setTimeout(() => setShowBanner(false), 3000);
         navigation.goBack();
         return;
       }
@@ -102,12 +160,12 @@ export const QuickAddScreen = ({ navigation, route }) => {
 
   // Show toast with Move/Undo after each snap
   const showMoveUndoToast = () => {
+    setToastMessage('Added! Move | Undo');
+    setToastType('success');
     setShowToast(true);
     if (toastTimeout) clearTimeout(toastTimeout);
-    const timeout = setTimeout(() => setShowToast(false), 2500);
+    const timeout = setTimeout(() => setShowToast(false), 2000);
     setToastTimeout(timeout);
-    // For Android native toast (optional):
-    if (ToastAndroid) ToastAndroid.show('Added! Move | Undo', ToastAndroid.SHORT);
   };
 
   // Move last product to a different room
@@ -161,7 +219,9 @@ export const QuickAddScreen = ({ navigation, route }) => {
 
   // Minimal UI: just a header and room selector, no photo grid or save all
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>...
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}> 
+      <Banner visible={showBanner} message={bannerMessage} type={bannerType} onHide={() => setShowBanner(false)} />
+      <Toast visible={showToast} message={toastMessage} type={toastType} onHide={() => setShowToast(false)} />
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
@@ -178,6 +238,16 @@ export const QuickAddScreen = ({ navigation, route }) => {
           <Text style={[styles.roomText, { color: colors.accent }]}>{currentRoom}</Text>
         </TouchableOpacity>
       </View>
+        {/* Batch Review Button */}
+        <View style={{ alignItems: 'center', marginVertical: 8 }}>
+          <TouchableOpacity
+            style={{ backgroundColor: colors.accent, borderRadius: 8, padding: 12, flexDirection: 'row', alignItems: 'center' }}
+            onPress={() => navigation.navigate('BatchReview')}
+          >
+            <Ionicons name="list" size={18} color="#fff" style={{ marginRight: 8 }} />
+            <Text style={{ color: '#fff', fontWeight: 'bold' }}>Batch Review New Items</Text>
+          </TouchableOpacity>
+        </View>
 
       {/* Photo Grid */}
       <ScrollView contentContainerStyle={styles.scrollContent}>

@@ -24,6 +24,7 @@ import { BillsScreen } from './screens/BillsScreen';
 import { CardSettingsScreen } from './screens/CardSettingsScreen';
 import { LegalScreen } from './screens/LegalScreen';
 import { QuickAddScreen } from './screens/QuickAddScreen';
+import BatchReviewScreen from './screens/BatchReviewScreen';
 import { RoomWizardScreen } from './screens/RoomWizardScreen';
 import { QuickLookupScreen } from './screens/QuickLookupScreen';
 import { UpgradeFinderScreen } from './screens/UpgradeFinderScreen';
@@ -44,6 +45,10 @@ import { SignupScreen } from './screens/SignupScreen';
 import { LoadingScreen } from './screens/LoadingScreen';
 import { PaywallScreen } from './screens/PaywallScreen';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const QUICK_ADD_PREFS_KEY = 'quickAddPrefs';
+
 const SettingsScreen = ({ _navigation }) => {
   const { isDark, colors, toggleTheme } = useTheme();
   const { handleLogout } = useAuth();
@@ -52,19 +57,32 @@ const SettingsScreen = ({ _navigation }) => {
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
   const [requestingPermission, setRequestingPermission] = React.useState(false);
 
-  // Load notification settings on mount
+
+  // Quick Add Preferences state
+  const { rooms } = useDatabase();
+  const [quickAddPrefs, setQuickAddPrefs] = React.useState({ defaultRoom: '', alwaysPrompt: true });
+
+  // Load notification settings and quick add prefs on mount
   React.useEffect(() => {
     const loadSettings = async () => {
       try {
         const { areNotificationsEnabled } = await import('./utils/notifications');
         const enabled = await areNotificationsEnabled();
         setNotificationsEnabled(enabled);
+        // Load quick add prefs
+        const prefsRaw = await AsyncStorage.getItem(QUICK_ADD_PREFS_KEY);
+        if (prefsRaw) setQuickAddPrefs(JSON.parse(prefsRaw));
       } catch (error) {
-        console.error('Error loading notification settings:', error);
+        console.error('Error loading settings:', error);
       }
     };
     loadSettings();
   }, []);
+
+  const saveQuickAddPrefs = async (prefs) => {
+    setQuickAddPrefs(prefs);
+    await AsyncStorage.setItem(QUICK_ADD_PREFS_KEY, JSON.stringify(prefs));
+  };
 
   const handleToggleNotifications = async () => {
     try {
@@ -203,6 +221,48 @@ const SettingsScreen = ({ _navigation }) => {
             <Text style={styles.toggleText}>{notificationsEnabled ? 'ON' : 'OFF'}</Text>
           </View>
         </TouchableOpacity>
+
+        <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 24 }]}>Quick Add Preferences</Text>
+        <View style={{ backgroundColor: colors.card, borderRadius: 8, padding: 16, marginBottom: 16 }}>
+          <Text style={{ color: colors.text, fontWeight: '600', marginBottom: 8 }}>Default Room</Text>
+          <View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 6, marginBottom: 12 }}>
+            <TouchableOpacity
+              onPress={() => {
+                // Show room picker
+                Alert.alert(
+                  'Select Default Room',
+                  '',
+                  [
+                    ...rooms.map(room => ({
+                      text: room,
+                      onPress: () => saveQuickAddPrefs({ ...quickAddPrefs, defaultRoom: room }),
+                    })),
+                    { text: 'None', onPress: () => saveQuickAddPrefs({ ...quickAddPrefs, defaultRoom: '' }) },
+                    { text: 'Cancel', style: 'cancel' },
+                  ]
+                );
+              }}
+              style={{ padding: 12 }}
+            >
+              <Text style={{ color: colors.text }}>
+                {quickAddPrefs.defaultRoom ? quickAddPrefs.defaultRoom : 'None'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+            <TouchableOpacity
+              onPress={() => saveQuickAddPrefs({ ...quickAddPrefs, alwaysPrompt: !quickAddPrefs.alwaysPrompt })}
+              style={{ marginRight: 12 }}
+            >
+              <View style={{ width: 32, height: 20, borderRadius: 10, backgroundColor: quickAddPrefs.alwaysPrompt ? colors.accent : colors.border, justifyContent: 'center' }}>
+                <View style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: '#fff', marginLeft: quickAddPrefs.alwaysPrompt ? 14 : 2 }} />
+              </View>
+            </TouchableOpacity>
+            <Text style={{ color: colors.text }}>
+              Always prompt for room when using Quick Add
+            </Text>
+          </View>
+        </View>
 
         <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 24 }]}>Appearance</Text>
         <TouchableOpacity 
@@ -435,6 +495,11 @@ const AppNavigator = () => {
           name="QuickAdd"
           component={QuickAddScreen}
           options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="BatchReview"
+          component={BatchReviewScreen}
+          options={{ title: 'Batch Review' }}
         />
         <MainStack.Screen
           name="RoomWizard"
