@@ -11,85 +11,72 @@ import { usePremium } from '../providers/PremiumProvider';
  * Users can snap multiple photos quickly without filling forms
  * Products are auto-created with minimal data, editable later
  */
+import { ToastAndroid } from 'react-native';
+
 export const QuickAddScreen = ({ navigation, route }) => {
   const { colors } = useTheme();
-  const { addProduct, rooms, products } = useDatabase();
+  const { addProduct, updateProduct, rooms, products } = useDatabase();
   const { checkProductLimit } = usePremium();
-  
-  const [photos, setPhotos] = useState([]);
-  const [currentRoom, setCurrentRoom] = useState(route.params?.room || 'Uncategorized');
-  const [isSaving, setIsSaving] = useState(false);
+  const [currentRoom, setCurrentRoom] = useState(route.params?.room || null);
+  const [lastProductId, setLastProductId] = useState(null);
+  const [lastProductRoom, setLastProductRoom] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastTimeout, setToastTimeout] = useState(null);
 
-  // Auto-focus on camera when screen loads
+  // Smart room guessing: use last used room or default to 'Put Away'
   useEffect(() => {
-    if (photos.length === 0) {
-      handleTakePhoto();
+    if (!currentRoom && rooms && rooms.length > 0) {
+      setCurrentRoom(rooms[0]);
     }
+  }, [rooms]);
+
+  useEffect(() => {
+    rapidSnapLoop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleTakePhoto = async () => {
-    try {
-      const ImagePicker = await import('expo-image-picker');
-      
-      // Request camera permission
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission Required', 'Camera access is needed for Quick Add');
-        return;
-      }
-
-      // Launch camera
-      const result = await ImagePicker.launchCameraAsync({
-        quality: 0.7,
-        allowsEditing: false,
-        aspect: [4, 3],
-      });
-
-      if (!result.canceled && result.assets && result.assets[0]) {
+  // Rapid snap: after each photo, add to inventory and prompt for next
+  const rapidSnapLoop = async () => {
+    while (true) {
+      try {
+        const ImagePicker = await import('expo-image-picker');
+        // Request camera permission
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert('Permission Required', 'Camera access is needed for Quick Add');
+          navigation.goBack();
+          return;
+        }
+        // Launch camera
+        const result = await ImagePicker.launchCameraAsync({
+          quality: 0.7,
+          allowsEditing: false,
+          aspect: [4, 3],
+        });
+        if (result.canceled || !result.assets || !result.assets[0]) {
+          // User cancelled, exit quick add
+          navigation.goBack();
+          return;
+        }
         const uri = result.assets[0].uri;
-        
         // Persist photo
         const { persistPhoto } = await import('../utils/photo');
         const savedPhoto = await persistPhoto(uri);
-        
-        setPhotos(prev => [...prev, savedPhoto]);
-      }
-    } catch (error) {
-      console.error('Quick Add photo failed:', error);
-      Alert.alert('Error', 'Failed to capture photo');
-    }
-  };
-
-  const handleRemovePhoto = (index) => {
-    setPhotos(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const handleSaveAll = async () => {
-    if (photos.length === 0) {
-      Alert.alert('No Photos', 'Take at least one photo before saving');
-      return;
-    }
-
-    try {
-      setIsSaving(true);
-
-      // Check product limit before adding multiple products
-      const canAdd = await checkProductLimit(products.length + photos.length - 1, navigation);
-      if (!canAdd) {
-        setIsSaving(false);
-        return; // User will see paywall or cancel
-      }
-
-      // Create a product for each photo
-      const timestamp = new Date().toLocaleDateString();
-      
-      for (let i = 0; i < photos.length; i++) {
+        // Check product limit before adding
+        const canAdd = await checkProductLimit(products.length + 1, navigation);
+        if (!canAdd) {
+          navigation.goBack();
+          return;
+        }
+        // Create product
+        const timestamp = new Date().toLocaleDateString();
+        const roomToUse = currentRoom || 'Put Away';
         const productData = {
-          name: `${currentRoom} Item ${i + 1} - ${timestamp}`,
+          name: `${roomToUse} Item - ${timestamp}`,
           category: 'Quick Add',
-          room: currentRoom,
-          photos: [photos[i]],
-          warranty: '', // No warranty in quick mode
+          room: roomToUse,
+          photos: [savedPhoto],
+          warranty: '',
           purchaseDate: '',
           purchasePrice: '',
           careInstructions: '',
@@ -99,38 +86,66 @@ export const QuickAddScreen = ({ navigation, route }) => {
           usageNotes: 'Added via Quick Add - edit to add details',
           specifications: '',
         };
-
-        await addProduct(productData);
+        const newId = await addProduct(productData);
+        setLastProductId(newId);
+        setLastProductRoom(roomToUse);
+        showMoveUndoToast();
+        // Continue loop for next snap
+      } catch (error) {
+        console.error('Quick Add photo failed:', error);
+        Alert.alert('Error', 'Failed to capture or save photo');
+        navigation.goBack();
+        return;
       }
-
-      Alert.alert(
-        'Success! 🎉',
-        `${photos.length} ${photos.length === 1 ? 'item' : 'items'} added to ${currentRoom}.\n\nTip: Tap any item later to add warranty, price, and other details.`,
-        [
-          {
-            text: 'Add More',
-            onPress: () => {
-              setPhotos([]);
-              handleTakePhoto();
-            },
-          },
-          {
-            text: 'Done',
-            onPress: () => navigation.goBack(),
-          },
-        ]
-      );
-    } catch (error) {
-      console.error('Save failed:', error);
-      Alert.alert('Error', 'Failed to save products');
-    } finally {
-      setIsSaving(false);
     }
+  };
+
+  // Show toast with Move/Undo after each snap
+  const showMoveUndoToast = () => {
+    setShowToast(true);
+    if (toastTimeout) clearTimeout(toastTimeout);
+    const timeout = setTimeout(() => setShowToast(false), 2500);
+    setToastTimeout(timeout);
+    // For Android native toast (optional):
+    if (ToastAndroid) ToastAndroid.show('Added! Move | Undo', ToastAndroid.SHORT);
+  };
+
+  // Move last product to a different room
+  const handleMoveLast = () => {
+    if (!lastProductId) return;
+    const roomList = rooms.length > 0 ? rooms : ['Kitchen', 'Living Room', 'Bedroom', 'Bathroom', 'Garage', 'Office'];
+    Alert.alert(
+      'Move Item',
+      'Select a room:',
+      [
+        ...roomList.map(room => ({
+          text: room,
+          onPress: async () => {
+            await updateProduct(lastProductId, { room });
+            setLastProductRoom(room);
+            setShowToast(false);
+          },
+        })),
+        { text: 'Cancel', style: 'cancel' },
+      ]
+    );
+  };
+
+  // Undo last add (delete product)
+  const handleUndoLast = async () => {
+    if (!lastProductId) return;
+    // Remove product from DB (assumes deleteProduct is available)
+    if (typeof products === 'object' && products.find) {
+      const prod = products.find(p => p.id === lastProductId);
+      if (prod && prod.deleteProduct) {
+        await prod.deleteProduct(lastProductId);
+      }
+    }
+    setShowToast(false);
   };
 
   const handleChangeRoom = () => {
     const roomList = rooms.length > 0 ? rooms : ['Kitchen', 'Living Room', 'Bedroom', 'Bathroom', 'Garage', 'Office'];
-    
     Alert.alert(
       'Select Room',
       'Which room are you in?',
@@ -144,8 +159,9 @@ export const QuickAddScreen = ({ navigation, route }) => {
     );
   };
 
+  // Minimal UI: just a header and room selector, no photo grid or save all
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>...
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>

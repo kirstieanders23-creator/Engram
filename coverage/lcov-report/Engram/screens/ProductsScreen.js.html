@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/252</span>
+                <span class='fraction'>0/255</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/174</span>
+                <span class='fraction'>0/176</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/236</span>
+                <span class='fraction'>0/239</span>
             </div>
         
             
@@ -1322,7 +1322,19 @@
 <a name='L1257'></a><a href='#L1257'>1257</a>
 <a name='L1258'></a><a href='#L1258'>1258</a>
 <a name='L1259'></a><a href='#L1259'>1259</a>
-<a name='L1260'></a><a href='#L1260'>1260</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L1260'></a><a href='#L1260'>1260</a>
+<a name='L1261'></a><a href='#L1261'>1261</a>
+<a name='L1262'></a><a href='#L1262'>1262</a>
+<a name='L1263'></a><a href='#L1263'>1263</a>
+<a name='L1264'></a><a href='#L1264'>1264</a>
+<a name='L1265'></a><a href='#L1265'>1265</a>
+<a name='L1266'></a><a href='#L1266'>1266</a>
+<a name='L1267'></a><a href='#L1267'>1267</a>
+<a name='L1268'></a><a href='#L1268'>1268</a>
+<a name='L1269'></a><a href='#L1269'>1269</a>
+<a name='L1270'></a><a href='#L1270'>1270</a>
+<a name='L1271'></a><a href='#L1271'>1271</a>
+<a name='L1272'></a><a href='#L1272'>1272</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1751,8 +1763,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1771,7 +1781,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1781,20 +1794,31 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -3009,9 +3033,7 @@ export const ProductsScreen = <span class="cstat-no" title="statement not covere
 <span class="cstat-no" title="statement not covered" >    return matchesSearch &amp;&amp; matchesRoom;</span>
   });
 &nbsp;
-  // Basic image -&gt; OCR -&gt; match flow. Attempts to find an existing product by
-  // matching OCR text with product names. If found, opens edit modal. If not,
-  // opens Add modal with prefilled fields.
+  // Camera scan: auto-upload, OCR, and add product to inventory with found info
   const handleScan = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >      setIsScanning(true);</span>
@@ -3032,18 +3054,28 @@ export const ProductsScreen = <span class="cstat-no" title="statement not covere
 <span class="cstat-no" title="statement not covered" >        return;</span>
       }
 &nbsp;
-  // Parse image with OCR helper via abstraction (returns { text, dates, vendors })
-  const ocrModule = <span class="cstat-no" title="statement not covered" >await import('../utils/ocr');</span>
-  const ocr = <span class="cstat-no" title="statement not covered" >await ocrModule.runOCR(result.uri);</span>
+      // Persist photo for reliability before attaching
+      const savedPhoto = <span class="cstat-no" title="statement not covered" >await persistPhoto(result.uri);</span>
+&nbsp;
+      // Parse image with OCR helper via abstraction (returns { text, dates, vendors })
+      const ocrModule = <span class="cstat-no" title="statement not covered" >await import('../utils/ocr');</span>
+      const ocr = <span class="cstat-no" title="statement not covered" >await ocrModule.runOCR(result.uri);</span>
       const ocrText = <span class="cstat-no" title="statement not covered" >ocr.text || '';</span>
 &nbsp;
       // Fuzzy match against existing products
       const match = <span class="cstat-no" title="statement not covered" >await findBestProductMatch(products, ocrText);</span>
 &nbsp;
+      let productData;
 <span class="cstat-no" title="statement not covered" >      if (match) {</span>
-        // Show quick view instead of edit modal
-<span class="cstat-no" title="statement not covered" >        setQuickViewProduct(match.product);</span>
+        // If match, update existing product with new photo (optional: could skip)
+<span class="cstat-no" title="statement not covered" >        productData = {</span>
+          ...match.product,
+          photos: [...(match.product.photos || []), savedPhoto],
+        };
+<span class="cstat-no" title="statement not covered" >        await updateProduct(match.product.id, productData);</span>
+<span class="cstat-no" title="statement not covered" >        setQuickViewProduct(productData);</span>
 <span class="cstat-no" title="statement not covered" >        setQuickViewVisible(true);</span>
+<span class="cstat-no" title="statement not covered" >        Alert.alert('Product Updated', 'Photo added to existing product.');</span>
       } else {
         // Build prefill from OCR: first non-empty line as name, first vendor, first date as warranty
         const lines = <span class="cstat-no" title="statement not covered" >ocrText.split('\n').map(<span class="fstat-no" title="function not covered" >l </span>=&gt; <span class="cstat-no" title="statement not covered" >l.trim())</span>.filter(Boolean);</span>
@@ -3051,11 +3083,15 @@ export const ProductsScreen = <span class="cstat-no" title="statement not covere
         const suggestedVendor = <span class="cstat-no" title="statement not covered" >(ocr.vendors &amp;&amp; ocr.vendors[0]) || '';</span>
         const suggestedWarranty = <span class="cstat-no" title="statement not covered" >(ocr.dates &amp;&amp; ocr.dates[0]) || '';</span>
 &nbsp;
-        // Persist photo for reliability before attaching
-        const savedPhoto = <span class="cstat-no" title="statement not covered" >await persistPhoto(result.uri);</span>
-<span class="cstat-no" title="statement not covered" >        setPrefillProduct({ name: suggestedName, category: suggestedVendor || '', room: '', warranty: suggestedWarranty, photos: [savedPhoto] });</span>
-<span class="cstat-no" title="statement not covered" >        setEditingProduct(null);</span>
-<span class="cstat-no" title="statement not covered" >        setModalVisible(true);</span>
+<span class="cstat-no" title="statement not covered" >        productData = {</span>
+          name: suggestedName,
+          category: suggestedVendor || '',
+          room: '',
+          warranty: suggestedWarranty,
+          photos: [savedPhoto],
+        };
+<span class="cstat-no" title="statement not covered" >        await addProduct(productData);</span>
+<span class="cstat-no" title="statement not covered" >        Alert.alert('Product Added', 'Product added to inventory automatically.');</span>
       }
     } catch (e) {
 <span class="cstat-no" title="statement not covered" >      console.warn('Scan failed', e);</span>
@@ -3847,7 +3883,7 @@ function <span class="fstat-no" title="function not covered" >DynamicBarcode(</s
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-16T06:04:50.191Z
+                at 2025-11-16T19:55:16.145Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

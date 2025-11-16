@@ -32,7 +32,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/32</span>
+                <span class='fraction'>0/30</span>
             </div>
         
             
@@ -702,14 +702,7 @@
 <a name='L637'></a><a href='#L637'>637</a>
 <a name='L638'></a><a href='#L638'>638</a>
 <a name='L639'></a><a href='#L639'>639</a>
-<a name='L640'></a><a href='#L640'>640</a>
-<a name='L641'></a><a href='#L641'>641</a>
-<a name='L642'></a><a href='#L642'>642</a>
-<a name='L643'></a><a href='#L643'>643</a>
-<a name='L644'></a><a href='#L644'>644</a>
-<a name='L645'></a><a href='#L645'>645</a>
-<a name='L646'></a><a href='#L646'>646</a>
-<a name='L647'></a><a href='#L647'>647</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L640'></a><a href='#L640'>640</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1084,15 +1077,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1730,168 +1716,161 @@ const AppNavigator = <span class="cstat-no" title="statement not covered" ><span
 <span class="cstat-no" title="statement not covered" >    return &lt;LoadingScreen /&gt;;</span>
   }
 &nbsp;
+  // Always show main app, even if not logged in
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;NavigationContainer theme={navTheme}&gt;
-      {user ? (
-        &lt;MainStack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}
-        &gt;
-          &lt;MainStack.Screen
-            name="Main"
-            component={MainTabs}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="ProductDetail"
-            component={ProductDetailScreen}
-            options={{ title: 'Product Details' }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="Settings"
-            component={SettingsScreen}
-            options={{ title: 'Settings' }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="CardSettings"
-            component={CardSettingsScreen}
-            options={{ title: 'Customize Dashboard' }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="Notes"
-            component={NotesScreen}
-            options={{ title: 'Notes' }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="Maintenance"
-            component={MaintenanceScreen}
-            options={{ title: 'Home Repairs' }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="Roommates"
-            component={RoommatesScreen}
-            options={{ title: 'Roommates &amp; Shared Tasks' }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="HomeInfo"
-            component={HomeInfoScreen}
-            options={{ title: 'Home Info' }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="Bills"
-            component={BillsScreen}
-            options={{ title: 'Monthly Bills' }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="Legal"
-            component={LegalScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="QuickAdd"
-            component={QuickAddScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="RoomWizard"
-            component={RoomWizardScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="QuickLookup"
-            component={QuickLookupScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="UpgradeFinder"
-            component={UpgradeFinderScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="WishList"
-            component={WishListScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="ManualLookup"
-            component={ManualLookupScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="Transfer"
-            component={TransferScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="ReceiveTransfer"
-            component={ReceiveTransferScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="Import"
-            component={ImportScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="ShoppingList"
-            component={ShoppingListScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="MealPlanning"
-            component={MealPlanningScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="SharedShopping"
-            component={SharedShoppingScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="DailyChecklist"
-            component={DailyChecklistScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="DontBuyAgain"
-            component={DontBuyAgainScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="TimeReminders"
-            component={TimeRemindersScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="MealHistory"
-            component={MealHistoryScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;MainStack.Screen
-            name="Paywall"
-            component={PaywallScreen}
-            options={{ headerShown: false }}
-          /&gt;
-        &lt;/MainStack.Navigator&gt;
-      ) : (
-        &lt;AuthStack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}
-        &gt;
-          &lt;AuthStack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          /&gt;
-          &lt;AuthStack.Screen
-            name="Signup"
-            component={SignupScreen}
-            options={{ headerShown: false }}
-          /&gt;
-        &lt;/AuthStack.Navigator&gt;
-      )}
+      &lt;MainStack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+      &gt;
+        &lt;MainStack.Screen
+          name="Main"
+          component={MainTabs}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="ProductDetail"
+          component={ProductDetailScreen}
+          options={{ title: 'Product Details' }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{ title: 'Settings' }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="CardSettings"
+          component={CardSettingsScreen}
+          options={{ title: 'Customize Dashboard' }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="Notes"
+          component={NotesScreen}
+          options={{ title: 'Notes' }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="Maintenance"
+          component={MaintenanceScreen}
+          options={{ title: 'Home Repairs' }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="Roommates"
+          component={RoommatesScreen}
+          options={{ title: 'Roommates &amp; Shared Tasks' }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="HomeInfo"
+          component={HomeInfoScreen}
+          options={{ title: 'Home Info' }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="Bills"
+          component={BillsScreen}
+          options={{ title: 'Monthly Bills' }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="Legal"
+          component={LegalScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="QuickAdd"
+          component={QuickAddScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="RoomWizard"
+          component={RoomWizardScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="QuickLookup"
+          component={QuickLookupScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="UpgradeFinder"
+          component={UpgradeFinderScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="WishList"
+          component={WishListScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="ManualLookup"
+          component={ManualLookupScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="Transfer"
+          component={TransferScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="ReceiveTransfer"
+          component={ReceiveTransferScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="Import"
+          component={ImportScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="ShoppingList"
+          component={ShoppingListScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="MealPlanning"
+          component={MealPlanningScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="SharedShopping"
+          component={SharedShoppingScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="DailyChecklist"
+          component={DailyChecklistScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="DontBuyAgain"
+          component={DontBuyAgainScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="TimeReminders"
+          component={TimeRemindersScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="MealHistory"
+          component={MealHistoryScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="Paywall"
+          component={PaywallScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        {/* Auth screens for cloud save only */}
+        &lt;MainStack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        /&gt;
+        &lt;MainStack.Screen
+          name="Signup"
+          component={SignupScreen}
+          options={{ headerShown: false }}
+        /&gt;
+      &lt;/MainStack.Navigator&gt;
     &lt;/NavigationContainer&gt;
   );
 };
@@ -2008,7 +1987,7 @@ const styles = <span class="cstat-no" title="statement not covered" >StyleSheet.
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-16T06:04:50.191Z
+                at 2025-11-16T19:55:16.145Z
             </div>
         <script src="../prettify.js"></script>
         <script>

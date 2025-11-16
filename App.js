@@ -373,168 +373,161 @@ const AppNavigator = () => {
     return <LoadingScreen />;
   }
 
+  // Always show main app, even if not logged in
   return (
     <NavigationContainer theme={navTheme}>
-      {user ? (
-        <MainStack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <MainStack.Screen
-            name="Main"
-            component={MainTabs}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="ProductDetail"
-            component={ProductDetailScreen}
-            options={{ title: 'Product Details' }}
-          />
-          <MainStack.Screen
-            name="Settings"
-            component={SettingsScreen}
-            options={{ title: 'Settings' }}
-          />
-          <MainStack.Screen
-            name="CardSettings"
-            component={CardSettingsScreen}
-            options={{ title: 'Customize Dashboard' }}
-          />
-          <MainStack.Screen
-            name="Notes"
-            component={NotesScreen}
-            options={{ title: 'Notes' }}
-          />
-          <MainStack.Screen
-            name="Maintenance"
-            component={MaintenanceScreen}
-            options={{ title: 'Home Repairs' }}
-          />
-          <MainStack.Screen
-            name="Roommates"
-            component={RoommatesScreen}
-            options={{ title: 'Roommates & Shared Tasks' }}
-          />
-          <MainStack.Screen
-            name="HomeInfo"
-            component={HomeInfoScreen}
-            options={{ title: 'Home Info' }}
-          />
-          <MainStack.Screen
-            name="Bills"
-            component={BillsScreen}
-            options={{ title: 'Monthly Bills' }}
-          />
-          <MainStack.Screen
-            name="Legal"
-            component={LegalScreen}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="QuickAdd"
-            component={QuickAddScreen}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="RoomWizard"
-            component={RoomWizardScreen}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="QuickLookup"
-            component={QuickLookupScreen}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="UpgradeFinder"
-            component={UpgradeFinderScreen}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="WishList"
-            component={WishListScreen}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="ManualLookup"
-            component={ManualLookupScreen}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="Transfer"
-            component={TransferScreen}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="ReceiveTransfer"
-            component={ReceiveTransferScreen}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="Import"
-            component={ImportScreen}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="ShoppingList"
-            component={ShoppingListScreen}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="MealPlanning"
-            component={MealPlanningScreen}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="SharedShopping"
-            component={SharedShoppingScreen}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="DailyChecklist"
-            component={DailyChecklistScreen}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="DontBuyAgain"
-            component={DontBuyAgainScreen}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="TimeReminders"
-            component={TimeRemindersScreen}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="MealHistory"
-            component={MealHistoryScreen}
-            options={{ headerShown: false }}
-          />
-          <MainStack.Screen
-            name="Paywall"
-            component={PaywallScreen}
-            options={{ headerShown: false }}
-          />
-        </MainStack.Navigator>
-      ) : (
-        <AuthStack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <AuthStack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
-          <AuthStack.Screen
-            name="Signup"
-            component={SignupScreen}
-            options={{ headerShown: false }}
-          />
-        </AuthStack.Navigator>
-      )}
+      <MainStack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <MainStack.Screen
+          name="Main"
+          component={MainTabs}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="ProductDetail"
+          component={ProductDetailScreen}
+          options={{ title: 'Product Details' }}
+        />
+        <MainStack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{ title: 'Settings' }}
+        />
+        <MainStack.Screen
+          name="CardSettings"
+          component={CardSettingsScreen}
+          options={{ title: 'Customize Dashboard' }}
+        />
+        <MainStack.Screen
+          name="Notes"
+          component={NotesScreen}
+          options={{ title: 'Notes' }}
+        />
+        <MainStack.Screen
+          name="Maintenance"
+          component={MaintenanceScreen}
+          options={{ title: 'Home Repairs' }}
+        />
+        <MainStack.Screen
+          name="Roommates"
+          component={RoommatesScreen}
+          options={{ title: 'Roommates & Shared Tasks' }}
+        />
+        <MainStack.Screen
+          name="HomeInfo"
+          component={HomeInfoScreen}
+          options={{ title: 'Home Info' }}
+        />
+        <MainStack.Screen
+          name="Bills"
+          component={BillsScreen}
+          options={{ title: 'Monthly Bills' }}
+        />
+        <MainStack.Screen
+          name="Legal"
+          component={LegalScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="QuickAdd"
+          component={QuickAddScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="RoomWizard"
+          component={RoomWizardScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="QuickLookup"
+          component={QuickLookupScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="UpgradeFinder"
+          component={UpgradeFinderScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="WishList"
+          component={WishListScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="ManualLookup"
+          component={ManualLookupScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="Transfer"
+          component={TransferScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="ReceiveTransfer"
+          component={ReceiveTransferScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="Import"
+          component={ImportScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="ShoppingList"
+          component={ShoppingListScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="MealPlanning"
+          component={MealPlanningScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="SharedShopping"
+          component={SharedShoppingScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="DailyChecklist"
+          component={DailyChecklistScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="DontBuyAgain"
+          component={DontBuyAgainScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="TimeReminders"
+          component={TimeRemindersScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="MealHistory"
+          component={MealHistoryScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="Paywall"
+          component={PaywallScreen}
+          options={{ headerShown: false }}
+        />
+        {/* Auth screens for cloud save only */}
+        <MainStack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="Signup"
+          component={SignupScreen}
+          options={{ headerShown: false }}
+        />
+      </MainStack.Navigator>
     </NavigationContainer>
   );
 };

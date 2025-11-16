@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">69.23% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>9/13</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>4/12</span>
+                <span class='fraction'>0/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/12</span>
+                <span class='fraction'>0/12</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -98,63 +98,63 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// External barcode lookup stub.
 // Replace with real API integration as needed. Returns null if not found.
 &nbsp;
-export async function fetchProductInfo(barcode) {
-  const code = String(barcode || <span class="branch-1 cbranch-no" title="branch not covered" >'')</span>.trim();
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (!code) <span class="cstat-no" title="statement not covered" >return null;</span>
+export async function <span class="fstat-no" title="function not covered" >fetchProductInfo(</span>barcode) {
+  const code = <span class="cstat-no" title="statement not covered" >String(barcode || '').trim();</span>
+<span class="cstat-no" title="statement not covered" >  if (!code) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 &nbsp;
   // Try Open Food Facts first
-  try {
-    const upcModule = await import('./upc-api');
+<span class="cstat-no" title="statement not covered" >  try {</span>
+    const upcModule = <span class="cstat-no" title="statement not covered" >await import('./upc-api');</span>
     const info = <span class="cstat-no" title="statement not covered" >await upcModule.fetchOpenFoodFacts(code);</span>
 <span class="cstat-no" title="statement not covered" >    if (info &amp;&amp; info.name) {</span>
 <span class="cstat-no" title="statement not covered" >      return { barcode: code, name: info.name, vendor: info.brand || '' };</span>
     }
   } catch (e) {
-    console.warn('UPC API lookup failed, falling back to mock', e?.message);
+<span class="cstat-no" title="statement not covered" >    console.warn('UPC API lookup failed, falling back to mock', e?.message);</span>
   }
 &nbsp;
   // Mock demo dataset fallback
-  const MOCK = {
+  const MOCK = <span class="cstat-no" title="statement not covered" >{</span>
     '012345678905': { name: 'Refrigerator', vendor: 'Acme Appliances' },
     '036000291452': { name: 'Toaster Oven', vendor: 'KitchenPro' },
   };
 &nbsp;
-  if (MOCK[code]) {
-    return { barcode: code, ...MOCK[code] };
+<span class="cstat-no" title="statement not covered" >  if (MOCK[code]) {</span>
+<span class="cstat-no" title="statement not covered" >    return { barcode: code, ...MOCK[code] };</span>
   }
 &nbsp;
   // Simulate not found
-  return null;
+<span class="cstat-no" title="statement not covered" >  return null;</span>
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -163,7 +163,7 @@ export async function fetchProductInfo(barcode) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-16T06:04:50.191Z
+                at 2025-11-16T19:55:16.145Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

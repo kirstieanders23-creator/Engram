@@ -426,9 +426,7 @@ export const ProductsScreen = ({ navigation }) => {
     return matchesSearch && matchesRoom;
   });
 
-  // Basic image -> OCR -> match flow. Attempts to find an existing product by
-  // matching OCR text with product names. If found, opens edit modal. If not,
-  // opens Add modal with prefilled fields.
+  // Camera scan: auto-upload, OCR, and add product to inventory with found info
   const handleScan = async () => {
     try {
       setIsScanning(true);
@@ -449,18 +447,28 @@ export const ProductsScreen = ({ navigation }) => {
         return;
       }
 
-  // Parse image with OCR helper via abstraction (returns { text, dates, vendors })
-  const ocrModule = await import('../utils/ocr');
-  const ocr = await ocrModule.runOCR(result.uri);
+      // Persist photo for reliability before attaching
+      const savedPhoto = await persistPhoto(result.uri);
+
+      // Parse image with OCR helper via abstraction (returns { text, dates, vendors })
+      const ocrModule = await import('../utils/ocr');
+      const ocr = await ocrModule.runOCR(result.uri);
       const ocrText = ocr.text || '';
 
       // Fuzzy match against existing products
       const match = await findBestProductMatch(products, ocrText);
 
+      let productData;
       if (match) {
-        // Show quick view instead of edit modal
-        setQuickViewProduct(match.product);
+        // If match, update existing product with new photo (optional: could skip)
+        productData = {
+          ...match.product,
+          photos: [...(match.product.photos || []), savedPhoto],
+        };
+        await updateProduct(match.product.id, productData);
+        setQuickViewProduct(productData);
         setQuickViewVisible(true);
+        Alert.alert('Product Updated', 'Photo added to existing product.');
       } else {
         // Build prefill from OCR: first non-empty line as name, first vendor, first date as warranty
         const lines = ocrText.split('\n').map(l => l.trim()).filter(Boolean);
@@ -468,11 +476,15 @@ export const ProductsScreen = ({ navigation }) => {
         const suggestedVendor = (ocr.vendors && ocr.vendors[0]) || '';
         const suggestedWarranty = (ocr.dates && ocr.dates[0]) || '';
 
-        // Persist photo for reliability before attaching
-        const savedPhoto = await persistPhoto(result.uri);
-        setPrefillProduct({ name: suggestedName, category: suggestedVendor || '', room: '', warranty: suggestedWarranty, photos: [savedPhoto] });
-        setEditingProduct(null);
-        setModalVisible(true);
+        productData = {
+          name: suggestedName,
+          category: suggestedVendor || '',
+          room: '',
+          warranty: suggestedWarranty,
+          photos: [savedPhoto],
+        };
+        await addProduct(productData);
+        Alert.alert('Product Added', 'Product added to inventory automatically.');
       }
     } catch (e) {
       console.warn('Scan failed', e);
