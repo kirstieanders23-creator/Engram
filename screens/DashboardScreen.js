@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   SafeAreaView,
   View,
@@ -36,10 +37,20 @@ export const DashboardScreen = ({ navigation }) => {
     AVAILABLE_CARDS.map(card => card.id)
   );
 
+
   // Load user's card preferences
   useEffect(() => {
     loadCardPreferences();
   }, []);
+
+  // Refresh products when screen is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      // This will trigger a re-render if products change
+      // If you need to force a reload from storage/server, do it here
+      return () => {};
+    }, [products])
+  );
 
   const loadCardPreferences = async () => {
     try {

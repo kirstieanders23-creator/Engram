@@ -31,6 +31,9 @@ export const QuickAddScreen = ({ navigation, route }) => {
   const [showBanner, setShowBanner] = useState(false);
   const [bannerMessage, setBannerMessage] = useState('');
   const [bannerType, setBannerType] = useState('info');
+  // Batch photo state
+  const [photos, setPhotos] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
 
 
 
@@ -62,71 +65,85 @@ export const QuickAddScreen = ({ navigation, route }) => {
   }, [rooms]);
 
 
+
+  // Remove infinite loop. Instead, trigger camera on mount if desired, and on user action.
   useEffect(() => {
-    // If alwaysPrompt is true, keep current behavior. If false and defaultRoom is set, skip prompt.
-    if (quickAddPrefs.alwaysPrompt) {
-      rapidSnapLoop();
-    } else if (quickAddPrefs.defaultRoom && rooms.includes(quickAddPrefs.defaultRoom)) {
-      setCurrentRoom(quickAddPrefs.defaultRoom);
-      rapidSnapLoop();
-    } else {
-      rapidSnapLoop();
+    if (quickAddPrefs.alwaysPrompt || (quickAddPrefs.defaultRoom && rooms.includes(quickAddPrefs.defaultRoom))) {
+      // Optionally auto-launch camera on mount, or just wait for user to tap 'Take Another'.
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quickAddPrefs, rooms]);
 
-  // Rapid snap: after each photo, add to inventory and prompt for next
-  const rapidSnapLoop = async () => {
-    while (true) {
-      try {
-        const ImagePicker = await import('expo-image-picker');
-        // Request camera permission
-        const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status !== 'granted') {
-          setBannerMessage('Camera access is needed for Quick Add');
-          setBannerType('error');
-          setShowBanner(true);
-          setTimeout(() => setShowBanner(false), 3000);
-          navigation.goBack();
-          return;
-        }
-        // Launch camera
-        const result = await ImagePicker.launchCameraAsync({
-          quality: 0.7,
-          allowsEditing: false,
-          aspect: [4, 3],
-        });
-        if (result.canceled || !result.assets || !result.assets[0]) {
-          // User cancelled, exit quick add
-          setBannerMessage('Quick Add cancelled');
-          setBannerType('info');
-          setShowBanner(true);
-          setTimeout(() => setShowBanner(false), 2000);
-          navigation.goBack();
-          return;
-        }
-        const uri = result.assets[0].uri;
-        // Persist photo
-        const { persistPhoto } = await import('../utils/photo');
-        const savedPhoto = await persistPhoto(uri);
-        // Check product limit before adding
+
+  // Take a photo and add to inventory (single shot)
+  // Take a photo and add to batch
+  const handleTakePhoto = async () => {
+    try {
+      const ImagePicker = await import('expo-image-picker');
+      // Request camera permission
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        setBannerMessage('Camera access is needed for Quick Add');
+        setBannerType('error');
+        setShowBanner(true);
+        setTimeout(() => setShowBanner(false), 3000);
+        return;
+      }
+      // Launch camera
+      const result = await ImagePicker.launchCameraAsync({
+        quality: 0.7,
+        allowsEditing: false,
+        aspect: [4, 3],
+      });
+      if (result.canceled || !result.assets || !result.assets[0]) {
+        setBannerMessage('Quick Add cancelled');
+        setBannerType('info');
+        setShowBanner(true);
+        setTimeout(() => setShowBanner(false), 2000);
+        return;
+      }
+      const uri = result.assets[0].uri;
+      // Persist photo
+      const { persistPhoto } = await import('../utils/photo');
+      const savedPhoto = await persistPhoto(uri);
+      setPhotos(prev => [...prev, savedPhoto]);
+    } catch (error) {
+      console.error('Quick Add photo failed:', error);
+      setBannerMessage('Failed to capture or save photo');
+      setBannerType('error');
+      setShowBanner(true);
+      setTimeout(() => setShowBanner(false), 3000);
+      return;
+    }
+  };
+
+  // Remove a photo from batch
+  const handleRemovePhoto = (index) => {
+    setPhotos(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Save all photos as products
+  const handleSaveAll = async () => {
+    if (photos.length === 0) return;
+    setIsSaving(true);
+    try {
+      for (let i = 0; i < photos.length; i++) {
+        const photo = photos[i];
         const canAdd = await checkProductLimit(products.length + 1, navigation);
         if (!canAdd) {
           setBannerMessage('Product limit reached. Upgrade for more.');
           setBannerType('error');
           setShowBanner(true);
           setTimeout(() => setShowBanner(false), 3000);
-          navigation.goBack();
+          setIsSaving(false);
           return;
         }
-        // Create product
         const timestamp = new Date().toLocaleDateString();
         const roomToUse = currentRoom || 'Put Away';
         const productData = {
           name: `${roomToUse} Item - ${timestamp}`,
           category: 'Quick Add',
           room: roomToUse,
-          photos: [savedPhoto],
+          photos: [photo],
           warranty: '',
           purchaseDate: '',
           purchasePrice: '',
@@ -140,22 +157,26 @@ export const QuickAddScreen = ({ navigation, route }) => {
         const newId = await addProduct(productData);
         setLastProductId(newId);
         setLastProductRoom(roomToUse);
-        // Save last used room for smart guessing
         try {
           await AsyncStorage.setItem('quickAddLastRoom', roomToUse);
         } catch {}
-        showMoveUndoToast();
-        // Continue loop for next snap
-      } catch (error) {
-        console.error('Quick Add photo failed:', error);
-        setBannerMessage('Failed to capture or save photo');
-        setBannerType('error');
-        setShowBanner(true);
-        setTimeout(() => setShowBanner(false), 3000);
-        navigation.goBack();
-        return;
       }
+      setPhotos([]);
+      setBannerMessage('All items added!');
+      setBannerType('success');
+      setShowBanner(true);
+      setTimeout(() => setShowBanner(false), 1200);
+      // Navigate back to Dashboard (or previous screen) to trigger refresh
+      setTimeout(() => {
+        navigation.navigate('Dashboard');
+      }, 1200);
+    } catch (error) {
+      setBannerMessage('Failed to save items');
+      setBannerType('error');
+      setShowBanner(true);
+      setTimeout(() => setShowBanner(false), 3000);
     }
+    setIsSaving(false);
   };
 
   // Show toast with Move/Undo after each snap

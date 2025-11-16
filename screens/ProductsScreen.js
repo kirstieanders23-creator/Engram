@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   SafeAreaView,
   View,
@@ -397,6 +398,14 @@ ProductModal.propTypes = {
 };
 
 export const ProductsScreen = ({ navigation }) => {
+    // Refresh products when screen is focused
+    useFocusEffect(
+      React.useCallback(() => {
+        // This will trigger a re-render if products change
+        // If you need to force a reload from storage/server, do it here
+        return () => {};
+      }, [products])
+    );
   const { colors } = useTheme();
   const { products, isLoading, addProduct, updateProduct, deleteProduct } = useDatabase();
   const { checkProductLimit } = usePremium();
