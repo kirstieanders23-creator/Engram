@@ -868,25 +868,39 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 40,
-    paddingBottom: 20,
+  return (
+    <ScrollView style={styles.container}>
+      <Header
+        title="Welcome Home"
+        subtitle="Your cozy, organized space"
+        right={<Avatar label="U" />}
+      />
+      <Card style={styles.card}>
+        <Button title="Quick Add" onPress={() => navigation.navigate('QuickAdd')} />
+        <Button title="Quick Note" onPress={() => navigation.navigate('Notes')} style={styles.button} />
+      </Card>
+      <Card style={styles.card}>
+        <ListItem title="Today's Checklist" onPress={() => navigation.navigate('DailyChecklist')} />
+        <ListItem title="Shopping List" onPress={() => navigation.navigate('ShoppingList')} />
+        <ListItem title="Meal Planning" onPress={() => navigation.navigate('MealPlanning')} />
+      </Card>
+    </ScrollView>
+  );
+}
+  
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F6F8F7',
   },
-  headerButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
+  card: {
+    marginHorizontal: 16,
+    marginTop: 16,
   },
-  scanButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 10,
+  button: {
+    marginTop: 10,
+  },
+});
     gap: 6,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
