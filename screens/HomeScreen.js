@@ -29,6 +29,7 @@ import { useDebounce } from '../utils/useDebounce';
 import { getAllCategories, getCategoryTemplate, applyTemplate } from '../utils/category-templates';
 import { QuickView } from '../components/QuickView';
 import UrgentMealSuggestion from '../components/UrgentMealSuggestion';
+import QuickNoteWidget from '../components/QuickNoteWidget';
 
 // Helper function to calculate warranty status
 function getWarrantyStatus(warrantyDate) {
@@ -694,6 +695,8 @@ export const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Quick Note Widget for fast notes */}
+      <QuickNoteWidget />
       <View style={styles.header}>
         <Text style={[styles.title, { color: colors.text }]}>My Home</Text>
         <View style={styles.headerButtons}>
