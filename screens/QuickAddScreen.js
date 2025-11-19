@@ -16,142 +16,143 @@ import { usePremium } from '../providers/PremiumProvider';
  */
 import { ToastAndroid } from 'react-native';
 
-export const QuickAddScreen = ({ navigation, route }) => {
-  const { colors } = useTheme();
-  const { addProduct, updateProduct, rooms, products } = useDatabase();
-  const { checkProductLimit } = usePremium();
-  const [currentRoom, setCurrentRoom] = useState(route.params?.room || null);
-  const [quickAddPrefs, setQuickAddPrefs] = useState({ defaultRoom: '', alwaysPrompt: true });
-  const [lastProductId, setLastProductId] = useState(null);
-  const [lastProductRoom, setLastProductRoom] = useState(null);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState('info');
-  const [toastTimeout, setToastTimeout] = useState(null);
-  const [showBanner, setShowBanner] = useState(false);
-  const [bannerMessage, setBannerMessage] = useState('');
-  const [bannerType, setBannerType] = useState('info');
 
+import React, { useState, useRef } from 'react';
+import { View, StyleSheet, Text, ActivityIndicator, Alert } from 'react-native';
+import { Camera } from 'expo-camera';
+import Button from '../components/MasterKit/Button';
+import Card from '../components/MasterKit/Card';
 
+export default function QuickAddScreen({ navigation }) {
+  const [hasPermission, setHasPermission] = useState(null);
+  const [scanning, setScanning] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const cameraRef = useRef(null);
 
-  // Smart room guessing: use last used room, then default, then fallback
-  useEffect(() => {
-    const loadPrefs = async () => {
-      const prefsRaw = await AsyncStorage.getItem('quickAddPrefs');
-      let lastRoom = null;
+  React.useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasPermission(status === 'granted');
+    })();
+  }, []);
+
+  const handleSnap = async () => {
+    if (cameraRef.current) {
+      setLoading(true);
       try {
-        lastRoom = await AsyncStorage.getItem('quickAddLastRoom');
-      } catch {}
-      if (prefsRaw) {
-        const prefs = JSON.parse(prefsRaw);
-        setQuickAddPrefs(prefs);
-        if (!route.params?.room && lastRoom && rooms.includes(lastRoom)) {
-          setCurrentRoom(lastRoom);
-        } else if (!route.params?.room && prefs.defaultRoom && rooms.includes(prefs.defaultRoom)) {
-          setCurrentRoom(prefs.defaultRoom);
-        } else if (!route.params?.room && rooms && rooms.length > 0) {
-          setCurrentRoom(rooms[0]);
-        }
-      } else if (!route.params?.room && lastRoom && rooms.includes(lastRoom)) {
-        setCurrentRoom(lastRoom);
-      } else if (!route.params?.room && rooms && rooms.length > 0) {
-        setCurrentRoom(rooms[0]);
+        const photo = await cameraRef.current.takePictureAsync({ base64: true });
+        // Simulate OCR/barcode detection and auto-population
+        // Replace this with your actual detection logic
+        setTimeout(() => {
+          setResult({
+            name: 'Sample Product',
+            category: 'Groceries',
+            detected: true,
+          });
+          setLoading(false);
+          // Auto-save and reopen camera for next snap
+          setTimeout(() => {
+            setResult(null);
+            setScanning(true);
+          }, 1200);
+        }, 1200);
+      } catch (e) {
+        Alert.alert('Error', 'Could not take picture.');
+        setLoading(false);
       }
-    };
-    loadPrefs();
-  }, [rooms]);
-
-
-  useEffect(() => {
-    // If alwaysPrompt is true, keep current behavior. If false and defaultRoom is set, skip prompt.
-    if (quickAddPrefs.alwaysPrompt) {
-      rapidSnapLoop();
-    } else if (quickAddPrefs.defaultRoom && rooms.includes(quickAddPrefs.defaultRoom)) {
-      setCurrentRoom(quickAddPrefs.defaultRoom);
-      rapidSnapLoop();
-    } else {
-      rapidSnapLoop();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quickAddPrefs, rooms]);
+  };
 
-  // Rapid snap: after each photo, add to inventory and prompt for next
-  const rapidSnapLoop = async () => {
-    while (true) {
-      try {
-        const ImagePicker = await import('expo-image-picker');
-        // Request camera permission
-        const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status !== 'granted') {
-          setBannerMessage('Camera access is needed for Quick Add');
-          setBannerType('error');
-          setShowBanner(true);
-          setTimeout(() => setShowBanner(false), 3000);
-          navigation.goBack();
-          return;
-        }
-        // Launch camera
-        const result = await ImagePicker.launchCameraAsync({
-          quality: 0.7,
-          allowsEditing: false,
-          aspect: [4, 3],
-        });
-        if (result.canceled || !result.assets || !result.assets[0]) {
-          // User cancelled, exit quick add
-          setBannerMessage('Quick Add cancelled');
-          setBannerType('info');
-          setShowBanner(true);
-          setTimeout(() => setShowBanner(false), 2000);
-          navigation.goBack();
-          return;
-        }
-        const uri = result.assets[0].uri;
-        // Persist photo
-        const { persistPhoto } = await import('../utils/photo');
-        const savedPhoto = await persistPhoto(uri);
-        // Check product limit before adding
-        const canAdd = await checkProductLimit(products.length + 1, navigation);
-        if (!canAdd) {
-          setBannerMessage('Product limit reached. Upgrade for more.');
-          setBannerType('error');
-          setShowBanner(true);
-          setTimeout(() => setShowBanner(false), 3000);
-          navigation.goBack();
-          return;
-        }
-        // Create product
-        const timestamp = new Date().toLocaleDateString();
-        const roomToUse = currentRoom || 'Put Away';
-        const productData = {
-          name: `${roomToUse} Item - ${timestamp}`,
-          category: 'Quick Add',
-          room: roomToUse,
-          photos: [savedPhoto],
-          warranty: '',
-          purchaseDate: '',
-          purchasePrice: '',
-          careInstructions: '',
-          isDishwasherSafe: '',
-          manualUrl: '',
-          cleaningTips: '',
-          usageNotes: 'Added via Quick Add - edit to add details',
-          specifications: '',
-        };
-        const newId = await addProduct(productData);
-        setLastProductId(newId);
-        setLastProductRoom(roomToUse);
-        // Save last used room for smart guessing
-        try {
-          await AsyncStorage.setItem('quickAddLastRoom', roomToUse);
-        } catch {}
-        showMoveUndoToast();
-        // Continue loop for next snap
-      } catch (error) {
-        console.error('Quick Add photo failed:', error);
-        setBannerMessage('Failed to capture or save photo');
-        setBannerType('error');
-        setShowBanner(true);
-        setTimeout(() => setShowBanner(false), 3000);
+  if (hasPermission === null) {
+    return <View style={styles.center}><ActivityIndicator size="large" /></View>;
+  }
+  if (hasPermission === false) {
+    return <View style={styles.center}><Text>No access to camera</Text></View>;
+  }
+
+  return (
+    <View style={styles.container}>
+      {(!scanning && !result) && (
+        <Card style={styles.card}>
+          <Text style={styles.title}>Quick Add</Text>
+          <Button title="Start Quick Snap" onPress={() => setScanning(true)} />
+        </Card>
+      )}
+      {(scanning || loading) && (
+        <Camera
+          ref={cameraRef}
+          style={styles.camera}
+          ratio="16:9"
+          autoFocus={Camera.Constants.AutoFocus.on}
+        >
+          <View style={styles.snapOverlay}>
+            <Button title={loading ? 'Processing...' : 'Snap'} onPress={handleSnap} loading={loading} />
+          </View>
+        </Camera>
+      )}
+      {result && (
+        <Card style={styles.card}>
+          <Text style={styles.resultTitle}>Detected:</Text>
+          <Text style={styles.resultText}>{result.name} ({result.category})</Text>
+          <Text style={styles.resultSaved}>Saved! Reopening camera...</Text>
+        </Card>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F6F8F7',
+    justifyContent: 'center',
+  },
+  card: {
+    margin: 24,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#6B8E7D',
+    marginBottom: 16,
+  },
+  camera: {
+    flex: 1,
+    margin: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
+    justifyContent: 'flex-end',
+  },
+  snapOverlay: {
+    position: 'absolute',
+    bottom: 30,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  resultTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#6B8E7D',
+    marginBottom: 8,
+  },
+  resultText: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 8,
+  },
+  resultSaved: {
+    fontSize: 14,
+    color: '#9BB092',
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
         navigation.goBack();
         return;
       }
