@@ -1,11 +1,17 @@
+
 import React, { useState } from 'react';
-import { View, TextInput, FlatList, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TextInput, FlatList, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Button from './MasterKit/Button';
+import * as Audio from 'expo-av';
+
 
 export default function QuickNoteWidget() {
   const [note, setNote] = useState('');
   const [notes, setNotes] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [recording, setRecording] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
+
 
   const handleAddOrEdit = () => {
     if (note.trim() === '') return;
@@ -18,6 +24,48 @@ export default function QuickNoteWidget() {
       setNotes([note, ...notes]);
     }
     setNote('');
+  };
+
+  // Voice recording logic
+  const startRecording = async () => {
+    try {
+      setIsRecording(true);
+      const { status } = await Audio.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission required', 'Microphone permission is required to record notes.');
+        setIsRecording(false);
+        return;
+      }
+      await Audio.Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
+      const { recording } = await Audio.Audio.Recording.createAsync(Audio.Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+      setRecording(recording);
+    } catch (err) {
+      Alert.alert('Recording error', err.message || 'Could not start recording.');
+      setIsRecording(false);
+    }
+  };
+
+  const stopRecording = async () => {
+    try {
+      setIsRecording(false);
+      await recording.stopAndUnloadAsync();
+      const uri = recording.getURI();
+      setRecording(null);
+      // Transcribe audio (mocked for now)
+      // In production, integrate with a speech-to-text API
+      const transcript = await mockTranscribe(uri);
+      if (transcript.trim()) {
+        setNotes([transcript, ...notes]);
+      }
+    } catch (err) {
+      Alert.alert('Recording error', err.message || 'Could not stop recording.');
+    }
+  };
+
+  // Mock transcription function (replace with real API for production)
+  const mockTranscribe = async (uri) => {
+    // Simulate transcription delay
+    return new Promise((resolve) => setTimeout(() => resolve('Voice note (transcribed): ' + new Date().toLocaleTimeString()), 1200));
   };
 
   const handleEdit = (index) => {
@@ -49,6 +97,13 @@ export default function QuickNoteWidget() {
           onPress={handleAddOrEdit}
           style={styles.addButton}
         />
+        <TouchableOpacity
+          onPress={isRecording ? stopRecording : startRecording}
+          style={[styles.voiceButton, isRecording && styles.voiceButtonActive]}
+          accessibilityLabel={isRecording ? 'Stop recording' : 'Record voice note'}
+        >
+          <Text style={{ color: '#fff', fontWeight: 'bold' }}>{isRecording ? '■' : '🎤'}</Text>
+        </TouchableOpacity>
       </View>
       <FlatList
         data={notes}
@@ -101,6 +156,19 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     paddingHorizontal: 16,
     backgroundColor: '#6B8E7D',
+  },
+  voiceButton: {
+    marginLeft: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#4B5D52',
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 36,
+  },
+  voiceButtonActive: {
+    backgroundColor: '#ff4444',
   },
   noteRow: {
     flexDirection: 'row',
