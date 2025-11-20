@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
-  Dimensions,
+  useWindowDimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../providers/ThemeProvider';
@@ -15,21 +15,9 @@ import {
 } from '../utils/smart-meal-suggestions';
 
 /**
- * UrgentMealSuggestion - Smart banner widget
- * 
- * Shows on Dashboard ONLY when ingredients are expiring soon (≤3 days)
- * 
- * Features:
- * - Non-intrusive banner at top of Dashboard
- * - Dismissable with X button
- * - One-tap: "Use chicken in stir fry?" → Navigate to meal planner
- * - Auto-hides after dismissal (won't nag again)
- * - Slide-in animation for smooth appearance
- * 
- * UX: PASSIVE, OPTIONAL, CONTEXTUAL
- */
 const UrgentMealSuggestion = ({ navigation, onDismiss }) => {
   const { colors } = useTheme();
+  const { fontScale } = useWindowDimensions();
   const [suggestion, setSuggestion] = useState(null);
   const [dismissed, setDismissed] = useState(false);
   const [slideAnim] = useState(new Animated.Value(-200)); // Start off-screen
@@ -41,11 +29,9 @@ const UrgentMealSuggestion = ({ navigation, onDismiss }) => {
   const loadSuggestion = async () => {
     try {
       const suggestions = await getUrgentMealSuggestions(3);
-      
       if (suggestions.length > 0) {
         const formatted = formatSuggestionForDisplay(suggestions[0]);
         setSuggestion(formatted);
-        
         // Slide in animation
         Animated.timing(slideAnim, {
           toValue: 0,
@@ -96,26 +82,48 @@ const UrgentMealSuggestion = ({ navigation, onDismiss }) => {
           transform: [{ translateY: slideAnim }],
         },
       ]}
+      accessible accessibilityLabel="Urgent Meal Suggestion Banner"
     >
       {/* Close button */}
       <TouchableOpacity
         style={styles.closeButton}
         onPress={handleDismiss}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        accessibilityLabel="Dismiss meal suggestion"
       >
         <Ionicons name="close" size={20} color={colors.textSecondary} />
       </TouchableOpacity>
 
       {/* Icon */}
-      <View style={[styles.iconContainer, { backgroundColor: urgencyColor + '20' }]}>
+      <View style={[styles.iconContainer, { backgroundColor: urgencyColor + '20' }]}
+        accessible accessibilityLabel="Meal suggestion icon">
         <Ionicons name="restaurant" size={24} color={urgencyColor} />
       </View>
 
       {/* Content */}
       <View style={styles.content}>
-        <Text style={[styles.title, { color: colors.text }]}>
+        <Text style={[styles.title, { color: colors.text, fontSize: 14 * fontScale }]} accessibilityRole="header">
           Meal Suggestion
         </Text>
+        <Text style={[styles.message, { color: colors.text, fontSize: 15 * fontScale }]}>{message}</Text>
+        <Text style={[styles.details, { color: colors.textSecondary, fontSize: 12 * fontScale }]}
+          accessibilityLabel={`Expiring item: ${expiringItem.name}, expires in ${expiringItem.daysLeft} days`}>
+          {expiringItem.name} expires in {expiringItem.daysLeft} day{expiringItem.daysLeft !== 1 ? 's' : ''}
+        </Text>
+      </View>
+
+      {/* Action button */}
+      <TouchableOpacity
+        style={[styles.actionButton, { backgroundColor: urgencyColor }]}
+        onPress={handleAccept}
+        accessibilityLabel="Add meal suggestion to plan"
+      >
+        <Text style={styles.actionText}>Add to Plan</Text>
+        <Ionicons name="arrow-forward" size={16} color="#fff" />
+      </TouchableOpacity>
+    </Animated.View>
+  );
+};
         <Text style={[styles.message, { color: colors.text }]}>
           {message}
         </Text>

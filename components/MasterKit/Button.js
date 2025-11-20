@@ -1,18 +1,31 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 
-export default function Button({ title, onPress, style, loading, icon, ...props }) {
+import React from 'react';
+import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, useWindowDimensions } from 'react-native';
+import { useTheme } from '../../providers/ThemeProvider';
+
+export default function Button({ title, onPress, style, loading, icon, accessibilityLabel, ...props }) {
+  const { colors } = useTheme();
+  const { fontScale } = useWindowDimensions();
   return (
-    <TouchableOpacity style={[styles.button, style]} onPress={onPress} disabled={loading} {...props}>
+    <TouchableOpacity
+      style={[styles.button, { backgroundColor: colors.accent }, style]}
+      onPress={onPress}
+      disabled={loading}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel || title}
+      {...props}
+    >
       {icon && <>{icon}</>}
-      {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.text}>{title}</Text>}
+      {loading
+        ? <ActivityIndicator color={colors.textOnPrimary || '#fff'} />
+        : <Text style={[styles.text, { color: colors.textOnPrimary || '#fff', fontSize: 16 * fontScale }]} allowFontScaling>{title}</Text>
+      }
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#6B8E7D',
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 24,
@@ -21,9 +34,7 @@ const styles = StyleSheet.create({
     marginVertical: 6,
   },
   text: {
-    color: '#fff',
     fontWeight: '600',
-    fontSize: 16,
     marginLeft: 8,
   },
 });

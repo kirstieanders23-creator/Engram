@@ -60,43 +60,46 @@ export const MealPlanningScreen = ({ navigation, route }) => {
     }
   }, [route?.params]);
 
-  useFocusEffect(
-    useCallback(() => {
-      loadData();
-    }, [weekStartDate])
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Meal Planning Screen">
+      <View style={styles.header} accessible accessibilityRole="header">
+        <Text style={[styles.title, { color: colors.text }]} allowFontScaling accessibilityLabel="Meal Planning">Meal Planning</Text>
+        <TouchableOpacity
+          style={[styles.addButton, { backgroundColor: colors.accent }]}
+          onPress={openAddModal}
+          accessibilityLabel="Add meal"
+        >
+          <Ionicons name="add" size={22} color="#fff" />
+        </TouchableOpacity>
+      </View>
+
+      {meals.length === 0 ? (
+        <View style={styles.emptyContainer} accessible accessibilityLabel="No meals planned">
+          <Text style={[styles.emptyText, { color: colors.textSecondary }]} allowFontScaling>No meals planned yet</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={meals}
+          renderItem={renderMealItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          accessibilityLabel="Meals list"
+        />
+      )}
+
+      <MealModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSave={editingMeal ? handleUpdateMeal : handleAddMeal}
+        onDelete={editingMeal ? handleDeleteMeal : null}
+        isEditing={!!editingMeal}
+        colors={colors}
+        meal={editingMeal}
+      />
+    </SafeAreaView>
   );
-
-  const loadData = async () => {
-    const plan = await getMealPlanForWeek(weekStartDate);
-    const dates = getWeekDates(weekStartDate);
-    const householdData = await getHousehold();
-    const statistics = getMealPlanStats(plan);
-    
-    setMealPlan(plan);
-    setWeekDates(dates);
-    setHousehold(householdData);
-    setStats(statistics);
-  };
-
-  const handlePreviousWeek = () => {
-    const date = new Date(weekStartDate);
-    date.setDate(date.getDate() - 7);
-    setWeekStartDate(date.toISOString().split('T')[0]);
-  };
-
-  const handleNextWeek = () => {
-    const date = new Date(weekStartDate);
-    date.setDate(date.getDate() + 7);
-    setWeekStartDate(date.toISOString().split('T')[0]);
-  };
-
-  const handleAddMeal = (dayIndex, mealType) => {
-    setEditingMeal({ dayIndex, mealType });
-    setMealName('');
-    setMealNotes('');
-    setAssignedTo(null);
-    setEditModalVisible(true);
-  };
 
   const handleEditMeal = (dayIndex, mealType, meal) => {
     setEditingMeal({ dayIndex, mealType });

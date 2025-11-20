@@ -1,9 +1,16 @@
+
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useTheme } from '../../providers/ThemeProvider';
 
 export default function Card({ children, style, ...props }) {
+  const { colors } = useTheme();
   return (
-    <View style={[styles.card, style]} {...props}>
+    <View
+      style={[styles.card, { backgroundColor: colors.card }, style]}
+      accessibilityRole="summary"
+      {...props}
+    >
       {children}
     </View>
   );
@@ -11,7 +18,6 @@ export default function Card({ children, style, ...props }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
     marginVertical: 8,

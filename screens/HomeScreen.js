@@ -255,9 +255,11 @@ const HomeScreen = ({ navigation }) => {
   };
 
    return (
-     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}> 
+     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+       accessible accessibilityLabel="Home Screen">
        <QuickNoteWidget />
-       <View style={styles.header}>
+       <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}
+         accessible accessibilityRole="header">
          <Text style={[styles.title, { color: colors.text }]}>My Home</Text>
          {/* Add header buttons here if needed */}
        </View>
@@ -267,15 +269,18 @@ const HomeScreen = ({ navigation }) => {
            { backgroundColor: colors.card, color: colors.text, borderColor: colors.border },
          ]}
          placeholder="Search products..."
-         placeholderTextColor={colors.text}
+         placeholderTextColor={colors.textSecondary}
          value={searchQuery}
          onChangeText={setSearchQuery}
+         accessibilityLabel="Search products"
+         allowFontScaling
        />
        <UrgentMealSuggestion navigation={navigation} />
 
        {/* Dedicated Check Later Section */}
        {checkLaterProducts.length > 0 && (
-         <View style={styles.checkLaterSection}>
+         <View style={[styles.checkLaterSection, { backgroundColor: colors.surface, borderColor: colors.border }]}
+           accessible accessibilityLabel="Check Later Section">
            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
              <Text style={[styles.sectionTitle, { color: colors.primary }]}>Check Later</Text>
              <TouchableOpacity
@@ -283,7 +288,8 @@ const HomeScreen = ({ navigation }) => {
                  setCheckLaterIds([]);
                  await AsyncStorage.setItem('CHECK_LATER_IDS', JSON.stringify([]));
                }}
-               style={styles.clearCheckLaterBtn}
+               style={[styles.clearCheckLaterBtn, { backgroundColor: colors.accent }]}
+               accessibilityLabel="Clear all check later items"
              >
                <Text style={{ color: colors.buttonText || '#fff' }}>Clear All</Text>
              </TouchableOpacity>
@@ -295,6 +301,7 @@ const HomeScreen = ({ navigation }) => {
              numColumns={2}
              columnWrapperStyle={styles.gridRow}
              contentContainerStyle={{ paddingVertical: 8 }}
+             accessibilityLabel="Check later products list"
            />
          </View>
        )}
@@ -305,6 +312,7 @@ const HomeScreen = ({ navigation }) => {
            horizontal
            showsHorizontalScrollIndicator={false}
            contentContainerStyle={styles.roomFilterContainer}
+           accessibilityLabel="Room filter"
          >
            {rooms.map((room) => (
              <TouchableOpacity
@@ -318,6 +326,7 @@ const HomeScreen = ({ navigation }) => {
                  }
                ]}
                onPress={() => setSelectedRoom(room)}
+               accessibilityLabel={`Filter by room: ${room}`}
              >
                <Text
                  style={[
@@ -344,6 +353,7 @@ const HomeScreen = ({ navigation }) => {
            <TouchableOpacity
              style={[styles.emptyButton, { backgroundColor: colors.primary }]}
              onPress={() => setModalVisible(true)}
+             accessibilityLabel="Add your first product"
            >
              <Text style={styles.buttonText}>Add your first product</Text>
            </TouchableOpacity>
@@ -356,6 +366,7 @@ const HomeScreen = ({ navigation }) => {
            numColumns={2}
            columnWrapperStyle={styles.gridRow}
            contentContainerStyle={styles.listContent}
+           accessibilityLabel="Main products list"
          />
        )}
        {/* Add modals and other components as needed */}

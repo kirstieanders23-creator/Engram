@@ -452,26 +452,30 @@ export const DashboardScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Dashboard Screen">
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: colors.card }]}
+        accessible accessibilityRole="header">
         <TouchableOpacity
           style={styles.profileButton}
           onPress={() => navigation.navigate('Profile')}
+          accessibilityLabel="Go to profile"
         >
           <View style={[styles.profileIcon, { backgroundColor: colors.primary }]}>
             <Ionicons name="person" size={22} color="#fff" />
           </View>
         </TouchableOpacity>
         <View style={styles.headerText}>
-          <View style={[styles.titleContainer, { backgroundColor: 'rgba(201, 169, 97, 0.12)' }]}>
-            <Text style={[styles.title, { color: colors.accent, textShadowColor: 'rgba(201, 169, 97, 0.3)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 }]}>ENGRAM</Text>
+          <View style={[styles.titleContainer, { backgroundColor: colors.surface, borderColor: colors.accent }]}> 
+            <Text style={[styles.title, { color: colors.accent, textShadowColor: colors.accent + '30', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 }]}>ENGRAM</Text>
           </View>
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Your Home, Elevated</Text>
         </View>
         <TouchableOpacity
           style={styles.settingsButton}
           onPress={() => navigation.navigate('Settings')}
+          accessibilityLabel="Open settings"
         >
           <View style={[styles.settingsIcon, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <Ionicons name="settings-outline" size={22} color={colors.primary} />
@@ -484,11 +488,12 @@ export const DashboardScreen = ({ navigation }) => {
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        accessibilityLabel="Dashboard cards"
       >
         {AVAILABLE_CARDS.map(card => renderCard(card.id))}
         
         <View style={styles.footer}>
-          <Text style={[styles.footerText, { color: colors.textSecondary }]}>
+          <Text style={[styles.footerText, { color: colors.textSecondary }]}> 
             Customize your dashboard in Settings
           </Text>
         </View>
@@ -498,6 +503,7 @@ export const DashboardScreen = ({ navigation }) => {
       <TouchableOpacity
         style={[styles.quickLookupButton, { backgroundColor: colors.primary }]}
         onPress={() => navigation.navigate('QuickLookup', { autoCapture: true })}
+        accessibilityLabel="Quick lookup"
       >
         <Ionicons name="camera" size={24} color="#fff" />
       </TouchableOpacity>
@@ -506,6 +512,7 @@ export const DashboardScreen = ({ navigation }) => {
       <TouchableOpacity
         style={[styles.quickAddButton, { backgroundColor: colors.accent }]}
         onPress={() => navigation.navigate('QuickAdd')}
+        accessibilityLabel="Quick add"
       >
         <Ionicons name="flash" size={28} color="#fff" />
         <Text style={styles.quickAddText}>Quick Add</Text>

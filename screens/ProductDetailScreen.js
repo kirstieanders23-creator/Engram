@@ -5,64 +5,69 @@ import { useTheme } from '../providers/ThemeProvider';
 import { PhotoViewer } from '../components/PhotoViewer';
 
 function daysUntil(dateStr) {
-  if (!dateStr) return null;
-  const now = new Date();
-  const target = new Date(dateStr);
-  if (isNaN(target.getTime())) return null;
-  const diff = target.getTime() - now.getTime();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
-}
-
-export const ProductDetailScreen = ({ route, navigation }) => {
-  const { colors } = useTheme();
-  const { product } = route.params || {};
-
-  const remaining = useMemo(() => daysUntil(product?.warranty), [product?.warranty]);
-  const [viewerVisible, setViewerVisible] = useState(false);
-  const [viewerIndex, setViewerIndex] = useState(0);
-
-  const openViewer = (idx) => {
-    setViewerIndex(idx);
-    setViewerVisible(true);
-  };
-
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView>
-        <View style={styles.header}>
-          <Text style={[styles.title, { color: colors.text }]}>{product?.name || 'Product'}</Text>
-          <TouchableOpacity style={[styles.editButton, { backgroundColor: colors.primary }]} onPress={() => navigation.goBack()}>
-            <Text style={styles.editText}>Back</Text>
-          </TouchableOpacity>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Product Detail Screen">
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}
+        accessibilityLabel="Product details">
+        {/* Product Image */}
+        <View style={styles.imageContainer} accessible accessibilityLabel="Product image container">
+          <PhotoViewer
+            imageUri={product.imageUri}
+            style={styles.productImage}
+            accessibilityLabel="Product image"
+          />
         </View>
 
-        <View style={styles.meta}>
-          {product?.category ? (
-            <Text style={[styles.metaText, { color: colors.text }]}>📦 Category: {product.category}</Text>
-          ) : null}
-          {product?.room ? (
-            <Text style={[styles.metaText, { color: colors.text }]}>🏠 Room: {product.room}</Text>
-          ) : null}
-          {product?.barcode ? (
-            <Text style={[styles.metaText, { color: colors.text }]}>🔢 Barcode: {product.barcode}</Text>
-          ) : null}
-          {product?.warranty ? (
-            <Text style={[styles.metaText, { color: colors.text }]}>📅 Warranty until: {product.warranty}{remaining != null ? `  (in ${remaining} days)` : ''}</Text>
+        {/* Product Info */}
+        <View style={styles.infoContainer} accessible accessibilityLabel="Product information">
+          <Text style={[styles.productName, { color: colors.text }]} allowFontScaling accessibilityLabel={`Product name: ${product.name}`}>{product.name}</Text>
+          <Text style={[styles.productCategory, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel={`Category: ${product.category}`}>{product.category}</Text>
+          {product.notes ? (
+            <Text style={[styles.productNotes, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel={`Notes: ${product.notes}`}>{product.notes}</Text>
           ) : null}
         </View>
 
-        {/* Quick Actions */}
-        <View style={styles.quickActions}>
-          <TouchableOpacity
-            style={[styles.actionButton, { backgroundColor: colors.accent }]}
-            onPress={() => navigation.navigate('UpgradeFinder', { productId: product?.id })}
-          >
-            <Text style={styles.actionIcon}>🔍</Text>
-            <Text style={styles.actionButtonText}>Find Upgrade</Text>
-          </TouchableOpacity>
+        {/* Actions */}
+        <View style={styles.actionsRow} accessible accessibilityRole="toolbar">
           <TouchableOpacity
             style={[styles.actionButton, { backgroundColor: colors.primary }]}
-            onPress={() => navigation.navigate('ManualLookup', { productId: product?.id, product })}
+            onPress={onEdit}
+            accessibilityLabel="Edit product"
+          >
+            <Ionicons name="pencil" size={20} color="#fff" />
+            <Text style={styles.actionButtonText}>Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.actionButton, { backgroundColor: colors.accent }]}
+            onPress={onShare}
+            accessibilityLabel="Share product"
+          >
+            <Ionicons name="share-social" size={20} color="#fff" />
+            <Text style={styles.actionButtonText}>Share</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Details List */}
+        <View style={styles.detailsList} accessible accessibilityLabel="Product details list">
+          <DetailRow label="Room" value={product.room} colors={colors} />
+          <DetailRow label="Quantity" value={product.quantity} colors={colors} />
+          <DetailRow label="Expiration" value={product.expiration} colors={colors} />
+          <DetailRow label="Added" value={product.addedDate} colors={colors} />
+        </View>
+
+        {/* Delete Button */}
+        <TouchableOpacity
+          style={[styles.deleteButton, { backgroundColor: colors.error }]}
+          onPress={onDelete}
+          accessibilityLabel="Delete product"
+        >
+          <Ionicons name="trash" size={20} color="#fff" />
+          <Text style={styles.deleteButtonText}>Delete</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
+  );
           >
             <Text style={styles.actionIcon}>📖</Text>
             <Text style={styles.actionButtonText}>Find Manual</Text>

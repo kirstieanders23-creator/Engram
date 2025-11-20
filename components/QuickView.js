@@ -1,9 +1,14 @@
+
 import React from 'react';
-import { View, Text, Modal, TouchableOpacity, StyleSheet, ScrollView, Linking } from 'react-native';
+import { View, Text, Modal, TouchableOpacity, StyleSheet, ScrollView, Linking, useWindowDimensions } from 'react-native';
 import PropTypes from 'prop-types';
+import { useTheme } from '../providers/ThemeProvider';
 
 // Quick view modal for showing product info without editing
-export const QuickView = ({ visible, product, onClose, onEdit, colors }) => {
+export const QuickView = ({ visible, product, onClose, onEdit, colors: propColors }) => {
+  const { colors } = useTheme();
+  const { fontScale } = useWindowDimensions();
+  const themeColors = propColors || colors;
   if (!product) return null;
 
   const openManual = () => {
@@ -15,69 +20,54 @@ export const QuickView = ({ visible, product, onClose, onEdit, colors }) => {
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.container, { backgroundColor: themeColors.background }]} accessibilityViewIsModal accessible accessibilityLabel="Product Quick View Modal">
           <View style={styles.header}>
-            <Text style={[styles.title, { color: colors.text }]}>{product.name}</Text>
-            <TouchableOpacity onPress={onClose}>
-              <Text style={[styles.closeButton, { color: colors.text }]}>✕</Text>
+            <Text style={[styles.title, { color: themeColors.text, fontSize: 22 * fontScale }]} accessibilityRole="header">{product.name}</Text>
+            <TouchableOpacity onPress={onClose} accessibilityLabel="Close quick view">
+              <Text style={[styles.closeButton, { color: themeColors.text }]}>✕</Text>
             </TouchableOpacity>
           </View>
 
           <ScrollView style={styles.content}>
             {/* Basic Info */}
-            <View style={[styles.section, { borderBottomColor: colors.border }]}>
+            <View style={[styles.section, { borderBottomColor: themeColors.border }]}
+              accessible accessibilityLabel="Product basic info section">
               {product.category && (
-                <Text style={[styles.infoText, { color: colors.text }]}>
-                  📦 <Text style={styles.label}>Category:</Text> {product.category}
-                </Text>
+                <Text style={[styles.infoText, { color: themeColors.text, fontSize: 15 * fontScale }]}>📦 <Text style={styles.label}>Category:</Text> {product.category}</Text>
               )}
               {product.room && (
-                <Text style={[styles.infoText, { color: colors.text }]}>
-                  🏠 <Text style={styles.label}>Room:</Text> {product.room}
-                </Text>
+                <Text style={[styles.infoText, { color: themeColors.text, fontSize: 15 * fontScale }]}>🏠 <Text style={styles.label}>Room:</Text> {product.room}</Text>
               )}
               {product.warranty && (
-                <Text style={[styles.infoText, { color: colors.text }]}>
-                  📅 <Text style={styles.label}>Warranty:</Text> {product.warranty}
-                </Text>
+                <Text style={[styles.infoText, { color: themeColors.text, fontSize: 15 * fontScale }]}>📅 <Text style={styles.label}>Warranty:</Text> {product.warranty}</Text>
               )}
             </View>
 
             {/* Care & Cleaning - Most Important */}
             {(product.isDishwasherSafe || product.careInstructions || product.cleaningTips) && (
-              <View style={[styles.section, { borderBottomColor: colors.border }]}>
-                <Text style={[styles.sectionTitle, { color: colors.primary }]}>🧼 Care & Cleaning</Text>
+              <View style={[styles.section, { borderBottomColor: themeColors.border }]} accessible accessibilityLabel="Care and cleaning section">
+                <Text style={[styles.sectionTitle, { color: themeColors.primary }]}>🧼 Care & Cleaning</Text>
                 {product.isDishwasherSafe && (
-                  <Text style={[styles.infoText, { color: colors.text }]}>
-                    <Text style={styles.label}>Dishwasher:</Text> {product.isDishwasherSafe}
-                  </Text>
+                  <Text style={[styles.infoText, { color: themeColors.text, fontSize: 15 * fontScale }]}><Text style={styles.label}>Dishwasher:</Text> {product.isDishwasherSafe}</Text>
                 )}
                 {product.careInstructions && (
-                  <Text style={[styles.infoText, { color: colors.text }]}>
-                    <Text style={styles.label}>Care:</Text> {product.careInstructions}
-                  </Text>
+                  <Text style={[styles.infoText, { color: themeColors.text, fontSize: 15 * fontScale }]}><Text style={styles.label}>Care:</Text> {product.careInstructions}</Text>
                 )}
                 {product.cleaningTips && (
-                  <Text style={[styles.infoText, { color: colors.text }]}>
-                    <Text style={styles.label}>Tips:</Text> {product.cleaningTips}
-                  </Text>
+                  <Text style={[styles.infoText, { color: themeColors.text, fontSize: 15 * fontScale }]}><Text style={styles.label}>Tips:</Text> {product.cleaningTips}</Text>
                 )}
               </View>
             )}
 
             {/* Usage & Specs */}
             {(product.usageNotes || product.specifications) && (
-              <View style={[styles.section, { borderBottomColor: colors.border }]}>
-                <Text style={[styles.sectionTitle, { color: colors.primary }]}>📋 Usage & Specs</Text>
+              <View style={[styles.section, { borderBottomColor: themeColors.border }]} accessible accessibilityLabel="Usage and specs section">
+                <Text style={[styles.sectionTitle, { color: themeColors.primary }]}>📋 Usage & Specs</Text>
                 {product.usageNotes && (
-                  <Text style={[styles.infoText, { color: colors.text }]}>
-                    <Text style={styles.label}>Usage:</Text> {product.usageNotes}
-                  </Text>
+                  <Text style={[styles.infoText, { color: themeColors.text, fontSize: 15 * fontScale }]}><Text style={styles.label}>Usage:</Text> {product.usageNotes}</Text>
                 )}
                 {product.specifications && (
-                  <Text style={[styles.infoText, { color: colors.text }]}>
-                    <Text style={styles.label}>Specs:</Text> {product.specifications}
-                  </Text>
+                  <Text style={[styles.infoText, { color: themeColors.text, fontSize: 15 * fontScale }]}><Text style={styles.label}>Specs:</Text> {product.specifications}</Text>
                 )}
               </View>
             )}
@@ -85,8 +75,9 @@ export const QuickView = ({ visible, product, onClose, onEdit, colors }) => {
             {/* Manual Link */}
             {product.manualUrl && (
               <TouchableOpacity 
-                style={[styles.manualButton, { backgroundColor: colors.primary }]}
+                style={[styles.manualButton, { backgroundColor: themeColors.primary }]}
                 onPress={openManual}
+                accessibilityLabel="Open manual or instructions"
               >
                 <Text style={styles.manualButtonText}>📖 Open Manual/Instructions</Text>
               </TouchableOpacity>
@@ -95,14 +86,16 @@ export const QuickView = ({ visible, product, onClose, onEdit, colors }) => {
 
           <View style={styles.footer}>
             <TouchableOpacity 
-              style={[styles.button, styles.closeBtn, { backgroundColor: colors.secondary || '#666' }]}
+              style={[styles.button, styles.closeBtn, { backgroundColor: themeColors.secondary || '#666' }]}
               onPress={onClose}
+              accessibilityLabel="Close quick view"
             >
               <Text style={styles.buttonText}>Close</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-              style={[styles.button, styles.editBtn, { backgroundColor: colors.primary }]}
+              style={[styles.button, styles.editBtn, { backgroundColor: themeColors.primary }]}
               onPress={() => { onClose(); onEdit(product); }}
+              accessibilityLabel="Edit product details"
             >
               <Text style={styles.buttonText}>Edit Details</Text>
             </TouchableOpacity>

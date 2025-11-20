@@ -659,9 +659,11 @@ export const ProductsScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Products Screen">
       {/* Fixed Search Header */}
-      <View style={[styles.searchHeader, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
+      <View style={[styles.searchHeader, { backgroundColor: colors.background, borderBottomColor: colors.border }]}
+        accessible accessibilityRole="header">
         <View style={styles.searchBarContainer}>
           <Ionicons name="search" size={20} color={colors.textSecondary} style={styles.searchIcon} />
           <TextInput
@@ -670,9 +672,11 @@ export const ProductsScreen = ({ navigation }) => {
             placeholderTextColor={colors.textSecondary}
             value={searchQuery}
             onChangeText={setSearchQuery}
+            accessibilityLabel="Search products"
+            allowFontScaling
           />
           {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchQuery('')}>
+            <TouchableOpacity onPress={() => setSearchQuery('')} accessibilityLabel="Clear search">
               <Ionicons name="close-circle" size={20} color={colors.textSecondary} />
             </TouchableOpacity>
           )}
@@ -684,6 +688,7 @@ export const ProductsScreen = ({ navigation }) => {
             style={[styles.iconButton, { backgroundColor: colors.card, borderColor: colors.border }]}
             onPress={handleScan}
             disabled={isScanning}
+            accessibilityLabel="Scan product with camera"
           >
             {isScanning ? (
               <ActivityIndicator size="small" color={colors.primary} />
@@ -696,6 +701,7 @@ export const ProductsScreen = ({ navigation }) => {
             style={[styles.iconButton, { backgroundColor: colors.card, borderColor: colors.border }]}
             onPress={handleStartBarcode}
             disabled={isBarcodeScanning}
+            accessibilityLabel="Scan product barcode"
           >
             {isBarcodeScanning ? (
               <ActivityIndicator size="small" color={colors.primary} />
@@ -707,6 +713,7 @@ export const ProductsScreen = ({ navigation }) => {
           <TouchableOpacity
             style={[styles.primaryButton, { backgroundColor: colors.accent }]}
             onPress={openAddModal}
+            accessibilityLabel="Add product"
           >
             <Ionicons name="add" size={22} color="#fff" />
             <Text style={styles.primaryButtonText}>Add Product</Text>
@@ -715,6 +722,7 @@ export const ProductsScreen = ({ navigation }) => {
           <TouchableOpacity
             style={[styles.iconButton, { backgroundColor: colors.card, borderColor: colors.border }]}
             onPress={() => navigation.navigate('Settings')}
+            accessibilityLabel="Open settings"
           >
             <Ionicons name="settings-outline" size={22} color={colors.textSecondary} />
           </TouchableOpacity>
@@ -728,6 +736,7 @@ export const ProductsScreen = ({ navigation }) => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.roomFilterContainer}
           style={[styles.roomFilterScroll, { backgroundColor: colors.background }]}
+          accessibilityLabel="Room filter"
         >
           {rooms.map((room) => (
             <TouchableOpacity
@@ -740,6 +749,7 @@ export const ProductsScreen = ({ navigation }) => {
                 }
               ]}
               onPress={() => setSelectedRoom(room)}
+              accessibilityLabel={`Filter by room: ${room}`}
             >
               <Ionicons 
                 name={room === 'All' ? 'home' : 'location'} 
@@ -773,6 +783,7 @@ export const ProductsScreen = ({ navigation }) => {
           <TouchableOpacity
             style={[styles.emptyButton, { backgroundColor: colors.primary }]}
             onPress={openAddModal}
+            accessibilityLabel="Add your first product"
           >
             <Text style={styles.buttonText}>Add your first product</Text>
           </TouchableOpacity>
@@ -786,16 +797,18 @@ export const ProductsScreen = ({ navigation }) => {
           columnWrapperStyle={filteredProducts.length > 0 ? styles.gridRow : null}
           contentContainerStyle={filteredProducts.length === 0 ? styles.emptyContainer : styles.listContent}
           showsVerticalScrollIndicator={false}
+          accessibilityLabel="Products list"
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <Text style={{ fontSize: 64, marginBottom: 16 }}>📦</Text>
               <Text style={[styles.emptyTitle, { color: colors.text }]}>Your Home Inventory Awaits</Text>
-              <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+              <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}> 
                 Start building your home inventory by adding products or scanning items
               </Text>
               <TouchableOpacity 
                 style={[styles.emptyButton, { backgroundColor: colors.accent }]}
                 onPress={openAddModal}
+                accessibilityLabel="Add your first product"
               >
                 <Ionicons name="add-circle" size={20} color="#fff" />
                 <Text style={styles.emptyButtonText}>Add Your First Product</Text>
@@ -834,7 +847,8 @@ export const ProductsScreen = ({ navigation }) => {
 
       {barcodeVisible && (
         <Modal visible animationType="fade" transparent onRequestClose={() => setBarcodeVisible(false)}>
-          <SafeAreaView style={[styles.barcodeContainer, { backgroundColor: '#000000aa' }]}>
+          <SafeAreaView style={[styles.barcodeContainer, { backgroundColor: '#000000aa' }]}
+            accessible accessibilityLabel="Barcode scanner modal">
             <View style={styles.barcodeInner}>
               <Text style={[styles.barcodeTitle, { color: '#fff' }]}>Scan Barcode</Text>
               {/* Dynamically render BarcodeScanner */}
@@ -842,7 +856,7 @@ export const ProductsScreen = ({ navigation }) => {
                 {/* Lazy inline component since we can't declare hooks after conditional */}
                 <DynamicBarcode onScanned={handleBarCodeScanned} />
               </View>
-              <TouchableOpacity style={styles.barcodeClose} onPress={() => setBarcodeVisible(false)}>
+              <TouchableOpacity style={styles.barcodeClose} onPress={() => setBarcodeVisible(false)} accessibilityLabel="Cancel barcode scan">
                 <Text style={{ color: '#fff', fontWeight: 'bold' }}>Cancel</Text>
               </TouchableOpacity>
             </View>

@@ -1,8 +1,12 @@
+
 import React, { useEffect } from 'react';
-import { Animated, Text, StyleSheet, View, Platform } from 'react-native';
+import { Animated, Text, StyleSheet, View, Platform, useWindowDimensions } from 'react-native';
+import { useTheme } from '../providers/ThemeProvider';
 
 export const Toast = ({ visible, message, onHide, duration = 2000, type = 'info' }) => {
   const opacity = React.useRef(new Animated.Value(0)).current;
+  const { colors } = useTheme();
+  const { fontScale } = useWindowDimensions();
 
   useEffect(() => {
     if (visible) {
@@ -24,12 +28,23 @@ export const Toast = ({ visible, message, onHide, duration = 2000, type = 'info'
 
   if (!visible) return null;
 
+  // Choose background color based on type and theme
+  const backgroundColor =
+    type === 'success' ? colors.success || '#4e8d7c'
+    : type === 'error' ? colors.error || '#c0392b'
+    : colors.card || '#222';
+
   return (
-    <Animated.View style={[styles.toast, styles[type], { opacity }]}
+    <Animated.View
+      style={[styles.toast, { backgroundColor, opacity }]}
       accessibilityLiveRegion="polite"
       accessibilityRole="alert"
+      accessible
+      accessibilityLabel={`Toast: ${message}`}
     >
-      <Text style={styles.toastText}>{message}</Text>
+      <Text style={[styles.toastText, { color: colors.textOnPrimary || '#fff', fontSize: 15 * fontScale }]} allowFontScaling>
+        {message}
+      </Text>
     </Animated.View>
   );
 };
@@ -42,7 +57,6 @@ const styles = StyleSheet.create({
     right: 24,
     padding: 16,
     borderRadius: 12,
-    backgroundColor: '#222',
     zIndex: 1000,
     alignItems: 'center',
     shadowColor: '#000',
@@ -51,18 +65,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 6,
   },
-  info: {
-    backgroundColor: '#222',
-  },
-  success: {
-    backgroundColor: '#4e8d7c',
-  },
-  error: {
-    backgroundColor: '#c0392b',
-  },
   toastText: {
-    color: '#fff',
-    fontSize: 15,
     fontWeight: '600',
     textAlign: 'center',
   },

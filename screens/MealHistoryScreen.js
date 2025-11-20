@@ -8,27 +8,29 @@ import {
   getMealHistory,
   getForgottenFavorites,
   getSuggestedMeals,
-  rateMeal,
-  deleteMeal,
-  getMealStats,
-  getDaysSinceLastMade,
-  getRatingColor,
-  getDifficultyIcon,
-  getDifficultyColor,
-  createSampleMealHistory,
-} from '../utils/meal-history';
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Meal History Screen">
+      <View style={styles.header} accessible accessibilityRole="header">
+        <Text style={[styles.title, { color: colors.text }]} allowFontScaling accessibilityLabel="Meal History">Meal History</Text>
+      </View>
 
-/**
- * Meal History & Suggestions Screen
- * 
- * "What should I make tonight?"
- * 
- * Shows:
- * - Forgotten favorites (loved but haven't made recently)
- * - Smart suggestions based on ratings + time since last made
- * - Full meal history with ratings & notes
- * - Quick filters (favorites, quick meals, etc.)
- */
+      {history.length === 0 ? (
+        <View style={styles.emptyContainer} accessible accessibilityLabel="No meal history">
+          <Text style={[styles.emptyText, { color: colors.textSecondary }]} allowFontScaling>No meal history yet</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={history}
+          renderItem={renderHistoryItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          accessibilityLabel="Meal history list"
+        />
+      )}
+    </SafeAreaView>
+  );
 
 export const MealHistoryScreen = ({ navigation }) => {
   const { colors } = useTheme();

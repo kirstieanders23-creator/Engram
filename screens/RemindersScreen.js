@@ -7,10 +7,24 @@ export const RemindersScreen = ({ navigation }) => {
   const { colors } = useTheme();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.content}>
-        <Text style={[styles.title, { color: colors.text }]}>📅 Reminders</Text>
-        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      accessible
+      accessibilityLabel="Reminders Screen"
+    >
+      <View style={styles.content} accessible accessibilityRole="header">
+        <Text
+          style={[styles.title, { color: colors.text }]}
+          allowFontScaling
+          accessibilityLabel="Reminders"
+        >
+          📅 Reminders
+        </Text>
+        <Text
+          style={[styles.subtitle, { color: colors.textSecondary }]}
+          allowFontScaling
+          accessibilityLabel="Coming soon: Set up reminders for trash day, warranty expiration, bills, and more!"
+        >
           Coming soon: Set up reminders for trash day, warranty expiration, bills, and more!
         </Text>
       </View>
