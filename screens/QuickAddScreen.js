@@ -1,24 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Toast from '../components/Toast';
 import Banner from '../components/Banner';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Alert, ActivityIndicator, ToastAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../providers/ThemeProvider';
 import { useDatabase } from '../providers/DatabaseProvider';
 import { usePremium } from '../providers/PremiumProvider';
-
-/**
- * Quick Add Screen - Rapid photo capture for bulk inventory
- * Users can snap multiple photos quickly without filling forms
- * Products are auto-created with minimal data, editable later
- */
-import { ToastAndroid } from 'react-native';
-
-
-import React, { useState, useRef } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, Alert } from 'react-native';
 import { Camera } from 'expo-camera';
 import Button from '../components/MasterKit/Button';
 import Card from '../components/MasterKit/Card';

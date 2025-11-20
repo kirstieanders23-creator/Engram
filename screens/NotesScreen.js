@@ -1,42 +1,19 @@
-import React, { useState, useEffect } from 'react';
+
 import {
   SafeAreaView,
   View,
   Text,
   TouchableOpacity,
-  return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
-      accessible accessibilityLabel="Notes Screen">
-      <View style={styles.header} accessible accessibilityRole="header">
-        <Text style={[styles.title, { color: colors.text }]} allowFontScaling accessibilityLabel="Notes">Notes</Text>
-        <TouchableOpacity style={[styles.addButton, { backgroundColor: colors.accent }]} onPress={openAddModal} accessibilityLabel="Add note">
-          <Ionicons name="add" size={22} color="#fff" />
-        </TouchableOpacity>
-      </View>
+  ScrollView,
+  Alert,
+  StyleSheet,
+  AsyncStorage
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../providers/ThemeProvider';
+import NoteModal from '../components/NoteModal';
 
-      {notes.length === 0 ? (
-        <View style={styles.emptyContainer} accessible accessibilityLabel="No notes">
-          <Text style={[styles.emptyText, { color: colors.textSecondary }]} allowFontScaling>No notes yet</Text>
-        </View>
-      ) : (
-        <ScrollView contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false} accessibilityLabel="Notes list">
-          {notes.map(renderNoteItem)}
-        </ScrollView>
-      )}
-
-      <NoteModal
-        visible={modalVisible}
-        onClose={closeModal}
-        onSave={editingNote ? updateNote : addNote}
-        onDelete={editingNote ? deleteNote : null}
-        isEditing={!!editingNote}
-        colors={colors}
-        note={editingNote}
-      />
-    </SafeAreaView>
-  );
-    loadNotes();
-  }, []);
+// ...existing code...
 
   const loadNotes = async () => {
     try {
