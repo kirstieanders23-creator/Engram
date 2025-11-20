@@ -122,25 +122,26 @@ export const ManualLookupScreen = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Manual Lookup Screen">
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+      <View style={styles.header} accessible accessibilityRole="header">
+        <TouchableOpacity onPress={() => navigation.goBack()} accessibilityLabel="Go back">
           <Ionicons name="arrow-back" size={28} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Find Manual</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]} allowFontScaling accessibilityLabel="Find Manual">Find Manual</Text>
         <View style={{ width: 28 }} />
       </View>
 
-      <ScrollView>
+      <ScrollView accessibilityLabel="Manual lookup content">
         {/* Product Info */}
         {product && (
-          <View style={[styles.productCard, { backgroundColor: colors.card }]}>
-            <Text style={[styles.productName, { color: colors.text }]}>
+          <View style={[styles.productCard, { backgroundColor: colors.card }]}> 
+            <Text style={[styles.productName, { color: colors.text }]} allowFontScaling accessibilityLabel={`Product name: ${product.name}`}> 
               {product.name}
             </Text>
             {product.category && (
-              <Text style={[styles.productMeta, { color: colors.textSecondary }]}>
+              <Text style={[styles.productMeta, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel={`Category and room: ${product.category} ${product.room}`}> 
                 {product.category} • {product.room}
               </Text>
             )}
@@ -151,7 +152,7 @@ export const ManualLookupScreen = ({ navigation, route }) => {
         {isSearching && (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={colors.primary} />
-            <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+            <Text style={[styles.loadingText, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel="Searching for manual and care instructions..."> 
               Searching for manual and care instructions...
             </Text>
           </View>

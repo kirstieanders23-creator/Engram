@@ -95,13 +95,14 @@ export const PaywallScreen = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Paywall Screen">
       {/* Header */}
-      <View style={styles.header}>
+      <View style={styles.header} accessible accessibilityRole="header">
         <View style={{ width: 28 }} />
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Upgrade to Premium</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]} allowFontScaling accessibilityLabel="Upgrade to Premium">Upgrade to Premium</Text>
         {showClose ? (
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.goBack()} accessibilityLabel="Close paywall">
             <Ionicons name="close" size={28} color={colors.text} />
           </TouchableOpacity>
         ) : (
@@ -109,23 +110,23 @@ export const PaywallScreen = ({ navigation, route }) => {
         )}
       </View>
 
-      <ScrollView>
+      <ScrollView accessibilityLabel="Paywall content">
         {/* Hero Section */}
         {feature && (
-          <View style={[styles.featureCard, { backgroundColor: colors.accent }]}>
+          <View style={[styles.featureCard, { backgroundColor: colors.accent }]}> 
             <Ionicons name="lock-closed" size={48} color="#fff" />
-            <Text style={styles.featureTitle}>
+            <Text style={styles.featureTitle} allowFontScaling accessibilityLabel="Premium Feature"> 
               Premium Feature
             </Text>
-            <Text style={styles.featureText}>
+            <Text style={styles.featureText} allowFontScaling accessibilityLabel={getFeatureDescription(feature)}> 
               {getFeatureDescription(feature)}
             </Text>
           </View>
         )}
 
         {/* Benefits */}
-        <View style={[styles.benefitsCard, { backgroundColor: colors.card }]}>
-          <Text style={[styles.benefitsTitle, { color: colors.text }]}>
+        <View style={[styles.benefitsCard, { backgroundColor: colors.card }]}> 
+          <Text style={[styles.benefitsTitle, { color: colors.text }]} allowFontScaling accessibilityLabel="Premium Includes:"> 
             Premium Includes:
           </Text>
           

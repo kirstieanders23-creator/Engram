@@ -310,25 +310,26 @@ export const QuickLookupScreen = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Quick Lookup Screen">
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+      <View style={styles.header} accessible accessibilityRole="header">
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton} accessibilityLabel="Close Quick Lookup">
           <Ionicons name="close" size={28} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Quick Lookup</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]} allowFontScaling accessibilityLabel="Quick Lookup">Quick Lookup</Text>
         <View style={{ width: 28 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} accessibilityLabel="Quick Lookup content">
         {/* Intro text */}
         {!capturedPhoto && (
           <View style={styles.introBox}>
             <Ionicons name="flash" size={48} color={colors.accent} />
-            <Text style={[styles.introTitle, { color: colors.text }]}>
+            <Text style={[styles.introTitle, { color: colors.text }]} allowFontScaling accessibilityLabel="Instant Product Info"> 
               Instant Product Info
             </Text>
-            <Text style={[styles.introText, { color: colors.textSecondary }]}>
+            <Text style={[styles.introText, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel="Snap a photo of any item in your home to instantly see care instructions, warranty status, and more."> 
               Snap a photo of any item in your home to instantly see care instructions, warranty status, and more.
             </Text>
           </View>
@@ -336,12 +337,12 @@ export const QuickLookupScreen = ({ navigation, route }) => {
 
         {/* Captured photo preview */}
         {capturedPhoto && (
-          <View style={[styles.photoPreview, { backgroundColor: colors.card }]}>
+          <View style={[styles.photoPreview, { backgroundColor: colors.card }]}> 
             <Image source={{ uri: capturedPhoto }} style={styles.photoImage} />
             {isProcessing && (
               <View style={styles.processingOverlay}>
                 <ActivityIndicator size="large" color={colors.accent} />
-                <Text style={[styles.processingText, { color: '#fff' }]}>
+                <Text style={[styles.processingText, { color: '#fff' }]} allowFontScaling accessibilityLabel="Identifying product..."> 
                   Identifying product...
                 </Text>
               </View>

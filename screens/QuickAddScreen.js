@@ -220,23 +220,24 @@ const styles = StyleSheet.create({
 
   // Minimal UI: just a header and room selector, no photo grid or save all
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}> 
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Quick Add Screen">
       <Banner visible={showBanner} message={bannerMessage} type={bannerType} onHide={() => setShowBanner(false)} />
       <Toast visible={showToast} message={toastMessage} type={toastType} onHide={() => setShowToast(false)} />
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+      <View style={styles.header} accessible accessibilityRole="header">
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton} accessibilityLabel="Go back">
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Quick Add</Text>
-          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
+          <Text style={[styles.headerTitle, { color: colors.text }]} allowFontScaling accessibilityLabel="Quick Add">Quick Add</Text>
+          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel="Snap photos, skip the forms"> 
             Snap photos, skip the forms
           </Text>
         </View>
-        <TouchableOpacity onPress={handleChangeRoom} style={styles.roomButton}>
+        <TouchableOpacity onPress={handleChangeRoom} style={styles.roomButton} accessibilityLabel={`Change room to ${currentRoom}`}>
           <Ionicons name="location" size={20} color={colors.accent} />
-          <Text style={[styles.roomText, { color: colors.accent }]}>{currentRoom}</Text>
+          <Text style={[styles.roomText, { color: colors.accent }]} allowFontScaling accessibilityLabel={`Current room: ${currentRoom}`}>{currentRoom}</Text>
         </TouchableOpacity>
       </View>
         {/* Batch Review Button */}
@@ -244,17 +245,18 @@ const styles = StyleSheet.create({
           <TouchableOpacity
             style={{ backgroundColor: colors.accent, borderRadius: 8, padding: 12, flexDirection: 'row', alignItems: 'center' }}
             onPress={() => navigation.navigate('BatchReview')}
+            accessibilityLabel="Batch Review New Items"
           >
             <Ionicons name="list" size={18} color="#fff" style={{ marginRight: 8 }} />
-            <Text style={{ color: '#fff', fontWeight: 'bold' }}>Batch Review New Items</Text>
+            <Text style={{ color: '#fff', fontWeight: 'bold' }} allowFontScaling>Batch Review New Items</Text>
           </TouchableOpacity>
         </View>
 
       {/* Photo Grid */}
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.scrollContent} accessibilityLabel="Photo grid">
         <View style={styles.photoGrid}>
           {photos.map((photo, index) => (
-            <View key={index} style={[styles.photoCard, { backgroundColor: colors.card }]}>
+            <View key={index} style={[styles.photoCard, { backgroundColor: colors.card }]}> 
               <Image source={{ uri: photo }} style={styles.photoImage} />
               <TouchableOpacity
                 style={[styles.removeButton, { backgroundColor: colors.error }]}

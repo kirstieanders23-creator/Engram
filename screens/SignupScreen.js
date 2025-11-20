@@ -69,14 +69,15 @@ export const SignupScreen = ({ navigation }) => {
   const displayError = validationError || error;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={[styles.title, { color: colors.text }]}>Create Account</Text>
-        <Text style={[styles.subtitle, { color: colors.text }]}>Get started with Engram</Text>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Signup Screen">
+      <ScrollView contentContainerStyle={styles.scrollContent} accessibilityLabel="Signup form">
+        <Text style={[styles.title, { color: colors.text }]} allowFontScaling accessibilityLabel="Create Account">Create Account</Text>
+        <Text style={[styles.subtitle, { color: colors.text }]} allowFontScaling accessibilityLabel="Get started with Engram">Get started with Engram</Text>
 
         {displayError && (
-          <View style={[styles.errorBox, { backgroundColor: colors.error }]}>
-            <Text style={styles.errorText}>{displayError}</Text>
+          <View style={[styles.errorBox, { backgroundColor: colors.error }]} accessible accessibilityLabel={displayError}> 
+            <Text style={styles.errorText} allowFontScaling>{displayError}</Text>
           </View>
         )}
 

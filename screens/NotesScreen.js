@@ -4,36 +4,37 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  TextInput,
-  Modal,
-  Alert,
-} from 'react-native';
-import PropTypes from 'prop-types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../providers/ThemeProvider';
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Notes Screen">
+      <View style={styles.header} accessible accessibilityRole="header">
+        <Text style={[styles.title, { color: colors.text }]} allowFontScaling accessibilityLabel="Notes">Notes</Text>
+        <TouchableOpacity style={[styles.addButton, { backgroundColor: colors.accent }]} onPress={openAddModal} accessibilityLabel="Add note">
+          <Ionicons name="add" size={22} color="#fff" />
+        </TouchableOpacity>
+      </View>
 
-const STORAGE_KEY = '@notes';
+      {notes.length === 0 ? (
+        <View style={styles.emptyContainer} accessible accessibilityLabel="No notes">
+          <Text style={[styles.emptyText, { color: colors.textSecondary }]} allowFontScaling>No notes yet</Text>
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false} accessibilityLabel="Notes list">
+          {notes.map(renderNoteItem)}
+        </ScrollView>
+      )}
 
-const NOTE_CATEGORIES = [
-  { id: 'urgent', label: 'Urgent', icon: 'alert-circle', color: '#ff4444' },
-  { id: 'ideas', label: 'Ideas', icon: 'bulb-outline', color: '#44aaff' },
-  { id: 'waiting', label: 'Waiting on Quote', icon: 'time-outline', color: '#ffaa00' },
-  { id: 'general', label: 'General', icon: 'document-text-outline', color: '#999' },
-];
-
-export const NotesScreen = ({ navigation }) => {
-  const { colors } = useTheme();
-  const [notes, setNotes] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [editingNote, setEditingNote] = useState(null);
-  const [noteText, setNoteText] = useState('');
-  const [noteCategory, setNoteCategory] = useState('general');
-  const [noteRoom, setNoteRoom] = useState('');
-
-  useEffect(() => {
+      <NoteModal
+        visible={modalVisible}
+        onClose={closeModal}
+        onSave={editingNote ? updateNote : addNote}
+        onDelete={editingNote ? deleteNote : null}
+        isEditing={!!editingNote}
+        colors={colors}
+        note={editingNote}
+      />
+    </SafeAreaView>
+  );
     loadNotes();
   }, []);
 

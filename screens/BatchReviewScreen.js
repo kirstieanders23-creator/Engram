@@ -14,33 +14,34 @@ export default function BatchReviewScreen({ route }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Batch Review: Assign Rooms</Text>
+    <View style={[styles.container, { backgroundColor: colors?.background || '#fff' }]} accessible accessibilityLabel="Batch Review Screen">
+      <Text style={[styles.header, { color: colors?.text || '#222' }]} allowFontScaling accessibilityLabel="Batch Review: Assign Rooms">Batch Review: Assign Rooms</Text>
       <FlatList
         data={newItems}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
           <View style={styles.itemRow}>
-            <Text style={styles.itemName}>{item.name}</Text>
+            <Text style={[styles.itemName, { color: colors?.text || '#222' }]} allowFontScaling accessibilityLabel={`Item: ${item.name}`}>{item.name}</Text>
             <FlatList
               data={rooms}
               horizontal
               keyExtractor={room => room}
               renderItem={({ item: room }) => (
                 <TouchableOpacity
-                  style={styles.roomButton}
+                  style={[styles.roomButton, { backgroundColor: colors?.card || '#eee' }]}
                   onPress={() => handleAssignRoom(item.id, room)}
+                  accessibilityLabel={`Assign to room: ${room}`}
                 >
-                  <Text style={styles.roomText}>{room}</Text>
+                  <Text style={[styles.roomText, { color: colors?.text || '#222' }]} allowFontScaling>{room}</Text>
                 </TouchableOpacity>
               )}
             />
           </View>
         )}
-        ListEmptyComponent={<Text style={styles.empty}>No new items to review.</Text>}
+        ListEmptyComponent={<Text style={[styles.empty, { color: colors?.textSecondary || '#888' }]} allowFontScaling>No new items to review.</Text>}
       />
-      <TouchableOpacity style={styles.doneButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.doneText}>Done</Text>
+      <TouchableOpacity style={[styles.doneButton, { backgroundColor: colors?.primary || '#4CAF50' }]} onPress={() => navigation.goBack()} accessibilityLabel="Done">
+        <Text style={[styles.doneText, { color: '#fff' }]} allowFontScaling>Done</Text>
       </TouchableOpacity>
     </View>
   );
