@@ -7,7 +7,8 @@ export const BillsScreen = ({ navigation }) => {
   const { colors } = useTheme();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Bills Screen">
       <View style={styles.content}>
         <Text style={[styles.title, { color: colors.text }]}>💰 Monthly Bills</Text>
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>

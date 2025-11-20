@@ -213,37 +213,38 @@ export const DailyChecklistScreen = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Daily Checklist Screen">
+      <View style={styles.header} accessible accessibilityRole="header">
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton} accessibilityLabel="Go back">
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Daily Checklist</Text>
-        <TouchableOpacity onPress={() => setAddModalVisible(true)} style={styles.addButton}>
+        <Text style={[styles.headerTitle, { color: colors.text }]} allowFontScaling accessibilityLabel="Daily Checklist">Daily Checklist</Text>
+        <TouchableOpacity onPress={() => setAddModalVisible(true)} style={styles.addButton} accessibilityLabel="Add checklist item">
           <Ionicons name="add-circle" size={28} color={colors.primary} />
         </TouchableOpacity>
       </View>
 
       {stats && (
-        <View style={[styles.statsCard, { backgroundColor: colors.card }]}>
+        <View style={[styles.statsCard, { backgroundColor: colors.card }]}> 
           <View style={styles.statItem}>
-            <Text style={[styles.statNumber, { color: colors.primary }]}>
+            <Text style={[styles.statNumber, { color: colors.primary }]} allowFontScaling accessibilityLabel={`Completed: ${stats.completedToday} of ${stats.totalToday}`}> 
               {stats.completedToday}/{stats.totalToday}
             </Text>
-            <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Completed</Text>
+            <Text style={[styles.statLabel, { color: colors.secondaryText }]} allowFontScaling accessibilityLabel="Completed">Completed</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
-            <Text style={[styles.statNumber, { color: colors.accent }]}>
+            <Text style={[styles.statNumber, { color: colors.accent }]} allowFontScaling accessibilityLabel={`Progress: ${stats.percentComplete}%`}> 
               {stats.percentComplete}%
             </Text>
-            <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Progress</Text>
+            <Text style={[styles.statLabel, { color: colors.secondaryText }]} allowFontScaling accessibilityLabel="Progress">Progress</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
             <Ionicons name="flame" size={20} color="#FFB347" />
-            <Text style={[styles.statNumber, { color: colors.text }]}>{stats.longestStreak}</Text>
-            <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Best Streak</Text>
+            <Text style={[styles.statNumber, { color: colors.text }]} allowFontScaling accessibilityLabel={`Best Streak: ${stats.longestStreak}`}>{stats.longestStreak}</Text>
+            <Text style={[styles.statLabel, { color: colors.secondaryText }]} allowFontScaling accessibilityLabel="Best Streak">Best Streak</Text>
           </View>
         </View>
       )}

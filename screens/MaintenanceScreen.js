@@ -7,23 +7,23 @@ export const MaintenanceScreen = ({ navigation }) => {
   const { colors } = useTheme();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.content}>
-        <Text style={[styles.title, { color: colors.text }]}>🔧 Home Repairs</Text>
-        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} accessible accessibilityLabel="Maintenance Screen">
+      <View style={styles.content} accessible accessibilityRole="main">
+        <Text style={[styles.title, { color: colors.text }]} allowFontScaling accessibilityLabel="Home Repairs">🔧 Home Repairs</Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel="Coming soon: Track repairs, assign tasks to rooms, and save your trusted pros!">
           Coming soon: Track repairs, assign tasks to rooms, and save your trusted pros!
         </Text>
-        <View style={styles.featureList}>
-          <Text style={[styles.feature, { color: colors.text }]}>
+        <View style={styles.featureList} accessible accessibilityLabel="Feature List">
+          <Text style={[styles.feature, { color: colors.text }]} allowFontScaling accessibilityLabel="Needed Repairs: What needs fixing">
             ✓ Needed Repairs - What needs fixing
           </Text>
-          <Text style={[styles.feature, { color: colors.text }]}>
+          <Text style={[styles.feature, { color: colors.text }]} allowFontScaling accessibilityLabel="Completed Repairs: History with notes and photos">
             ✓ Completed Repairs - History with notes & photos
           </Text>
-          <Text style={[styles.feature, { color: colors.text }]}>
+          <Text style={[styles.feature, { color: colors.text }]} allowFontScaling accessibilityLabel="Trusted Pros: Save your favorite contractors">
             ✓ Trusted Pros - Save your favorite contractors
           </Text>
-          <Text style={[styles.feature, { color: colors.text }]}>
+          <Text style={[styles.feature, { color: colors.text }]} allowFontScaling accessibilityLabel="Room Assignment: Organize by location">
             ✓ Room Assignment - Organize by location
           </Text>
         </View>

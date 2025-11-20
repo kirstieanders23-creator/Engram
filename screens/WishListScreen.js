@@ -144,44 +144,32 @@ export const WishListScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} accessible accessibilityLabel="Wish List Screen">
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+      <View style={styles.header} accessible accessibilityRole="header">
+        <TouchableOpacity onPress={() => navigation.goBack()} accessibilityLabel="Go back">
           <Ionicons name="arrow-back" size={28} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Wish List</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]} allowFontScaling accessibilityLabel="Wish List">Wish List</Text>
         <View style={{ width: 28 }} />
       </View>
 
       {/* Stats Card */}
       {stats && (
-        <View style={[styles.statsCard, { backgroundColor: colors.card }]}>
+        <View style={[styles.statsCard, { backgroundColor: colors.card }]} accessible accessibilityLabel="Wish List Stats">
           <View style={styles.statItem}>
-            <Text style={[styles.statNumber, { color: colors.accent }]}>
-              {stats.totalItems}
-            </Text>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-              Items
-            </Text>
+            <Text style={[styles.statNumber, { color: colors.accent }]} allowFontScaling accessibilityLabel={`Total items: ${stats.totalItems}`}>{stats.totalItems}</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel="Items">Items</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
-            <Text style={[styles.statNumber, { color: colors.primary }]}>
-              ${stats.totalValue.toFixed(0)}
-            </Text>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-              Total Value
-            </Text>
+            <Text style={[styles.statNumber, { color: colors.primary }]} allowFontScaling accessibilityLabel={`Total value: $${stats.totalValue.toFixed(0)}`}>${stats.totalValue.toFixed(0)}</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel="Total Value">Total Value</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
-            <Text style={[styles.statNumber, { color: '#FF5252' }]}>
-              {stats.highPriority}
-            </Text>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-              High Priority
-            </Text>
+            <Text style={[styles.statNumber, { color: '#FF5252' }]} allowFontScaling accessibilityLabel={`High Priority: ${stats.highPriority}`}>{stats.highPriority}</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel="High Priority">High Priority</Text>
           </View>
         </View>
       )}
@@ -192,37 +180,29 @@ export const WishListScreen = ({ navigation }) => {
         }
       >
         {wishlist.length > 0 ? (
-          <View style={styles.wishlistContainer}>
+          <View style={styles.wishlistContainer} accessible accessibilityLabel="Wish List Items">
             {wishlist.map((item) => (
-              <View key={item.id} style={[styles.wishCard, { backgroundColor: colors.card }]}>
+              <View key={item.id} style={[styles.wishCard, { backgroundColor: colors.card }]} accessible accessibilityLabel={`Wish: ${item.model}, for ${item.productName}, price $${item.price}`}> 
                 {/* Priority Badge */}
-                <View style={[styles.priorityBadge, { backgroundColor: getPriorityColor(item.priority) }]}>
+                <View style={[styles.priorityBadge, { backgroundColor: getPriorityColor(item.priority) }]} accessibilityLabel={`Priority: ${item.priority}`}> 
                   <Ionicons name={getPriorityIcon(item.priority)} size={12} color="#fff" />
                 </View>
 
                 {/* Item Info */}
                 <View style={styles.wishHeader}>
                   <View style={styles.wishInfo}>
-                    <Text style={[styles.wishName, { color: colors.text }]}>
-                      {item.model}
-                    </Text>
-                    <Text style={[styles.wishProduct, { color: colors.textSecondary }]}>
-                      For: {item.productName}
-                    </Text>
+                    <Text style={[styles.wishName, { color: colors.text }]} allowFontScaling accessibilityLabel={`Model: ${item.model}`}>{item.model}</Text>
+                    <Text style={[styles.wishProduct, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel={`For: ${item.productName}`}>For: {item.productName}</Text>
                   </View>
-                  <Text style={[styles.wishPrice, { color: colors.accent }]}>
-                    ${item.price}
-                  </Text>
+                  <Text style={[styles.wishPrice, { color: colors.accent }]} allowFontScaling accessibilityLabel={`Price: $${item.price}`}>${item.price}</Text>
                 </View>
 
                 {/* Features */}
                 {item.features && item.features.length > 0 && (
-                  <View style={styles.featuresList}>
+                  <View style={styles.featuresList} accessible accessibilityLabel="Features">
                     {item.features.slice(0, 2).map((feature, index) => (
                       <View key={index} style={[styles.featureChip, { backgroundColor: colors.background }]}>
-                        <Text style={[styles.featureText, { color: colors.text }]} numberOfLines={1}>
-                          {feature}
-                        </Text>
+                        <Text style={[styles.featureText, { color: colors.text }]} numberOfLines={1} allowFontScaling accessibilityLabel={`Feature: ${feature}`}>{feature}</Text>
                       </View>
                     ))}
                   </View>
@@ -230,19 +210,18 @@ export const WishListScreen = ({ navigation }) => {
 
                 {/* Price Alert */}
                 {item.targetPrice && (
-                  <View style={[styles.priceAlert, { backgroundColor: colors.background }]}>
+                  <View style={[styles.priceAlert, { backgroundColor: colors.background }]} accessible accessibilityLabel={`Price alert at $${item.targetPrice}`}>
                     <Ionicons name="notifications" size={16} color={colors.primary} />
-                    <Text style={[styles.priceAlertText, { color: colors.text }]}>
-                      Alert at ${item.targetPrice}
-                    </Text>
+                    <Text style={[styles.priceAlertText, { color: colors.text }]} allowFontScaling accessibilityLabel={`Alert at $${item.targetPrice}`}>Alert at ${item.targetPrice}</Text>
                   </View>
                 )}
 
                 {/* Actions */}
-                <View style={styles.wishActions}>
+                <View style={styles.wishActions} accessible accessibilityLabel="Actions">
                   <TouchableOpacity
                     style={styles.actionIcon}
                     onPress={() => handleSetPriceAlert(item)}
+                    accessibilityLabel="Set price alert"
                   >
                     <Ionicons name="notifications-outline" size={22} color={colors.primary} />
                   </TouchableOpacity>
@@ -270,6 +249,7 @@ export const WishListScreen = ({ navigation }) => {
                         ]
                       );
                     }}
+                    accessibilityLabel="Set priority"
                   >
                     <Ionicons name="flag-outline" size={22} color={getPriorityColor(item.priority)} />
                   </TouchableOpacity>
@@ -278,6 +258,7 @@ export const WishListScreen = ({ navigation }) => {
                     <TouchableOpacity
                       style={styles.actionIcon}
                       onPress={() => handleViewProduct(item.currentProductId)}
+                      accessibilityLabel="View product"
                     >
                       <Ionicons name="eye-outline" size={22} color={colors.text} />
                     </TouchableOpacity>
@@ -286,6 +267,7 @@ export const WishListScreen = ({ navigation }) => {
                   <TouchableOpacity
                     style={styles.actionIcon}
                     onPress={() => handleRemove(item.id)}
+                    accessibilityLabel="Remove from wish list"
                   >
                     <Ionicons name="trash-outline" size={22} color="#FF5252" />
                   </TouchableOpacity>
@@ -294,34 +276,24 @@ export const WishListScreen = ({ navigation }) => {
             ))}
           </View>
         ) : (
-          <View style={styles.emptyState}>
+          <View style={styles.emptyState} accessible accessibilityLabel="No items in wish list">
             <Ionicons name="heart-outline" size={64} color={colors.border} />
-            <Text style={[styles.emptyTitle, { color: colors.text }]}>
-              No Items Yet
-            </Text>
-            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-              Find upgrades from your product details to add items to your wish list
-            </Text>
+            <Text style={[styles.emptyTitle, { color: colors.text }]} allowFontScaling accessibilityLabel="No Items Yet">No Items Yet</Text>
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel="Find upgrades from your product details to add items to your wish list">Find upgrades from your product details to add items to your wish list</Text>
           </View>
         )}
       </ScrollView>
 
       {/* Price Alert Modal */}
       {editingItem && (
-        <View style={[styles.modal, { backgroundColor: 'rgba(0,0,0,0.5)' }]}>
-          <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
-            <Text style={[styles.modalTitle, { color: colors.text }]}>
-              Set Price Alert
-            </Text>
-            <Text style={[styles.modalSubtitle, { color: colors.textSecondary }]}>
-              {editingItem.model}
-            </Text>
-            <Text style={[styles.modalLabel, { color: colors.text }]}>
-              Current Price: ${editingItem.price}
-            </Text>
+        <View style={[styles.modal, { backgroundColor: 'rgba(0,0,0,0.5)' }]} accessible accessibilityLabel="Set Price Alert Modal"> 
+          <View style={[styles.modalContent, { backgroundColor: colors.card }]} accessible accessibilityRole="dialog">
+            <Text style={[styles.modalTitle, { color: colors.text }]} allowFontScaling accessibilityLabel="Set Price Alert">Set Price Alert</Text>
+            <Text style={[styles.modalSubtitle, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel={editingItem.model}>{editingItem.model}</Text>
+            <Text style={[styles.modalLabel, { color: colors.text }]} allowFontScaling accessibilityLabel={`Current Price: $${editingItem.price}`}>Current Price: ${editingItem.price}</Text>
             
-            <View style={styles.priceInput}>
-              <Text style={[styles.dollarSign, { color: colors.text }]}>$</Text>
+            <View style={styles.priceInput} accessible accessibilityLabel="Target Price Input">
+              <Text style={[styles.dollarSign, { color: colors.text }]} allowFontScaling accessibilityLabel="Dollar Sign">$</Text>
               <TextInput
                 style={[styles.input, { color: colors.text, borderColor: colors.border }]}
                 value={targetPrice}
@@ -329,28 +301,28 @@ export const WishListScreen = ({ navigation }) => {
                 keyboardType="decimal-pad"
                 placeholder="Enter target price"
                 placeholderTextColor={colors.textSecondary}
+                accessibilityLabel="Enter target price"
+                allowFontScaling
               />
             </View>
 
-            <View style={styles.modalActions}>
+            <View style={styles.modalActions} accessible accessibilityLabel="Modal Actions">
               <TouchableOpacity
                 style={[styles.modalButton, { backgroundColor: colors.background }]}
                 onPress={() => {
                   setEditingItem(null);
                   setTargetPrice('');
                 }}
+                accessibilityLabel="Cancel"
               >
-                <Text style={[styles.modalButtonText, { color: colors.text }]}>
-                  Cancel
-                </Text>
+                <Text style={[styles.modalButtonText, { color: colors.text }]} allowFontScaling accessibilityLabel="Cancel">Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalButton, { backgroundColor: colors.accent }]}
                 onPress={handleSavePriceAlert}
+                accessibilityLabel="Save Alert"
               >
-                <Text style={[styles.modalButtonText, { color: '#fff' }]}>
-                  Save Alert
-                </Text>
+                <Text style={[styles.modalButtonText, { color: '#fff' }]} allowFontScaling accessibilityLabel="Save Alert">Save Alert</Text>
               </TouchableOpacity>
             </View>
           </View>

@@ -96,12 +96,13 @@ export const CardSettingsScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={[styles.title, { color: colors.text }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Card Settings Screen">
+      <ScrollView contentContainerStyle={styles.content} accessibilityLabel="Customize dashboard cards">
+        <Text style={[styles.title, { color: colors.text }]} allowFontScaling accessibilityLabel="Customize Dashboard"> 
           Customize Dashboard
         </Text>
-        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel="Choose which cards to display on your home screen"> 
           Choose which cards to display on your home screen
         </Text>
 
@@ -112,16 +113,17 @@ export const CardSettingsScreen = ({ navigation }) => {
               <View
                 key={card.id}
                 style={[styles.cardItem, { backgroundColor: colors.card }]}
+                accessible accessibilityLabel={`Card: ${card.title}`}
               >
                 <View style={styles.cardInfo}>
-                  <Text style={[styles.cardTitle, { color: colors.text }]}>
+                  <Text style={[styles.cardTitle, { color: colors.text }]} allowFontScaling accessibilityLabel={card.title}> 
                     {card.title}
                   </Text>
-                  <Text style={[styles.cardDescription, { color: colors.textSecondary }]}>
+                  <Text style={[styles.cardDescription, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel={card.description}> 
                     {card.description}
                   </Text>
                   {!card.canDisable && (
-                    <Text style={[styles.requiredText, { color: colors.accent }]}>
+                    <Text style={[styles.requiredText, { color: colors.accent }]} allowFontScaling accessibilityLabel="Required"> 
                       Required
                     </Text>
                   )}
