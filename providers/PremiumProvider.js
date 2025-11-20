@@ -11,26 +11,31 @@ import {
 
 const PremiumContext = createContext();
 
+
 export const PremiumProvider = ({ children }) => {
   const [isPremium, setIsPremium] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    console.log('PremiumProvider: mounting');
+  }, []);
 
   useEffect(() => {
     initializePremium();
   }, []);
 
   const initializePremium = async () => {
+    console.log('PremiumProvider: initializing premium');
     try {
       // Initialize RevenueCat
       await initializeRevenueCat();
       
       // Check premium status
       const premium = await isPremiumUser();
+      console.log('PremiumProvider: isPremiumUser', premium);
       setIsPremium(premium);
-      
       setIsLoading(false);
     } catch (error) {
-      console.error('Failed to initialize premium:', error);
+      console.error('PremiumProvider: Failed to initialize premium:', error);
       setIsLoading(false);
     }
   };
@@ -85,6 +90,7 @@ export const PremiumProvider = ({ children }) => {
     checkProductLimit,
     features: PREMIUM_FEATURES,
   };
+  console.log('PremiumProvider: value', value);
 
   return (
     <PremiumContext.Provider value={value}>

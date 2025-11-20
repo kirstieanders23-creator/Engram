@@ -38,10 +38,14 @@ let auth = null;
 
 const AuthContext = createContext(null);
 
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  useEffect(() => {
+    console.log('AuthProvider: mounting');
+  }, []);
 
   // Check auth state on mount and restore session
   useEffect(() => {
@@ -49,19 +53,20 @@ export const AuthProvider = ({ children }) => {
       try {
         // Local-only mode: just restore from storage
         const savedUser = await storage.getUser();
+        console.log('AuthProvider: loaded user', savedUser);
         if (savedUser) {
           setUser(savedUser);
         }
         setIsLoading(false);
       } catch (err) {
-        console.error('Error checking auth state:', err);
+        console.error('AuthProvider: error checking auth state:', err);
         setIsLoading(false);
       }
     };
-
     checkAuthState();
   }, []);
 
+  console.log('AuthProvider: user, isLoading', { user, isLoading });
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);

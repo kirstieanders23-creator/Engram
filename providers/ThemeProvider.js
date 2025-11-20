@@ -34,14 +34,20 @@ const darkColors = {
   warning: '#E0B884',
 };
 
+
 export const ThemeProvider = ({ children }) => {
   const [isDark, setIsDark] = useState(false);
 
-  // Load theme preference from storage on mount
   useEffect(() => {
+    console.log('ThemeProvider: mounting');
     const loadTheme = async () => {
-      const settings = await storage.getSettings();
-      setIsDark(settings.dark);
+      try {
+        const settings = await storage.getSettings();
+        console.log('ThemeProvider: loaded settings', settings);
+        setIsDark(settings.dark);
+      } catch (e) {
+        console.error('ThemeProvider: error loading settings', e);
+      }
     };
     loadTheme();
   }, []);
@@ -52,11 +58,13 @@ export const ThemeProvider = ({ children }) => {
     await storage.setSettings({ dark: newTheme });
   };
 
+
   const value = {
     isDark,
     colors: isDark ? darkColors : lightColors,
     toggleTheme,
   };
+  console.log('ThemeProvider: value', value);
 
   return (
     <ThemeContext.Provider value={value}>

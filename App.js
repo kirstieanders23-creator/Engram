@@ -11,6 +11,8 @@ import { ThemeProvider, useTheme } from './providers/ThemeProvider';
 import { AuthProvider, useAuth } from './providers/AuthProvider';
 import { DatabaseProvider, useDatabase } from './providers/DatabaseProvider';
 import { PremiumProvider } from './providers/PremiumProvider';
+
+console.log('App.js: File loaded');
 import { DashboardScreen } from './screens/DashboardScreen';
 import { ProductsScreen } from './screens/ProductsScreen';
 import { ProductDetailScreen } from './screens/ProductDetailScreen';
@@ -483,7 +485,9 @@ const AppNavigator = () => {
 };
 
 // Main App component
+
 const App = () => {
+  console.log('App: Rendering App component');
   return (
     <ThemeProvider>
       <AuthProvider>
@@ -497,90 +501,91 @@ const App = () => {
   );
 };
 
-export default App;
+const AppNavigator = () => {
+  const { user, isLoading } = useAuth();
+  const { isDark, colors } = useTheme();
 
-// Styles
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 20,
-  },
-  screenText: {
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 40,
-  },
-  input: {
-    height: 50,
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    marginBottom: 15,
-  },
-  button: {
-    height: 50,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  sectionTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 12,
-    opacity: 0.6,
-  },
-  settingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    marginBottom: 12,
-  },
-  settingLeft: {
-    flex: 1,
-  },
-  settingTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  settingDescription: {
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  toggle: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-    minWidth: 50,
-    alignItems: 'center',
-  },
-  toggleText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  linkButton: {
+  const navTheme = {
+    dark: isDark,
+    colors: {
+      primary: colors.primary,
+      background: colors.background,
+      card: colors.card,
+      text: colors.text,
+      border: colors.border,
+      notification: colors.primary,
+    },
+    fonts: {
+      regular: {
+        fontFamily: 'System',
+        fontWeight: '400',
+      },
+      medium: {
+        fontFamily: 'System',
+        fontWeight: '500',
+      },
+      bold: {
+        fontFamily: 'System',
+        fontWeight: '700',
+      },
+      heavy: {
+        fontFamily: 'System',
+        fontWeight: '900',
+      },
+    },
+  };
+
+  console.log('AppNavigator: user, isLoading', { user, isLoading });
+
+  if (isLoading) {
+    console.log('AppNavigator: LoadingScreen shown');
+    return <LoadingScreen />;
+  }
+
+  // Always show main app, even if not logged in
+  console.log('AppNavigator: Rendering NavigationContainer');
+  return (
+    <NavigationContainer theme={navTheme}>
+      <MainStack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <MainStack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
+        <MainStack.Screen name="ProductDetail" component={ProductDetailScreen} options={{ title: 'Product Details' }} />
+        <MainStack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
+        <MainStack.Screen name="CardSettings" component={CardSettingsScreen} options={{ title: 'Customize Dashboard' }} />
+        <MainStack.Screen name="Notes" component={NotesScreen} options={{ title: 'Notes' }} />
+        <MainStack.Screen name="Maintenance" component={MaintenanceScreen} options={{ title: 'Home Repairs' }} />
+        <MainStack.Screen name="Roommates" component={RoommatesScreen} options={{ title: 'Roommates & Shared Tasks' }} />
+        <MainStack.Screen name="HomeInfo" component={HomeInfoScreen} options={{ title: 'Home Info' }} />
+        <MainStack.Screen name="Bills" component={BillsScreen} options={{ title: 'Monthly Bills' }} />
+        <MainStack.Screen name="Legal" component={LegalScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="QuickAdd" component={QuickAddScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="BatchReview" component={BatchReviewScreen} options={{ title: 'Batch Review' }} />
+        <MainStack.Screen name="RoomWizard" component={RoomWizardScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="QuickLookup" component={QuickLookupScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="UpgradeFinder" component={UpgradeFinderScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="WishList" component={WishListScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="ManualLookup" component={ManualLookupScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="Transfer" component={TransferScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="ReceiveTransfer" component={ReceiveTransferScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="Import" component={ImportScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="ShoppingList" component={ShoppingListScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="MealPlanning" component={MealPlanningScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="SharedShopping" component={SharedShoppingScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="DailyChecklist" component={DailyChecklistScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="DontBuyAgain" component={DontBuyAgainScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="TimeReminders" component={TimeRemindersScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="MealHistory" component={MealHistoryScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="Paywall" component={PaywallScreen} options={{ headerShown: false }} />
+        {/* Auth screens for cloud save only */}
+        <MainStack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+        <MainStack.Screen name="Signup" component={SignupScreen} options={{ headerShown: false }} />
+      </MainStack.Navigator>
+    </NavigationContainer>
+  );
+};
     marginTop: 20,
   },
   linkText: {
