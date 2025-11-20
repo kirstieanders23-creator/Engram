@@ -66,19 +66,7 @@ export const ShoppingListScreen = ({ navigation }) => {
       />
     </SafeAreaView>
   );
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: async () => {
-            const result = await removeFromShoppingList(itemId);
-            if (result.success) {
-              await loadShoppingList();
-            }
-          },
-        },
-      ]
-    );
+// (Removed stray Alert config outside of function)
   };
 
   const handleClearChecked = async () => {

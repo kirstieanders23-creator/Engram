@@ -1,4 +1,5 @@
 
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   View,
@@ -7,13 +8,34 @@ import {
   ScrollView,
   Alert,
   StyleSheet,
-  AsyncStorage
+  TextInput,
+  Modal,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../providers/ThemeProvider';
-import NoteModal from '../components/NoteModal';
+import PropTypes from 'prop-types';
 
-// ...existing code...
+const STORAGE_KEY = '@notes';
+const NOTE_CATEGORIES = [
+  { id: 'urgent', label: 'Urgent', icon: 'alert-circle', color: '#ff4444' },
+  { id: 'ideas', label: 'Ideas', icon: 'bulb-outline', color: '#44aaff' },
+  { id: 'waiting', label: 'Waiting on Quote', icon: 'time-outline', color: '#ffaa00' },
+  { id: 'general', label: 'General', icon: 'document-text-outline', color: '#999' },
+];
+
+const NotesScreen = ({ navigation }) => {
+  const { colors } = useTheme();
+  const [notes, setNotes] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingNote, setEditingNote] = useState(null);
+  const [noteText, setNoteText] = useState('');
+  const [noteCategory, setNoteCategory] = useState('general');
+  const [noteRoom, setNoteRoom] = useState('');
+
+  useEffect(() => {
+    loadNotes();
+  }, []);
 
   const loadNotes = async () => {
     try {
@@ -296,11 +318,14 @@ import NoteModal from '../components/NoteModal';
   );
 };
 
+
 NotesScreen.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,
 };
+
+export default NotesScreen;
 
 const styles = StyleSheet.create({
   container: {

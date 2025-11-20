@@ -142,8 +142,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-        navigation.goBack();
-        return;
       }
     }
   };

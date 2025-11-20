@@ -1,22 +1,58 @@
-import React, { useMemo, useState } from 'react';
+
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, FlatList, Image, TouchableOpacity, ScrollView, Linking } from 'react-native';
 import PropTypes from 'prop-types';
 import { useTheme } from '../providers/ThemeProvider';
 import { PhotoViewer } from '../components/PhotoViewer';
+import { Ionicons } from '@expo/vector-icons';
 
 function daysUntil(dateStr) {
+  if (!dateStr) return null;
+  const now = new Date();
+  const target = new Date(dateStr);
+  const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+  return diff;
+}
+
+function DetailRow({ label, value, colors }) {
+  if (!value) return null;
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
-      accessible accessibilityLabel="Product Detail Screen">
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}
-        accessibilityLabel="Product details">
+    <View style={styles.infoRow}>
+      <Text style={[styles.infoLabel, { color: colors.text }]}>{label}:</Text>
+      <Text style={[styles.infoValue, { color: colors.text }]}>{value}</Text>
+    </View>
+  );
+}
+
+export const ProductDetailScreen = ({ route, navigation }) => {
+  const { colors } = useTheme();
+  const [viewerVisible, setViewerVisible] = useState(false);
+  const [viewerIndex, setViewerIndex] = useState(0);
+  const product = route?.params?.product || {};
+
+  const onEdit = () => {
+    // Implement edit navigation or modal
+    navigation.navigate('Products');
+  };
+  const onShare = () => {
+    // Implement share logic
+    alert('Share feature coming soon!');
+  };
+  const onDelete = () => {
+    // Implement delete logic
+    alert('Delete feature coming soon!');
+  };
+  const openViewer = (index) => {
+    setViewerIndex(index);
+    setViewerVisible(true);
+  };
+
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} accessible accessibilityLabel="Product Detail Screen">
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} accessibilityLabel="Product details">
         {/* Product Image */}
         <View style={styles.imageContainer} accessible accessibilityLabel="Product image container">
-          <PhotoViewer
-            imageUri={product.imageUri}
-            style={styles.productImage}
-            accessibilityLabel="Product image"
-          />
+          <PhotoViewer imageUri={product.imageUri} style={styles.productImage} accessibilityLabel="Product image" />
         </View>
 
         {/* Product Info */}
@@ -30,19 +66,11 @@ function daysUntil(dateStr) {
 
         {/* Actions */}
         <View style={styles.actionsRow} accessible accessibilityRole="toolbar">
-          <TouchableOpacity
-            style={[styles.actionButton, { backgroundColor: colors.primary }]}
-            onPress={onEdit}
-            accessibilityLabel="Edit product"
-          >
+          <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.primary }]} onPress={onEdit} accessibilityLabel="Edit product">
             <Ionicons name="pencil" size={20} color="#fff" />
             <Text style={styles.actionButtonText}>Edit</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.actionButton, { backgroundColor: colors.accent }]}
-            onPress={onShare}
-            accessibilityLabel="Share product"
-          >
+          <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.accent }]} onPress={onShare} accessibilityLabel="Share product">
             <Ionicons name="share-social" size={20} color="#fff" />
             <Text style={styles.actionButtonText}>Share</Text>
           </TouchableOpacity>
@@ -57,32 +85,10 @@ function daysUntil(dateStr) {
         </View>
 
         {/* Delete Button */}
-        <TouchableOpacity
-          style={[styles.deleteButton, { backgroundColor: colors.error }]}
-          onPress={onDelete}
-          accessibilityLabel="Delete product"
-        >
+        <TouchableOpacity style={[styles.deleteButton, { backgroundColor: colors.error }]} onPress={onDelete} accessibilityLabel="Delete product">
           <Ionicons name="trash" size={20} color="#fff" />
           <Text style={styles.deleteButtonText}>Delete</Text>
         </TouchableOpacity>
-      </ScrollView>
-    </SafeAreaView>
-  );
-          >
-            <Text style={styles.actionIcon}>📖</Text>
-            <Text style={styles.actionButtonText}>Find Manual</Text>
-          </TouchableOpacity>
-        </View>
-        
-        <View style={styles.quickActions}>
-          <TouchableOpacity
-            style={[styles.actionButton, { backgroundColor: '#2196F3' }]}
-            onPress={() => navigation.navigate('Transfer', { product })}
-          >
-            <Text style={styles.actionIcon}>🔗</Text>
-            <Text style={styles.actionButtonText}>Transfer Product</Text>
-          </TouchableOpacity>
-        </View>
 
         {/* Care & Cleaning Section */}
         {(product?.careInstructions || product?.isDishwasherSafe || product?.cleaningTips) ? (
@@ -136,10 +142,7 @@ function daysUntil(dateStr) {
         {product?.manualUrl ? (
           <>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>📖 Manual & Instructions</Text>
-            <TouchableOpacity 
-              style={[styles.manualButton, { backgroundColor: colors.primary }]}
-              onPress={() => Linking.openURL(product.manualUrl).catch(() => {})}
-            >
+            <TouchableOpacity style={[styles.manualButton, { backgroundColor: colors.primary }]} onPress={() => Linking.openURL(product.manualUrl).catch(() => {})}>
               <Text style={styles.manualButtonText}>Open Manual/Instructions</Text>
             </TouchableOpacity>
           </>
