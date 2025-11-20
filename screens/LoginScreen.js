@@ -43,14 +43,14 @@ export const LoginScreen = ({ navigation }) => {
   const displayError = validationError || error;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.content}>
-        <Text style={[styles.title, { color: colors.text }]}>Engram</Text>
-        <Text style={[styles.subtitle, { color: colors.text }]}>Manage Your Home</Text>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} accessible accessibilityLabel="Login Screen">
+      <View style={styles.content} accessible accessibilityRole="form">
+        <Text style={[styles.title, { color: colors.text }]} allowFontScaling accessibilityLabel="Engram">Engram</Text>
+        <Text style={[styles.subtitle, { color: colors.text }]} allowFontScaling accessibilityLabel="Manage Your Home">Manage Your Home</Text>
 
         {displayError && (
-          <View style={[styles.errorBox, { backgroundColor: colors.error }]}>
-            <Text style={styles.errorText}>{displayError}</Text>
+          <View style={[styles.errorBox, { backgroundColor: colors.error }]} accessible accessibilityLabel={displayError}> 
+            <Text style={styles.errorText} allowFontScaling accessibilityLabel={displayError}>{displayError}</Text>
           </View>
         )}
 
@@ -67,6 +67,8 @@ export const LoginScreen = ({ navigation }) => {
           editable={!isLoading}
           keyboardType="email-address"
           autoCapitalize="none"
+          accessibilityLabel="Email input"
+          allowFontScaling
         />
 
         <TextInput
@@ -81,22 +83,25 @@ export const LoginScreen = ({ navigation }) => {
           onChangeText={setPassword}
           editable={!isLoading}
           secureTextEntry
+          accessibilityLabel="Password input"
+          allowFontScaling
         />
 
         <TouchableOpacity
           style={[styles.button, { backgroundColor: colors.primary, opacity: isLoading ? 0.6 : 1 }]}
           onPress={handleLoginPress}
           disabled={isLoading}
+          accessibilityLabel="Log In"
         >
           {isLoading ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Text style={styles.buttonText}>Log In</Text>
+            <Text style={styles.buttonText} allowFontScaling accessibilityLabel="Log In">Log In</Text>
           )}
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Signup')} disabled={isLoading}>
-          <Text style={[styles.linkText, { color: colors.primary }]}>
+        <TouchableOpacity onPress={() => navigation.navigate('Signup')} disabled={isLoading} accessibilityLabel="Go to Signup">
+          <Text style={[styles.linkText, { color: colors.primary }]} allowFontScaling accessibilityLabel="Don't have an account? Sign up">
             Don't have an account? Sign up
           </Text>
         </TouchableOpacity>

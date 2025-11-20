@@ -178,16 +178,16 @@ export const LegalScreen = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} accessible accessibilityLabel="Legal Information Screen">
+      <View style={styles.header} accessible accessibilityRole="header">
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton} accessibilityLabel="Go back">
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Legal Information</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]} allowFontScaling accessibilityLabel="Legal Information">Legal Information</Text>
         <View style={{ width: 24 }} />
       </View>
 
-      <View style={styles.tabContainer}>
+      <View style={styles.tabContainer} accessible accessibilityRole="tablist" accessibilityLabel="Legal tabs">
         {tabs.map(tab => (
           <TouchableOpacity
             key={tab.key}
@@ -196,6 +196,9 @@ export const LegalScreen = ({ navigation }) => {
               activeTab === tab.key && { borderBottomColor: colors.accent, borderBottomWidth: 2 }
             ]}
             onPress={() => setActiveTab(tab.key)}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: activeTab === tab.key }}
+            accessibilityLabel={tab.label}
           >
             <Ionicons 
               name={tab.icon} 
@@ -205,14 +208,14 @@ export const LegalScreen = ({ navigation }) => {
             <Text style={[
               styles.tabLabel,
               { color: activeTab === tab.key ? colors.accent : colors.textSecondary }
-            ]}>
+            ]} allowFontScaling accessibilityLabel={tab.label}>
               {tab.label}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      <ScrollView style={styles.scrollView}>
+      <ScrollView style={styles.scrollView} accessible accessibilityLabel="Legal content">
         {activeTab === 'disclaimer' && <DisclaimerContent />}
         {activeTab === 'terms' && <TermsContent />}
         {activeTab === 'privacy' && <PrivacyContent />}
