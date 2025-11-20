@@ -7,10 +7,11 @@ export const RoommatesScreen = ({ navigation }) => {
   const { colors } = useTheme();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.content}>
-        <Text style={[styles.title, { color: colors.text }]}>👥 Roommates & Shared Tasks</Text>
-        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Roommates Screen">
+      <View style={styles.content} accessible accessibilityRole="header">
+        <Text style={[styles.title, { color: colors.text }]} allowFontScaling accessibilityLabel="Roommates and Shared Tasks">👥 Roommates & Shared Tasks</Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel="Coming soon: Invite roommates, assign chores, send requests, and coordinate house tasks!">
           Coming soon: Invite roommates, assign chores, send requests, and coordinate house tasks!
         </Text>
       </View>

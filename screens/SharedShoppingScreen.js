@@ -210,11 +210,12 @@ export const SharedShoppingScreen = ({ navigation }) => {
           </TouchableOpacity>
 
           <View style={styles.itemDetails}>
-            <Text style={[styles.itemName, { color: colors.text }]}>
-              {item.name}
-              {item.quantity > 1 && ` (×${item.quantity})`}
-            </Text>
-            
+              return (
+                <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}
+                  accessible accessibilityLabel="Shared Shopping Screen">
+                  {/* ...existing code... */}
+                </SafeAreaView>
+              );
             {claimedByOther && (
               <View style={styles.claimedBadge}>
                 <View style={[styles.claimedDot, { backgroundColor: claimer?.color }]} />

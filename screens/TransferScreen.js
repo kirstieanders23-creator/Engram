@@ -95,29 +95,30 @@ export const TransferScreen = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Transfer Screen">
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+      <View style={styles.header} accessible accessibilityRole="header">
+        <TouchableOpacity onPress={() => navigation.goBack()} accessibilityLabel="Go back">
           <Ionicons name="arrow-back" size={28} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Transfer Product</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]} allowFontScaling accessibilityLabel="Transfer Product">Transfer Product</Text>
         <View style={{ width: 28 }} />
       </View>
 
-      <ScrollView>
+      <ScrollView accessibilityLabel="Transfer details">
         {/* Product Info */}
-        <View style={[styles.productCard, { backgroundColor: colors.card }]}>
-          <Text style={[styles.productName, { color: colors.text }]}>
+        <View style={[styles.productCard, { backgroundColor: colors.card }]}> 
+          <Text style={[styles.productName, { color: colors.text }]} allowFontScaling accessibilityLabel={`Product name: ${product?.name}`}> 
             {product?.name}
           </Text>
-          <Text style={[styles.productMeta, { color: colors.textSecondary }]}>
+          <Text style={[styles.productMeta, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel={`Category and room: ${product?.category} ${product?.room}`}> 
             {product?.category} • {product?.room}
           </Text>
           {product?.photos && product.photos.length > 0 && (
             <View style={styles.photoBadge}>
               <Ionicons name="images" size={16} color={colors.primary} />
-              <Text style={[styles.photoBadgeText, { color: colors.primary }]}>
+              <Text style={[styles.photoBadgeText, { color: colors.primary }]} allowFontScaling accessibilityLabel={`${product.photos.length} ${product.photos.length === 1 ? 'photo' : 'photos'} included`}> 
                 {product.photos.length} {product.photos.length === 1 ? 'photo' : 'photos'} included
               </Text>
             </View>
@@ -125,7 +126,7 @@ export const TransferScreen = ({ navigation, route }) => {
         </View>
 
         {/* Info Section */}
-        <View style={[styles.infoCard, { backgroundColor: colors.card }]}>
+        <View style={[styles.infoCard, { backgroundColor: colors.card }]}> 
           <View style={styles.infoHeader}>
             <Ionicons name="information-circle" size={32} color={colors.primary} />
             <Text style={[styles.infoTitle, { color: colors.text }]}>

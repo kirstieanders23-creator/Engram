@@ -475,7 +475,8 @@ export const RoomWizardScreen = ({ navigation }) => {
 
   // Main Render
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Room Wizard Screen">
       {step === 'welcome' && <WelcomeStep />}
       {step === 'select-room' && <SelectRoomStep />}
       {step === 'capture' && <CaptureStep />}

@@ -131,21 +131,22 @@ export const ReceiveTransferScreen = ({ navigation, route }) => {
   const warrantyStatus = getWarrantyStatus(transferData?.warrantyDate);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Receive Transfer Screen">
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+      <View style={styles.header} accessible accessibilityRole="header">
+        <TouchableOpacity onPress={() => navigation.goBack()} accessibilityLabel="Go back">
           <Ionicons name="arrow-back" size={28} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Product Transfer</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]} allowFontScaling accessibilityLabel="Product Transfer">Product Transfer</Text>
         <View style={{ width: 28 }} />
       </View>
 
-      <ScrollView>
+      <ScrollView accessibilityLabel="Transfer details">
         {transferData?.claimed && (
-          <View style={[styles.claimedBanner, { backgroundColor: '#FF9800' }]}>
+          <View style={[styles.claimedBanner, { backgroundColor: '#FF9800' }]}> 
             <Ionicons name="checkmark-circle" size={24} color="#fff" />
-            <Text style={styles.claimedText}>
+            <Text style={styles.claimedText} allowFontScaling accessibilityLabel="This product has already been claimed">
               This product has already been claimed
             </Text>
           </View>
@@ -159,10 +160,10 @@ export const ReceiveTransferScreen = ({ navigation, route }) => {
             marginTop: transferData?.claimed ? 0 : 16,
           }
         ]}>
-          <Text style={[styles.previewTitle, { color: colors.text }]}>
+          <Text style={[styles.previewTitle, { color: colors.text }]} allowFontScaling accessibilityLabel={`Product name: ${transferData?.name}`}>
             {transferData?.name}
           </Text>
-          <Text style={[styles.previewMeta, { color: colors.textSecondary }]}>
+          <Text style={[styles.previewMeta, { color: colors.textSecondary }]} allowFontScaling accessibilityLabel={`Category and room: ${transferData?.category} ${transferData?.room}`}>
             {transferData?.category} • {transferData?.room}
           </Text>
           

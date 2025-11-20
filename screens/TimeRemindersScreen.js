@@ -61,13 +61,14 @@ export const TimeRemindersScreen = ({ navigation }) => {
   const handleAddReminder = async () => {
     if (!newTitle.trim() || !newEventDate || !newEventTime) {
       Alert.alert('Error', 'Please fill in title, date, and time');
-      return;
-    }
-
-    const result = await createTimeReminder({
-      title: newTitle.trim(),
-      type: 'event',
-      eventDate: newEventDate,
+      return (
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+          accessible accessibilityLabel="Time Reminders Screen">
+          <ScrollView contentContainerStyle={styles.scrollContent} accessibilityLabel="Time reminders list">
+            {/* ...existing code... */}
+          </ScrollView>
+        </SafeAreaView>
+      );
       eventTime: newEventTime,
       advanceNotice: parseInt(newAdvanceNotice) || 30,
       reminderText: newReminderText.trim(),

@@ -26,43 +26,46 @@ export const ShoppingListScreen = ({ navigation }) => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newItemName, setNewItemName] = useState('');
 
-  useFocusEffect(
-    useCallback(() => {
-      loadShoppingList();
-    }, [])
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}
+      accessible accessibilityLabel="Shopping List Screen">
+      <View style={styles.header} accessible accessibilityRole="header">
+        <Text style={[styles.title, { color: colors.text }]} allowFontScaling accessibilityLabel="Shopping List">Shopping List</Text>
+        <TouchableOpacity
+          style={[styles.addButton, { backgroundColor: colors.accent }]}
+          onPress={openAddModal}
+          accessibilityLabel="Add shopping item"
+        >
+          <Ionicons name="add" size={22} color="#fff" />
+        </TouchableOpacity>
+      </View>
+
+      {items.length === 0 ? (
+        <View style={styles.emptyContainer} accessible accessibilityLabel="No shopping items">
+          <Text style={[styles.emptyText, { color: colors.textSecondary }]} allowFontScaling>No items yet</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={items}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          accessibilityLabel="Shopping list items"
+        />
+      )}
+
+      <ShoppingItemModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSave={editingItem ? handleUpdateItem : handleAddItem}
+        onDelete={editingItem ? handleDeleteItem : null}
+        isEditing={!!editingItem}
+        colors={colors}
+        item={editingItem}
+      />
+    </SafeAreaView>
   );
-
-  const loadShoppingList = async () => {
-    try {
-      const list = await getShoppingList();
-      const statistics = getShoppingListStats(list);
-      
-      setShoppingList(list);
-      setStats(statistics);
-    } catch (error) {
-      console.error('Failed to load shopping list:', error);
-      Alert.alert('Error', 'Failed to load shopping list');
-    }
-  };
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await loadShoppingList();
-    setRefreshing(false);
-  };
-
-  const handleToggleItem = async (itemId) => {
-    const result = await toggleShoppingListItem(itemId);
-    if (result.success) {
-      await loadShoppingList();
-    }
-  };
-
-  const handleRemoveItem = async (itemId, itemName) => {
-    Alert.alert(
-      'Remove Item',
-      `Remove "${itemName}" from shopping list?`,
-      [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Remove',

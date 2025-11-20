@@ -249,7 +249,7 @@ export const UpgradeFinderScreen = ({ navigation, route }) => {
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+        if (!product) {
             Finding upgrades...
           </Text>
         </View>
@@ -270,13 +270,15 @@ export const UpgradeFinderScreen = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}
+      accessible accessibilityLabel="Upgrade Finder Screen">
         {/* Current Product */}
         {currentProduct && (
           <View style={[styles.currentProduct, { backgroundColor: colors.card }]}>
             <Text style={[styles.currentLabel, { color: colors.textSecondary }]}>
               Your Current Product
-            </Text>
+        accessibilityLabel="Upgrade recommendations list"
+        >
             <Text style={[styles.currentName, { color: colors.text }]}>
               {currentProduct.name}
             </Text>
