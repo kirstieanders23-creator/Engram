@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "files.watcherExclude": {
     "**/node_modules/**": true,
     "**/.git/objects/**": true,
@@ -17,4 +18,11 @@
   },
   "typescript.tsserver.maxTsServerMemory": 4096,
   "javascript.updateImportsOnFileMove.enabled": "never"
+=======
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit",
+    "source.sortMembers": "explicit"
+  }
+>>>>>>> 840c995 (Setup Engram app, fix test dependency, initial build)
 }

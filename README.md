@@ -62,3 +62,49 @@ npm test
 
 This project was cleanly migrated from Vestal with all features preserved.
 
+# Engram
+
+Engram is a React Native + Expo app designed as your second brain for home and life management. It features secure login, product/item management, photo and OCR input, barcode scanning, multi-photo storage, fuzzy search, full-screen photo viewer, cloud OCR, API lookups, backup/export, theme toggle, and a premium, neurodivergent-friendly UX.
+
+## Features
+- Login/Signup (Firebase/local)
+- Product/Item CRUD with debounced and fuzzy search
+- Inline photo thumbnails in cards
+- Multi-photo capture and persistent storage
+- OCR (local and Google Vision API)
+- Barcode scanning with Open Food Facts API
+- Full-screen photo viewer (swipe/zoom)
+- Product detail with warranty/reminders
+- Backup/export to JSON
+- Theme toggle with persistence
+- Automated tests and CI workflow
+- Premium, accessible, user-friendly design
+
+## Install
+```powershell
+npm install --legacy-peer-deps
+expo install expo-image-picker expo-file-system expo-barcode-scanner expo-sharing
+npm install firebase tesseract.js fast-levenshtein
+```
+
+## Run
+```powershell
+npm start
+```
+
+## Test
+```powershell
+npm test --silent
+```
+
+## Configuration
+- Google Vision API: Set your API key in `.env` or as an environment variable.
+- Open Food Facts API: No key required; falls back to mock data if unavailable.
+
+## Scripts
+```powershell
+npm run lint     # ESLint
+npm run format   # Prettier
+```
+
+Enjoy building with Engram!
