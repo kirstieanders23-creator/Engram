@@ -1,13 +1,26 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Alert, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import * as DocumentPicker from 'expo-document-picker';
-import { useTheme } from '../providers/ThemeProvider';
-import { useDatabase } from '../providers/DatabaseProvider';
-import { usePremium } from '../providers/PremiumProvider';
-import { PREMIUM_FEATURES } from '../utils/monetization';
-import { parseAmazonCSV, isLikelyStillOwned, estimateWarranty } from '../utils/csv-parser';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+  Image,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import * as DocumentPicker from "expo-document-picker";
+import { useTheme } from "../providers/ThemeProvider";
+import { useDatabase } from "../providers/DatabaseProvider";
+import { usePremium } from "../providers/PremiumProvider";
+import { PREMIUM_FEATURES } from "../utils/monetization";
+import {
+  parseAmazonCSV,
+  isLikelyStillOwned,
+  estimateWarranty,
+} from "../utils/csv-parser";
 
 /**
  * Import Screen - Import products from Amazon Order History CSV
@@ -17,7 +30,7 @@ export const ImportScreen = ({ navigation }) => {
   const { colors } = useTheme();
   const { addProduct } = useDatabase();
   const { checkFeatureAccess } = usePremium();
-  
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [parsedProducts, setParsedProducts] = useState([]);
@@ -27,7 +40,10 @@ export const ImportScreen = ({ navigation }) => {
   // Check premium access on mount
   useEffect(() => {
     const verifyAccess = async () => {
-      const hasAccess = await checkFeatureAccess(PREMIUM_FEATURES.CSV_IMPORT, navigation);
+      const hasAccess = await checkFeatureAccess(
+        PREMIUM_FEATURES.CSV_IMPORT,
+        navigation,
+      );
       if (!hasAccess) return;
     };
     verifyAccess();
@@ -36,7 +52,7 @@ export const ImportScreen = ({ navigation }) => {
   const handlePickFile = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: 'text/csv',
+        type: "text/csv",
         copyToCacheDirectory: true,
       });
 
@@ -49,8 +65,8 @@ export const ImportScreen = ({ navigation }) => {
         await processCSV(file.uri);
       }
     } catch (error) {
-      console.error('File picker error:', error);
-      Alert.alert('Error', 'Failed to pick file');
+      console.error("File picker error:", error);
+      Alert.alert("Error", "Failed to pick file");
     }
   };
 
@@ -66,7 +82,7 @@ export const ImportScreen = ({ navigation }) => {
       const result = parseAmazonCSV(csvText);
 
       if (!result.success) {
-        Alert.alert('Parse Error', result.error || 'Failed to parse CSV');
+        Alert.alert("Parse Error", result.error || "Failed to parse CSV");
         setIsProcessing(false);
         return;
       }
@@ -89,9 +105,9 @@ export const ImportScreen = ({ navigation }) => {
 
       setIsProcessing(false);
     } catch (error) {
-      console.error('CSV process error:', error);
+      console.error("CSV process error:", error);
       setIsProcessing(false);
-      Alert.alert('Error', 'Failed to process CSV file');
+      Alert.alert("Error", "Failed to process CSV file");
     }
   };
 
@@ -107,7 +123,10 @@ export const ImportScreen = ({ navigation }) => {
 
   const handleImport = async () => {
     if (selectedProducts.size === 0) {
-      Alert.alert('No Items Selected', 'Please select at least one item to import');
+      Alert.alert(
+        "No Items Selected",
+        "Please select at least one item to import",
+      );
       return;
     }
 
@@ -123,26 +142,26 @@ export const ImportScreen = ({ navigation }) => {
         try {
           const productData = {
             name: product.name,
-            category: product.category || 'Other',
-            room: '', // User will fill in later
-            purchaseDate: product.purchaseDate || '',
-            purchasePrice: product.purchasePrice || '',
-            purchaseLocation: product.purchaseLocation || '',
-            warrantyDate: estimateWarranty(product) || '',
+            category: product.category || "Other",
+            room: "", // User will fill in later
+            purchaseDate: product.purchaseDate || "",
+            purchasePrice: product.purchasePrice || "",
+            purchaseLocation: product.purchaseLocation || "",
+            warrantyDate: estimateWarranty(product) || "",
             photos: [],
-            careInstructions: '',
-            isDishwasherSafe: '',
-            cleaningTips: '',
+            careInstructions: "",
+            isDishwasherSafe: "",
+            cleaningTips: "",
             usageNotes: `Imported from ${product.source}`,
-            manualUrl: '',
-            specifications: '',
-            asin: product.asin || '',
+            manualUrl: "",
+            specifications: "",
+            asin: product.asin || "",
           };
 
           await addProduct(productData);
           successCount++;
         } catch (error) {
-          console.error('Add product error:', error);
+          console.error("Add product error:", error);
           errorCount++;
         }
       }
@@ -150,52 +169,70 @@ export const ImportScreen = ({ navigation }) => {
       setIsImporting(false);
 
       Alert.alert(
-        'Import Complete! ✓',
-        `Successfully imported ${successCount} ${successCount === 1 ? 'product' : 'products'}` +
-        (errorCount > 0 ? `\n${errorCount} failed` : ''),
+        "Import Complete! ✓",
+        `Successfully imported ${successCount} ${successCount === 1 ? "product" : "products"}` +
+          (errorCount > 0 ? `\n${errorCount} failed` : ""),
         [
           {
-            text: 'View Products',
-            onPress: () => navigation.navigate('Main', { screen: 'Home' }),
+            text: "View Products",
+            onPress: () => navigation.navigate("Main", { screen: "Home" }),
           },
-        ]
+        ],
       );
     } catch (error) {
-      console.error('Import error:', error);
+      console.error("Import error:", error);
       setIsImporting(false);
-      Alert.alert('Error', 'Failed to import products');
+      Alert.alert("Error", "Failed to import products");
     }
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={28} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Import Products</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>
+          Import Products
+        </Text>
         <View style={{ width: 28 }} />
       </View>
 
       {parsedProducts.length === 0 ? (
         <ScrollView contentContainerStyle={styles.emptyContainer}>
           {/* Instructions */}
-          <View style={[styles.instructionCard, { backgroundColor: colors.card }]}>
-            <Ionicons name="information-circle" size={48} color={colors.primary} />
+          <View
+            style={[styles.instructionCard, { backgroundColor: colors.card }]}
+          >
+            <Ionicons
+              name="information-circle"
+              size={48}
+              color={colors.primary}
+            />
             <Text style={[styles.instructionTitle, { color: colors.text }]}>
               Import from Amazon Order History
             </Text>
-            <Text style={[styles.instructionText, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.instructionText, { color: colors.textSecondary }]}
+            >
               1. Go to Amazon.com → Accounts & Lists → Download order reports
             </Text>
-            <Text style={[styles.instructionText, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.instructionText, { color: colors.textSecondary }]}
+            >
               2. Select date range (e.g., past 2 years)
             </Text>
-            <Text style={[styles.instructionText, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.instructionText, { color: colors.textSecondary }]}
+            >
               3. Download CSV file
             </Text>
-            <Text style={[styles.instructionText, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.instructionText, { color: colors.textSecondary }]}
+            >
               4. Tap button below to select file
             </Text>
           </View>
@@ -222,13 +259,21 @@ export const ImportScreen = ({ navigation }) => {
               Supported Formats
             </Text>
             <View style={styles.exampleRow}>
-              <Ionicons name="checkmark-circle" size={20} color={colors.primary} />
+              <Ionicons
+                name="checkmark-circle"
+                size={20}
+                color={colors.primary}
+              />
               <Text style={[styles.exampleText, { color: colors.text }]}>
                 Amazon Order History CSV
               </Text>
             </View>
             <View style={styles.exampleRow}>
-              <Ionicons name="checkmark-circle" size={20} color={colors.primary} />
+              <Ionicons
+                name="checkmark-circle"
+                size={20}
+                color={colors.primary}
+              />
               <Text style={[styles.exampleText, { color: colors.text }]}>
                 Any CSV with "Title" and "Order Date" columns
               </Text>
@@ -248,7 +293,9 @@ export const ImportScreen = ({ navigation }) => {
                   <Text style={[styles.statValue, { color: colors.primary }]}>
                     {parseStats.successCount}
                   </Text>
-                  <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                  <Text
+                    style={[styles.statLabel, { color: colors.textSecondary }]}
+                  >
                     Found
                   </Text>
                 </View>
@@ -256,16 +303,23 @@ export const ImportScreen = ({ navigation }) => {
                   <Text style={[styles.statValue, { color: colors.accent }]}>
                     {selectedProducts.size}
                   </Text>
-                  <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                  <Text
+                    style={[styles.statLabel, { color: colors.textSecondary }]}
+                  >
                     Selected
                   </Text>
                 </View>
                 {parseStats.errorCount > 0 && (
                   <View style={styles.statBox}>
-                    <Text style={[styles.statValue, { color: '#F44336' }]}>
+                    <Text style={[styles.statValue, { color: "#F44336" }]}>
                       {parseStats.errorCount}
                     </Text>
-                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                    <Text
+                      style={[
+                        styles.statLabel,
+                        { color: colors.textSecondary },
+                      ]}
+                    >
                       Errors
                     </Text>
                   </View>
@@ -282,30 +336,53 @@ export const ImportScreen = ({ navigation }) => {
                     styles.productCard,
                     {
                       backgroundColor: colors.card,
-                      borderColor: selectedProducts.has(index) ? colors.primary : colors.border,
+                      borderColor: selectedProducts.has(index)
+                        ? colors.primary
+                        : colors.border,
                     },
                   ]}
                   onPress={() => toggleProduct(index)}
                 >
                   <View style={styles.productHeader}>
                     <View style={styles.productInfo}>
-                      <Text style={[styles.productName, { color: colors.text }]}>
+                      <Text
+                        style={[styles.productName, { color: colors.text }]}
+                      >
                         {product.name}
                       </Text>
-                      <Text style={[styles.productMeta, { color: colors.textSecondary }]}>
+                      <Text
+                        style={[
+                          styles.productMeta,
+                          { color: colors.textSecondary },
+                        ]}
+                      >
                         {product.category}
-                        {product.purchaseDate && ` • ${new Date(product.purchaseDate).toLocaleDateString()}`}
+                        {product.purchaseDate &&
+                          ` • ${new Date(product.purchaseDate).toLocaleDateString()}`}
                       </Text>
                       {product.purchasePrice && (
-                        <Text style={[styles.productPrice, { color: colors.accent }]}>
+                        <Text
+                          style={[
+                            styles.productPrice,
+                            { color: colors.accent },
+                          ]}
+                        >
                           ${product.purchasePrice}
                         </Text>
                       )}
                     </View>
                     <Ionicons
-                      name={selectedProducts.has(index) ? 'checkbox' : 'square-outline'}
+                      name={
+                        selectedProducts.has(index)
+                          ? "checkbox"
+                          : "square-outline"
+                      }
                       size={32}
-                      color={selectedProducts.has(index) ? colors.primary : colors.border}
+                      color={
+                        selectedProducts.has(index)
+                          ? colors.primary
+                          : colors.border
+                      }
                     />
                   </View>
                 </TouchableOpacity>
@@ -346,7 +423,8 @@ export const ImportScreen = ({ navigation }) => {
                 <>
                   <Ionicons name="download" size={24} color="#fff" />
                   <Text style={styles.importButtonText}>
-                    Import {selectedProducts.size} {selectedProducts.size === 1 ? 'Product' : 'Products'}
+                    Import {selectedProducts.size}{" "}
+                    {selectedProducts.size === 1 ? "Product" : "Products"}
                   </Text>
                 </>
               )}
@@ -363,16 +441,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: "#E0E0E0",
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   emptyContainer: {
     padding: 16,
@@ -381,9 +459,9 @@ const styles = StyleSheet.create({
   instructionCard: {
     padding: 24,
     borderRadius: 16,
-    alignItems: 'center',
+    alignItems: "center",
     gap: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -391,37 +469,37 @@ const styles = StyleSheet.create({
   },
   instructionTitle: {
     fontSize: 20,
-    fontWeight: '700',
-    textAlign: 'center',
+    fontWeight: "700",
+    textAlign: "center",
   },
   instructionText: {
     fontSize: 14,
     lineHeight: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   pickButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 12,
     paddingVertical: 16,
     borderRadius: 12,
     marginHorizontal: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
   },
   pickButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   exampleCard: {
     padding: 20,
     borderRadius: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -429,12 +507,12 @@ const styles = StyleSheet.create({
   },
   exampleTitle: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     marginBottom: 12,
   },
   exampleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
     marginBottom: 8,
   },
@@ -444,28 +522,28 @@ const styles = StyleSheet.create({
   exampleNote: {
     fontSize: 12,
     marginTop: 8,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   statsCard: {
     margin: 16,
     padding: 20,
     borderRadius: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
   },
   statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
   statBox: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   statValue: {
     fontSize: 32,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   statLabel: {
     fontSize: 12,
@@ -480,15 +558,15 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
   },
   productHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
     gap: 12,
   },
   productInfo: {
@@ -496,7 +574,7 @@ const styles = StyleSheet.create({
   },
   productName: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 4,
   },
   productMeta: {
@@ -505,10 +583,10 @@ const styles = StyleSheet.create({
   },
   productPrice: {
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   bulkActions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
     padding: 16,
     paddingTop: 8,
@@ -517,34 +595,34 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 12,
     borderRadius: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   bulkButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   footer: {
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
+    borderTopColor: "#E0E0E0",
   },
   importButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 12,
     paddingVertical: 16,
     borderRadius: 12,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
   },
   importButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -9,19 +9,29 @@ import {
   TextInput,
   Modal,
   Alert,
-} from 'react-native';
-import PropTypes from 'prop-types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../providers/ThemeProvider';
+} from "react-native";
+import PropTypes from "prop-types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../providers/ThemeProvider";
 
-const STORAGE_KEY = '@notes';
+const STORAGE_KEY = "@notes";
 
 const NOTE_CATEGORIES = [
-  { id: 'urgent', label: 'Urgent', icon: 'alert-circle', color: '#ff4444' },
-  { id: 'ideas', label: 'Ideas', icon: 'bulb-outline', color: '#44aaff' },
-  { id: 'waiting', label: 'Waiting on Quote', icon: 'time-outline', color: '#ffaa00' },
-  { id: 'general', label: 'General', icon: 'document-text-outline', color: '#999' },
+  { id: "urgent", label: "Urgent", icon: "alert-circle", color: "#ff4444" },
+  { id: "ideas", label: "Ideas", icon: "bulb-outline", color: "#44aaff" },
+  {
+    id: "waiting",
+    label: "Waiting on Quote",
+    icon: "time-outline",
+    color: "#ffaa00",
+  },
+  {
+    id: "general",
+    label: "General",
+    icon: "document-text-outline",
+    color: "#999",
+  },
 ];
 
 export const NotesScreen = ({ navigation }) => {
@@ -29,9 +39,9 @@ export const NotesScreen = ({ navigation }) => {
   const [notes, setNotes] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingNote, setEditingNote] = useState(null);
-  const [noteText, setNoteText] = useState('');
-  const [noteCategory, setNoteCategory] = useState('general');
-  const [noteRoom, setNoteRoom] = useState('');
+  const [noteText, setNoteText] = useState("");
+  const [noteCategory, setNoteCategory] = useState("general");
+  const [noteRoom, setNoteRoom] = useState("");
 
   useEffect(() => {
     loadNotes();
@@ -44,7 +54,7 @@ export const NotesScreen = ({ navigation }) => {
         setNotes(JSON.parse(saved));
       }
     } catch (error) {
-      console.log('Error loading notes:', error);
+      console.log("Error loading notes:", error);
     }
   };
 
@@ -53,13 +63,13 @@ export const NotesScreen = ({ navigation }) => {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedNotes));
       setNotes(updatedNotes);
     } catch (error) {
-      Alert.alert('Error', 'Failed to save note');
+      Alert.alert("Error", "Failed to save note");
     }
   };
 
   const addNote = () => {
     if (!noteText.trim()) {
-      Alert.alert('Empty Note', 'Please enter some text');
+      Alert.alert("Empty Note", "Please enter some text");
       return;
     }
 
@@ -78,14 +88,14 @@ export const NotesScreen = ({ navigation }) => {
 
   const updateNote = () => {
     if (!noteText.trim()) {
-      Alert.alert('Empty Note', 'Please enter some text');
+      Alert.alert("Empty Note", "Please enter some text");
       return;
     }
 
-    const updatedNotes = notes.map(note =>
+    const updatedNotes = notes.map((note) =>
       note.id === editingNote.id
         ? { ...note, text: noteText, category: noteCategory, room: noteRoom }
-        : note
+        : note,
     );
 
     saveNotes(updatedNotes);
@@ -93,28 +103,24 @@ export const NotesScreen = ({ navigation }) => {
   };
 
   const deleteNote = (noteId) => {
-    Alert.alert(
-      'Delete Note',
-      'Are you sure?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            const updatedNotes = notes.filter(note => note.id !== noteId);
-            saveNotes(updatedNotes);
-          },
+    Alert.alert("Delete Note", "Are you sure?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          const updatedNotes = notes.filter((note) => note.id !== noteId);
+          saveNotes(updatedNotes);
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const openAddModal = () => {
     setEditingNote(null);
-    setNoteText('');
-    setNoteCategory('general');
-    setNoteRoom('');
+    setNoteText("");
+    setNoteCategory("general");
+    setNoteRoom("");
     setModalVisible(true);
   };
 
@@ -122,29 +128,33 @@ export const NotesScreen = ({ navigation }) => {
     setEditingNote(note);
     setNoteText(note.text);
     setNoteCategory(note.category);
-    setNoteRoom(note.room || '');
+    setNoteRoom(note.room || "");
     setModalVisible(true);
   };
 
   const closeModal = () => {
     setModalVisible(false);
     setEditingNote(null);
-    setNoteText('');
-    setNoteCategory('general');
-    setNoteRoom('');
+    setNoteText("");
+    setNoteCategory("general");
+    setNoteRoom("");
   };
 
   const getCategoryInfo = (categoryId) => {
-    return NOTE_CATEGORIES.find(cat => cat.id === categoryId) || NOTE_CATEGORIES[3];
+    return (
+      NOTE_CATEGORIES.find((cat) => cat.id === categoryId) || NOTE_CATEGORIES[3]
+    );
   };
 
   const groupedNotes = NOTE_CATEGORIES.reduce((acc, cat) => {
-    acc[cat.id] = notes.filter(note => note.category === cat.id);
+    acc[cat.id] = notes.filter((note) => note.category === cat.id);
     return acc;
   }, {});
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <Text style={[styles.title, { color: colors.text }]}>📝 Notes</Text>
@@ -163,20 +173,24 @@ export const NotesScreen = ({ navigation }) => {
             </Text>
           </View>
         ) : (
-          NOTE_CATEGORIES.map(category => {
+          NOTE_CATEGORIES.map((category) => {
             const categoryNotes = groupedNotes[category.id];
             if (categoryNotes.length === 0) return null;
 
             return (
               <View key={category.id} style={styles.categorySection}>
                 <View style={styles.categoryHeader}>
-                  <Ionicons name={category.icon} size={20} color={category.color} />
+                  <Ionicons
+                    name={category.icon}
+                    size={20}
+                    color={category.color}
+                  />
                   <Text style={[styles.categoryTitle, { color: colors.text }]}>
                     {category.label} ({categoryNotes.length})
                   </Text>
                 </View>
 
-                {categoryNotes.map(note => (
+                {categoryNotes.map((note) => (
                   <TouchableOpacity
                     key={note.id}
                     style={[styles.noteCard, { backgroundColor: colors.card }]}
@@ -184,14 +198,30 @@ export const NotesScreen = ({ navigation }) => {
                     onLongPress={() => deleteNote(note.id)}
                   >
                     <View style={styles.noteHeader}>
-                      <View style={[styles.noteCategoryBadge, { backgroundColor: category.color }]}>
+                      <View
+                        style={[
+                          styles.noteCategoryBadge,
+                          { backgroundColor: category.color },
+                        ]}
+                      >
                         <Ionicons name={category.icon} size={14} color="#fff" />
-                        <Text style={styles.noteCategoryText}>{category.label}</Text>
+                        <Text style={styles.noteCategoryText}>
+                          {category.label}
+                        </Text>
                       </View>
                       {note.room && (
                         <View style={styles.noteRoomContainer}>
-                          <Ionicons name="home-outline" size={14} color={colors.textSecondary} />
-                          <Text style={[styles.noteRoom, { color: colors.textSecondary }]}>
+                          <Ionicons
+                            name="home-outline"
+                            size={14}
+                            color={colors.textSecondary}
+                          />
+                          <Text
+                            style={[
+                              styles.noteRoom,
+                              { color: colors.textSecondary },
+                            ]}
+                          >
                             {note.room}
                           </Text>
                         </View>
@@ -200,7 +230,9 @@ export const NotesScreen = ({ navigation }) => {
                     <Text style={[styles.noteText, { color: colors.text }]}>
                       {note.text}
                     </Text>
-                    <Text style={[styles.noteDate, { color: colors.textSecondary }]}>
+                    <Text
+                      style={[styles.noteDate, { color: colors.textSecondary }]}
+                    >
                       {new Date(note.createdAt).toLocaleDateString()}
                     </Text>
                   </TouchableOpacity>
@@ -221,15 +253,18 @@ export const NotesScreen = ({ navigation }) => {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
             <Text style={[styles.modalTitle, { color: colors.text }]}>
-              {editingNote ? 'Edit Note' : 'Add Note'}
+              {editingNote ? "Edit Note" : "Add Note"}
             </Text>
 
             <TextInput
-              style={[styles.textInput, { 
-                backgroundColor: colors.background, 
-                color: colors.text,
-                borderColor: colors.border,
-              }]}
+              style={[
+                styles.textInput,
+                {
+                  backgroundColor: colors.background,
+                  color: colors.text,
+                  borderColor: colors.border,
+                },
+              ]}
               placeholder="Enter your note..."
               placeholderTextColor={colors.textSecondary}
               multiline
@@ -241,40 +276,48 @@ export const NotesScreen = ({ navigation }) => {
 
             <Text style={[styles.label, { color: colors.text }]}>Category</Text>
             <View style={styles.categoryPicker}>
-              {NOTE_CATEGORIES.map(cat => (
+              {NOTE_CATEGORIES.map((cat) => (
                 <TouchableOpacity
                   key={cat.id}
                   style={[
                     styles.categoryOption,
-                    { 
-                      backgroundColor: noteCategory === cat.id ? cat.color : colors.background,
+                    {
+                      backgroundColor:
+                        noteCategory === cat.id ? cat.color : colors.background,
                       borderColor: cat.color,
-                    }
+                    },
                   ]}
                   onPress={() => setNoteCategory(cat.id)}
                 >
-                  <Ionicons 
-                    name={cat.icon} 
-                    size={16} 
-                    color={noteCategory === cat.id ? '#fff' : cat.color} 
+                  <Ionicons
+                    name={cat.icon}
+                    size={16}
+                    color={noteCategory === cat.id ? "#fff" : cat.color}
                   />
-                  <Text style={[
-                    styles.categoryOptionText,
-                    { color: noteCategory === cat.id ? '#fff' : colors.text }
-                  ]}>
+                  <Text
+                    style={[
+                      styles.categoryOptionText,
+                      { color: noteCategory === cat.id ? "#fff" : colors.text },
+                    ]}
+                  >
                     {cat.label}
                   </Text>
                 </TouchableOpacity>
               ))}
             </View>
 
-            <Text style={[styles.label, { color: colors.text }]}>Room (Optional)</Text>
+            <Text style={[styles.label, { color: colors.text }]}>
+              Room (Optional)
+            </Text>
             <TextInput
-              style={[styles.input, { 
-                backgroundColor: colors.background, 
-                color: colors.text,
-                borderColor: colors.border,
-              }]}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.background,
+                  color: colors.text,
+                  borderColor: colors.border,
+                },
+              ]}
               placeholder="e.g., Kitchen, Bedroom"
               placeholderTextColor={colors.textSecondary}
               value={noteRoom}
@@ -283,7 +326,10 @@ export const NotesScreen = ({ navigation }) => {
 
             <View style={styles.modalButtons}>
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: colors.background }]}
+                style={[
+                  styles.modalButton,
+                  { backgroundColor: colors.background },
+                ]}
                 onPress={closeModal}
               >
                 <Text style={[styles.modalButtonText, { color: colors.text }]}>
@@ -294,8 +340,8 @@ export const NotesScreen = ({ navigation }) => {
                 style={[styles.modalButton, { backgroundColor: colors.accent }]}
                 onPress={editingNote ? updateNote : addNote}
               >
-                <Text style={[styles.modalButtonText, { color: '#fff' }]}>
-                  {editingNote ? 'Update' : 'Add'}
+                <Text style={[styles.modalButtonText, { color: "#fff" }]}>
+                  {editingNote ? "Update" : "Add"}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -332,14 +378,14 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 24,
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   addButton: {
     paddingHorizontal: 16,
@@ -347,24 +393,24 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   addButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   emptyState: {
     paddingVertical: 60,
-    alignItems: 'center',
+    alignItems: "center",
   },
   emptyText: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   categorySection: {
     marginBottom: 24,
   },
   categoryHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 12,
     gap: 8,
   },
@@ -375,40 +421,40 @@ const styles = StyleSheet.create({
   },
   categoryTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   noteCard: {
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
     elevation: 2,
   },
   noteHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 10,
   },
   noteCategoryBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 8,
   },
   noteCategoryText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   noteRoomContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   noteRoom: {
@@ -424,25 +470,25 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalContent: {
-    width: '90%',
+    width: "90%",
     maxWidth: 500,
     borderRadius: 20,
     padding: 24,
-    maxHeight: '80%',
+    maxHeight: "80%",
   },
   modalTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
   },
   label: {
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 8,
     marginTop: 16,
   },
@@ -452,7 +498,7 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 15,
     minHeight: 120,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   input: {
     borderWidth: 1,
@@ -461,13 +507,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   categoryPicker: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
   },
   categoryOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -476,10 +522,10 @@ const styles = StyleSheet.create({
   },
   categoryOptionText: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   modalButtons: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
     marginTop: 24,
   },
@@ -487,21 +533,21 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     borderRadius: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   modalButtonText: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   deleteButton: {
     marginTop: 12,
     padding: 14,
     borderRadius: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   deleteButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

@@ -1,7 +1,13 @@
-import React, { useEffect } from 'react';
-import { Animated, Text, StyleSheet, View, Platform } from 'react-native';
+import React, { useEffect } from "react";
+import { Animated, Text, StyleSheet, View, Platform } from "react-native";
 
-export const Banner = ({ visible, message, onHide, duration = 3000, type = 'info' }) => {
+export const Banner = ({
+  visible,
+  message,
+  onHide,
+  duration = 3000,
+  type = "info",
+}) => {
   const translateY = React.useRef(new Animated.Value(-100)).current;
 
   useEffect(() => {
@@ -25,7 +31,8 @@ export const Banner = ({ visible, message, onHide, duration = 3000, type = 'info
   if (!visible) return null;
 
   return (
-    <Animated.View style={[styles.banner, styles[type], { transform: [{ translateY }] }]}
+    <Animated.View
+      style={[styles.banner, styles[type], { transform: [{ translateY }] }]}
       accessibilityLiveRegion="polite"
       accessibilityRole="alert"
     >
@@ -36,36 +43,36 @@ export const Banner = ({ visible, message, onHide, duration = 3000, type = 'info
 
 const styles = StyleSheet.create({
   banner: {
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? 48 : 24,
+    position: "absolute",
+    top: Platform.OS === "ios" ? 48 : 24,
     left: 0,
     right: 0,
     marginHorizontal: 0,
     padding: 16,
     borderRadius: 0,
-    backgroundColor: '#333',
+    backgroundColor: "#333",
     zIndex: 1000,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 4,
   },
   info: {
-    backgroundColor: '#333',
+    backgroundColor: "#333",
   },
   success: {
-    backgroundColor: '#4e8d7c',
+    backgroundColor: "#4e8d7c",
   },
   error: {
-    backgroundColor: '#c0392b',
+    backgroundColor: "#c0392b",
   },
   bannerText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 15,
-    fontWeight: '600',
-    textAlign: 'center',
+    fontWeight: "600",
+    textAlign: "center",
   },
 });
 

@@ -1,9 +1,18 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Modal, TextInput, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../providers/ThemeProvider';
-import { useFocusEffect } from '@react-navigation/native';
+import React, { useState, useCallback } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Modal,
+  TextInput,
+  Alert,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../providers/ThemeProvider";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   getTodaysItems,
   toggleItemCompletion,
@@ -15,13 +24,13 @@ import {
   getCategoryIcon,
   getCategoryColor,
   createSampleChecklist,
-} from '../utils/daily-checklist';
+} from "../utils/daily-checklist";
 
 /**
  * Daily Checklist Screen
- * 
+ *
  * "Should I / Did You" reminders for executive function support
- * 
+ *
  * Perfect for ADHD/chronic illness:
  * - "Did you take your meds?"
  * - "Should I start dinner?"
@@ -36,24 +45,24 @@ export const DailyChecklistScreen = ({ navigation }) => {
   const [stats, setStats] = useState(null);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   // Form state
-  const [newItemText, setNewItemText] = useState('');
-  const [newItemType, setNewItemType] = useState('did-you');
-  const [newItemCategory, setNewItemCategory] = useState('routine');
-  const [newItemTime, setNewItemTime] = useState('');
+  const [newItemText, setNewItemText] = useState("");
+  const [newItemType, setNewItemType] = useState("did-you");
+  const [newItemCategory, setNewItemCategory] = useState("routine");
+  const [newItemTime, setNewItemTime] = useState("");
 
   useFocusEffect(
     useCallback(() => {
       loadData();
-    }, [])
+    }, []),
   );
 
   const loadData = async () => {
     setLoading(true);
     const todaysItems = await getTodaysItems();
     const statistics = await getChecklistStats();
-    
+
     // Check completion status for each item
     const completed = new Set();
     for (const item of todaysItems) {
@@ -62,7 +71,7 @@ export const DailyChecklistScreen = ({ navigation }) => {
         completed.add(item.id);
       }
     }
-    
+
     setItems(todaysItems);
     setCompletedItems(completed);
     setStats(statistics);
@@ -85,7 +94,7 @@ export const DailyChecklistScreen = ({ navigation }) => {
 
   const handleAddItem = async () => {
     if (!newItemText.trim()) {
-      Alert.alert('Error', 'Please enter a reminder');
+      Alert.alert("Error", "Please enter a reminder");
       return;
     }
 
@@ -94,52 +103,44 @@ export const DailyChecklistScreen = ({ navigation }) => {
       type: newItemType,
       category: newItemCategory,
       time: newItemTime || null,
-      frequency: 'daily',
+      frequency: "daily",
     });
 
     if (result.success) {
-      setNewItemText('');
-      setNewItemTime('');
+      setNewItemText("");
+      setNewItemTime("");
       setAddModalVisible(false);
       await loadData();
     } else {
-      Alert.alert('Error', result.error || 'Failed to add item');
+      Alert.alert("Error", result.error || "Failed to add item");
     }
   };
 
   const handleDeleteItem = (item) => {
-    Alert.alert(
-      'Delete Reminder',
-      `Remove "${item.text}"?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            await deleteChecklistItem(item.id);
-            await loadData();
-          },
+    Alert.alert("Delete Reminder", `Remove "${item.text}"?`, [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: async () => {
+          await deleteChecklistItem(item.id);
+          await loadData();
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleCreateSamples = async () => {
-    Alert.alert(
-      'Add Sample Items',
-      'Add example reminders to get started?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Add Samples',
-          onPress: async () => {
-            await createSampleChecklist();
-            await loadData();
-          },
+    Alert.alert("Add Sample Items", "Add example reminders to get started?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Add Samples",
+        onPress: async () => {
+          await createSampleChecklist();
+          await loadData();
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const renderItem = (item) => {
@@ -150,36 +151,56 @@ export const DailyChecklistScreen = ({ navigation }) => {
     return (
       <TouchableOpacity
         key={item.id}
-        style={[styles.itemCard, { backgroundColor: colors.card, borderColor: colors.border }]}
+        style={[
+          styles.itemCard,
+          { backgroundColor: colors.card, borderColor: colors.border },
+        ]}
         onPress={() => handleToggleItem(item)}
         onLongPress={() => handleDeleteItem(item)}
       >
         <View style={styles.itemLeft}>
           <Ionicons
-            name={isCompleted ? 'checkmark-circle' : 'ellipse-outline'}
+            name={isCompleted ? "checkmark-circle" : "ellipse-outline"}
             size={32}
             color={isCompleted ? colors.primary : colors.secondaryText}
           />
-          
+
           <View style={styles.itemDetails}>
             <View style={styles.itemHeader}>
-              <View style={[styles.categoryBadge, { backgroundColor: categoryColor }]}>
+              <View
+                style={[
+                  styles.categoryBadge,
+                  { backgroundColor: categoryColor },
+                ]}
+              >
                 <Ionicons name={categoryIcon} size={12} color="#fff" />
               </View>
               <Text style={[styles.itemType, { color: colors.secondaryText }]}>
-                {item.type === 'did-you' ? 'Did you...' : 'Should I...'}
+                {item.type === "did-you" ? "Did you..." : "Should I..."}
               </Text>
             </View>
-            
-            <Text style={[styles.itemText, isCompleted && styles.completedText, { color: colors.text }]}>
+
+            <Text
+              style={[
+                styles.itemText,
+                isCompleted && styles.completedText,
+                { color: colors.text },
+              ]}
+            >
               {item.text}
             </Text>
-            
+
             <View style={styles.itemMeta}>
               {item.time && (
                 <View style={styles.timeChip}>
-                  <Ionicons name="time-outline" size={12} color={colors.secondaryText} />
-                  <Text style={[styles.timeText, { color: colors.secondaryText }]}>
+                  <Ionicons
+                    name="time-outline"
+                    size={12}
+                    color={colors.secondaryText}
+                  />
+                  <Text
+                    style={[styles.timeText, { color: colors.secondaryText }]}
+                  >
                     {formatTime12Hour(item.time)}
                   </Text>
                 </View>
@@ -187,8 +208,10 @@ export const DailyChecklistScreen = ({ navigation }) => {
               {item.streakCount > 0 && (
                 <View style={styles.streakChip}>
                   <Ionicons name="flame" size={12} color="#FFB347" />
-                  <Text style={[styles.streakText, { color: colors.secondaryText }]}>
-                    {item.streakCount} day{item.streakCount !== 1 ? 's' : ''}
+                  <Text
+                    style={[styles.streakText, { color: colors.secondaryText }]}
+                  >
+                    {item.streakCount} day{item.streakCount !== 1 ? "s" : ""}
                   </Text>
                 </View>
               )}
@@ -199,27 +222,41 @@ export const DailyChecklistScreen = ({ navigation }) => {
     );
   };
 
-  const pendingItems = items.filter(item => !completedItems.has(item.id));
-  const doneItems = items.filter(item => completedItems.has(item.id));
+  const pendingItems = items.filter((item) => !completedItems.has(item.id));
+  const doneItems = items.filter((item) => completedItems.has(item.id));
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <View style={styles.loadingContainer}>
-          <Text style={[styles.loadingText, { color: colors.text }]}>Loading...</Text>
+          <Text style={[styles.loadingText, { color: colors.text }]}>
+            Loading...
+          </Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Daily Checklist</Text>
-        <TouchableOpacity onPress={() => setAddModalVisible(true)} style={styles.addButton}>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>
+          Daily Checklist
+        </Text>
+        <TouchableOpacity
+          onPress={() => setAddModalVisible(true)}
+          style={styles.addButton}
+        >
           <Ionicons name="add-circle" size={28} color={colors.primary} />
         </TouchableOpacity>
       </View>
@@ -230,20 +267,28 @@ export const DailyChecklistScreen = ({ navigation }) => {
             <Text style={[styles.statNumber, { color: colors.primary }]}>
               {stats.completedToday}/{stats.totalToday}
             </Text>
-            <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Completed</Text>
+            <Text style={[styles.statLabel, { color: colors.secondaryText }]}>
+              Completed
+            </Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
             <Text style={[styles.statNumber, { color: colors.accent }]}>
               {stats.percentComplete}%
             </Text>
-            <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Progress</Text>
+            <Text style={[styles.statLabel, { color: colors.secondaryText }]}>
+              Progress
+            </Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
             <Ionicons name="flame" size={20} color="#FFB347" />
-            <Text style={[styles.statNumber, { color: colors.text }]}>{stats.longestStreak}</Text>
-            <Text style={[styles.statLabel, { color: colors.secondaryText }]}>Best Streak</Text>
+            <Text style={[styles.statNumber, { color: colors.text }]}>
+              {stats.longestStreak}
+            </Text>
+            <Text style={[styles.statLabel, { color: colors.secondaryText }]}>
+              Best Streak
+            </Text>
           </View>
         </View>
       )}
@@ -269,9 +314,17 @@ export const DailyChecklistScreen = ({ navigation }) => {
 
         {items.length === 0 && (
           <View style={styles.emptyContainer}>
-            <Ionicons name="checkbox-outline" size={80} color={colors.secondaryText} />
-            <Text style={[styles.emptyTitle, { color: colors.text }]}>No Reminders Yet</Text>
-            <Text style={[styles.emptyDescription, { color: colors.secondaryText }]}>
+            <Ionicons
+              name="checkbox-outline"
+              size={80}
+              color={colors.secondaryText}
+            />
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+              No Reminders Yet
+            </Text>
+            <Text
+              style={[styles.emptyDescription, { color: colors.secondaryText }]}
+            >
               Add daily reminders to help you remember important tasks
             </Text>
             <TouchableOpacity
@@ -290,38 +343,63 @@ export const DailyChecklistScreen = ({ navigation }) => {
       <Modal visible={addModalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={[styles.modal, { backgroundColor: colors.card }]}>
-            <Text style={[styles.modalTitle, { color: colors.text }]}>Add Reminder</Text>
-            
+            <Text style={[styles.modalTitle, { color: colors.text }]}>
+              Add Reminder
+            </Text>
+
             {/* Type Selection */}
             <View style={styles.typeSelector}>
               <TouchableOpacity
                 style={[
                   styles.typeButton,
-                  newItemType === 'did-you' && { backgroundColor: colors.primary },
+                  newItemType === "did-you" && {
+                    backgroundColor: colors.primary,
+                  },
                   { borderColor: colors.border },
                 ]}
-                onPress={() => setNewItemType('did-you')}
+                onPress={() => setNewItemType("did-you")}
               >
-                <Text style={[styles.typeButtonText, newItemType === 'did-you' && { color: '#fff' }, { color: colors.text }]}>
+                <Text
+                  style={[
+                    styles.typeButtonText,
+                    newItemType === "did-you" && { color: "#fff" },
+                    { color: colors.text },
+                  ]}
+                >
                   Did you...
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
                   styles.typeButton,
-                  newItemType === 'should-i' && { backgroundColor: colors.primary },
+                  newItemType === "should-i" && {
+                    backgroundColor: colors.primary,
+                  },
                   { borderColor: colors.border },
                 ]}
-                onPress={() => setNewItemType('should-i')}
+                onPress={() => setNewItemType("should-i")}
               >
-                <Text style={[styles.typeButtonText, newItemType === 'should-i' && { color: '#fff' }, { color: colors.text }]}>
+                <Text
+                  style={[
+                    styles.typeButtonText,
+                    newItemType === "should-i" && { color: "#fff" },
+                    { color: colors.text },
+                  ]}
+                >
                   Should I...
                 </Text>
               </TouchableOpacity>
             </View>
-            
+
             <TextInput
-              style={[styles.input, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.background,
+                  color: colors.text,
+                  borderColor: colors.border,
+                },
+              ]}
               placeholder="take your morning meds?"
               placeholderTextColor={colors.secondaryText}
               value={newItemText}
@@ -329,57 +407,85 @@ export const DailyChecklistScreen = ({ navigation }) => {
               autoFocus
               multiline
             />
-            
+
             {/* Category Selection */}
-            <Text style={[styles.inputLabel, { color: colors.secondaryText }]}>Category</Text>
+            <Text style={[styles.inputLabel, { color: colors.secondaryText }]}>
+              Category
+            </Text>
             <View style={styles.categoryGrid}>
-              {['health', 'chores', 'self-care', 'routine', 'other'].map(cat => (
-                <TouchableOpacity
-                  key={cat}
-                  style={[
-                    styles.categoryChip,
-                    newItemCategory === cat && { backgroundColor: getCategoryColor(cat) },
-                    { borderColor: colors.border },
-                  ]}
-                  onPress={() => setNewItemCategory(cat)}
-                >
-                  <Ionicons
-                    name={getCategoryIcon(cat)}
-                    size={16}
-                    color={newItemCategory === cat ? '#fff' : colors.text}
-                  />
-                  <Text style={[styles.categoryChipText, newItemCategory === cat && { color: '#fff' }, { color: colors.text }]}>
-                    {cat}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+              {["health", "chores", "self-care", "routine", "other"].map(
+                (cat) => (
+                  <TouchableOpacity
+                    key={cat}
+                    style={[
+                      styles.categoryChip,
+                      newItemCategory === cat && {
+                        backgroundColor: getCategoryColor(cat),
+                      },
+                      { borderColor: colors.border },
+                    ]}
+                    onPress={() => setNewItemCategory(cat)}
+                  >
+                    <Ionicons
+                      name={getCategoryIcon(cat)}
+                      size={16}
+                      color={newItemCategory === cat ? "#fff" : colors.text}
+                    />
+                    <Text
+                      style={[
+                        styles.categoryChipText,
+                        newItemCategory === cat && { color: "#fff" },
+                        { color: colors.text },
+                      ]}
+                    >
+                      {cat}
+                    </Text>
+                  </TouchableOpacity>
+                ),
+              )}
             </View>
-            
-            <Text style={[styles.inputLabel, { color: colors.secondaryText }]}>Time (optional)</Text>
+
+            <Text style={[styles.inputLabel, { color: colors.secondaryText }]}>
+              Time (optional)
+            </Text>
             <TextInput
-              style={[styles.input, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: colors.background,
+                  color: colors.text,
+                  borderColor: colors.border,
+                },
+              ]}
               placeholder="08:00 (24hr format)"
               placeholderTextColor={colors.secondaryText}
               value={newItemTime}
               onChangeText={setNewItemTime}
             />
-            
+
             <View style={styles.modalButtons}>
               <TouchableOpacity
                 style={[styles.modalButton, { backgroundColor: colors.border }]}
                 onPress={() => {
                   setAddModalVisible(false);
-                  setNewItemText('');
-                  setNewItemTime('');
+                  setNewItemText("");
+                  setNewItemTime("");
                 }}
               >
-                <Text style={[styles.modalButtonText, { color: colors.text }]}>Cancel</Text>
+                <Text style={[styles.modalButtonText, { color: colors.text }]}>
+                  Cancel
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: colors.primary }]}
+                style={[
+                  styles.modalButton,
+                  { backgroundColor: colors.primary },
+                ]}
                 onPress={handleAddItem}
               >
-                <Text style={[styles.modalButtonText, { color: '#fff' }]}>Add</Text>
+                <Text style={[styles.modalButtonText, { color: "#fff" }]}>
+                  Add
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -394,9 +500,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
@@ -405,26 +511,26 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   addButton: {
     padding: 4,
   },
   statsCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
     marginHorizontal: 16,
     marginBottom: 16,
     padding: 16,
     borderRadius: 12,
   },
   statItem: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   statNumber: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   statLabel: {
     fontSize: 11,
@@ -433,7 +539,7 @@ const styles = StyleSheet.create({
   statDivider: {
     width: 1,
     height: 40,
-    backgroundColor: '#ddd',
+    backgroundColor: "#ddd",
   },
   scrollView: {
     flex: 1,
@@ -444,23 +550,23 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 13,
-    fontWeight: '700',
-    textTransform: 'uppercase',
+    fontWeight: "700",
+    textTransform: "uppercase",
     letterSpacing: 1,
     marginBottom: 12,
   },
   itemCard: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
     marginBottom: 8,
   },
   itemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
     gap: 12,
   },
@@ -468,8 +574,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   itemHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     marginBottom: 4,
   },
@@ -477,38 +583,38 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   itemType: {
     fontSize: 11,
-    textTransform: 'uppercase',
-    fontWeight: '600',
+    textTransform: "uppercase",
+    fontWeight: "600",
   },
   itemText: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
     marginBottom: 4,
   },
   completedText: {
     opacity: 0.6,
   },
   itemMeta: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
     marginTop: 4,
   },
   timeChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   timeText: {
     fontSize: 12,
   },
   streakChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   streakText: {
@@ -516,26 +622,26 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingText: {
     fontSize: 16,
   },
   emptyContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingTop: 60,
     paddingHorizontal: 40,
   },
   emptyTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 20,
     marginBottom: 12,
   },
   emptyDescription: {
     fontSize: 15,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 24,
   },
   sampleButton: {
@@ -544,28 +650,28 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   sampleButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
   },
   modal: {
     padding: 24,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    maxHeight: '80%',
+    maxHeight: "80%",
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 16,
   },
   typeSelector: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
     marginBottom: 16,
   },
@@ -574,15 +680,15 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     borderWidth: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   typeButtonText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   inputLabel: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 8,
     marginTop: 12,
   },
@@ -594,14 +700,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
     marginBottom: 12,
   },
   categoryChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -610,10 +716,10 @@ const styles = StyleSheet.create({
   },
   categoryChipText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   modalButtons: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
     marginTop: 16,
   },
@@ -621,10 +727,10 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 14,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   modalButtonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

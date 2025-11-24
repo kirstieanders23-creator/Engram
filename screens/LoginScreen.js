@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   SafeAreaView,
   View,
@@ -8,45 +8,52 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
-} from 'react-native';
-import PropTypes from 'prop-types';
-import { useTheme } from '../providers/ThemeProvider';
-import { useAuth } from '../providers/AuthProvider';
+} from "react-native";
+import PropTypes from "prop-types";
+import { useTheme } from "../providers/ThemeProvider";
+import { useAuth } from "../providers/AuthProvider";
 
 export const LoginScreen = ({ navigation }) => {
   const { isDark, colors } = useTheme();
   const { handleLogin, isLoading, error } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [validationError, setValidationError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [validationError, setValidationError] = useState("");
 
   const handleLoginPress = async () => {
-    setValidationError('');
+    setValidationError("");
 
     if (!email.trim()) {
-      setValidationError('Email is required');
+      setValidationError("Email is required");
       return;
     }
     if (!password.trim()) {
-      setValidationError('Password is required');
+      setValidationError("Password is required");
       return;
     }
 
     try {
       await handleLogin(email.trim(), password);
     } catch (err) {
-      setValidationError(err.message || 'Login failed');
-      Alert.alert('Login Error', err.message || 'Could not log in. Please try again.');
+      setValidationError(err.message || "Login failed");
+      Alert.alert(
+        "Login Error",
+        err.message || "Could not log in. Please try again.",
+      );
     }
   };
 
   const displayError = validationError || error;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <View style={styles.content}>
         <Text style={[styles.title, { color: colors.text }]}>Engram</Text>
-        <Text style={[styles.subtitle, { color: colors.text }]}>Manage Your Home</Text>
+        <Text style={[styles.subtitle, { color: colors.text }]}>
+          Manage Your Home
+        </Text>
 
         {displayError && (
           <View style={[styles.errorBox, { backgroundColor: colors.error }]}>
@@ -55,11 +62,14 @@ export const LoginScreen = ({ navigation }) => {
         )}
 
         <TextInput
-          style={[styles.input, { 
-            borderColor: colors.border, 
-            color: colors.text,
-            backgroundColor: colors.card,
-          }]}
+          style={[
+            styles.input,
+            {
+              borderColor: colors.border,
+              color: colors.text,
+              backgroundColor: colors.card,
+            },
+          ]}
           placeholder="Email"
           placeholderTextColor={colors.text}
           value={email}
@@ -70,11 +80,14 @@ export const LoginScreen = ({ navigation }) => {
         />
 
         <TextInput
-          style={[styles.input, { 
-            borderColor: colors.border, 
-            color: colors.text,
-            backgroundColor: colors.card,
-          }]}
+          style={[
+            styles.input,
+            {
+              borderColor: colors.border,
+              color: colors.text,
+              backgroundColor: colors.card,
+            },
+          ]}
           placeholder="Password"
           placeholderTextColor={colors.text}
           value={password}
@@ -84,7 +97,10 @@ export const LoginScreen = ({ navigation }) => {
         />
 
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: colors.primary, opacity: isLoading ? 0.6 : 1 }]}
+          style={[
+            styles.button,
+            { backgroundColor: colors.primary, opacity: isLoading ? 0.6 : 1 },
+          ]}
           onPress={handleLoginPress}
           disabled={isLoading}
         >
@@ -95,7 +111,10 @@ export const LoginScreen = ({ navigation }) => {
           )}
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Signup')} disabled={isLoading}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Signup")}
+          disabled={isLoading}
+        >
           <Text style={[styles.linkText, { color: colors.primary }]}>
             Don't have an account? Sign up
           </Text>
@@ -117,18 +136,18 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: 20,
   },
   title: {
     fontSize: 40,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 40,
   },
   errorBox: {
@@ -137,7 +156,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   errorText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 14,
   },
   input: {
@@ -151,18 +170,18 @@ const styles = StyleSheet.create({
   button: {
     height: 50,
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 20,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   linkText: {
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 20,
   },
 });

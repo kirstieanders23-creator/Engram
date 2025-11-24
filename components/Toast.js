@@ -1,7 +1,13 @@
-import React, { useEffect } from 'react';
-import { Animated, Text, StyleSheet, View, Platform } from 'react-native';
+import React, { useEffect } from "react";
+import { Animated, Text, StyleSheet, View, Platform } from "react-native";
 
-export const Toast = ({ visible, message, onHide, duration = 2000, type = 'info' }) => {
+export const Toast = ({
+  visible,
+  message,
+  onHide,
+  duration = 2000,
+  type = "info",
+}) => {
   const opacity = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -25,7 +31,8 @@ export const Toast = ({ visible, message, onHide, duration = 2000, type = 'info'
   if (!visible) return null;
 
   return (
-    <Animated.View style={[styles.toast, styles[type], { opacity }]}
+    <Animated.View
+      style={[styles.toast, styles[type], { opacity }]}
       accessibilityLiveRegion="polite"
       accessibilityRole="alert"
     >
@@ -36,35 +43,35 @@ export const Toast = ({ visible, message, onHide, duration = 2000, type = 'info'
 
 const styles = StyleSheet.create({
   toast: {
-    position: 'absolute',
-    bottom: Platform.OS === 'ios' ? 48 : 24,
+    position: "absolute",
+    bottom: Platform.OS === "ios" ? 48 : 24,
     left: 24,
     right: 24,
     padding: 16,
     borderRadius: 12,
-    backgroundColor: '#222',
+    backgroundColor: "#222",
     zIndex: 1000,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 6,
   },
   info: {
-    backgroundColor: '#222',
+    backgroundColor: "#222",
   },
   success: {
-    backgroundColor: '#4e8d7c',
+    backgroundColor: "#4e8d7c",
   },
   error: {
-    backgroundColor: '#c0392b',
+    backgroundColor: "#c0392b",
   },
   toastText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 15,
-    fontWeight: '600',
-    textAlign: 'center',
+    fontWeight: "600",
+    textAlign: "center",
   },
 });
 

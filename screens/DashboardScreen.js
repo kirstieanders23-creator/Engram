@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import React, { useState, useEffect } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   SafeAreaView,
   View,
@@ -8,35 +8,70 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import PropTypes from 'prop-types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTheme } from '../providers/ThemeProvider';
-import { useDatabase } from '../providers/DatabaseProvider';
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import PropTypes from "prop-types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTheme } from "../providers/ThemeProvider";
+import { useDatabase } from "../providers/DatabaseProvider";
 
 // Available dashboard cards (ordered by priority)
 const AVAILABLE_CARDS = [
-  { id: 'quick-actions', title: 'Quick Actions', description: 'Wizard, Scan, Camera, Rooms, Export, Remove, Share' },
-  { id: 'reminders', title: 'Reminders', description: 'Upcoming tasks and notifications' },
-  { id: 'warranty-expiring', title: 'Warranty Alerts', description: 'Products with expiring warranties' },
-  { id: 'notes', title: 'Notes', description: 'Quick notes and ideas for your home' },
-  { id: 'fixes', title: 'Home Repairs', description: 'Track repairs and trusted pros' },
-  { id: 'living-partners', title: 'Roommates & Shared Tasks', description: 'Coordinate with housemates' },
-  { id: 'home-info', title: 'Home Info', description: 'Documents and important information' },
-  { id: 'bills', title: 'Monthly Bills', description: 'Track and split expenses' },
-  { id: 'first-scan', title: 'First Home Scan', description: 'Get started with your inventory' },
+  {
+    id: "quick-actions",
+    title: "Quick Actions",
+    description: "Wizard, Scan, Camera, Rooms, Export, Remove, Share",
+  },
+  {
+    id: "reminders",
+    title: "Reminders",
+    description: "Upcoming tasks and notifications",
+  },
+  {
+    id: "warranty-expiring",
+    title: "Warranty Alerts",
+    description: "Products with expiring warranties",
+  },
+  {
+    id: "notes",
+    title: "Notes",
+    description: "Quick notes and ideas for your home",
+  },
+  {
+    id: "fixes",
+    title: "Home Repairs",
+    description: "Track repairs and trusted pros",
+  },
+  {
+    id: "living-partners",
+    title: "Roommates & Shared Tasks",
+    description: "Coordinate with housemates",
+  },
+  {
+    id: "home-info",
+    title: "Home Info",
+    description: "Documents and important information",
+  },
+  {
+    id: "bills",
+    title: "Monthly Bills",
+    description: "Track and split expenses",
+  },
+  {
+    id: "first-scan",
+    title: "First Home Scan",
+    description: "Get started with your inventory",
+  },
 ];
 
-const STORAGE_KEY = '@dashboard_cards';
+const STORAGE_KEY = "@dashboard_cards";
 
 export const DashboardScreen = ({ navigation }) => {
   const { colors } = useTheme();
   const { products } = useDatabase();
   const [visibleCards, setVisibleCards] = useState(
-    AVAILABLE_CARDS.map(card => card.id)
+    AVAILABLE_CARDS.map((card) => card.id),
   );
-
 
   // Load user's card preferences
   useEffect(() => {
@@ -49,7 +84,7 @@ export const DashboardScreen = ({ navigation }) => {
       // This will trigger a re-render if products change
       // If you need to force a reload from storage/server, do it here
       return () => {};
-    }, [products])
+    }, [products]),
   );
 
   const loadCardPreferences = async () => {
@@ -59,17 +94,19 @@ export const DashboardScreen = ({ navigation }) => {
         setVisibleCards(JSON.parse(saved));
       }
     } catch (error) {
-      console.log('Error loading card preferences:', error);
+      console.log("Error loading card preferences:", error);
     }
   };
 
   // Calculate warranty stats
   const getWarrantyStats = () => {
     const now = new Date();
-    const expiringSoon = products.filter(p => {
+    const expiringSoon = products.filter((p) => {
       if (!p.warranty) return false;
       const warrantyDate = new Date(p.warranty);
-      const daysRemaining = Math.ceil((warrantyDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      const daysRemaining = Math.ceil(
+        (warrantyDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+      );
       return daysRemaining > 0 && daysRemaining <= 30;
     });
     return { count: expiringSoon.length, products: expiringSoon };
@@ -84,78 +121,86 @@ export const DashboardScreen = ({ navigation }) => {
   const handleExportPDF = async () => {
     try {
       if (products.length === 0) {
-        Alert.alert('No Products', 'Add some products before exporting.');
+        Alert.alert("No Products", "Add some products before exporting.");
         return;
       }
 
-      Alert.alert(
-        'Export Inventory Report',
-        'Choose report type:',
-        [
-          {
-            text: 'Insurance Report',
-            onPress: async () => {
-              try {
-                const { exportInsuranceReport } = await import('../utils/pdf-export');
-                await exportInsuranceReport(products);
-                Alert.alert('Success', 'Insurance report generated and ready to share!');
-              } catch (error) {
-                Alert.alert('Error', `Failed to export: ${error.message}`);
-              }
-            },
+      Alert.alert("Export Inventory Report", "Choose report type:", [
+        {
+          text: "Insurance Report",
+          onPress: async () => {
+            try {
+              const { exportInsuranceReport } = await import(
+                "../utils/pdf-export"
+              );
+              await exportInsuranceReport(products);
+              Alert.alert(
+                "Success",
+                "Insurance report generated and ready to share!",
+              );
+            } catch (error) {
+              Alert.alert("Error", `Failed to export: ${error.message}`);
+            }
           },
-          {
-            text: 'Simple List',
-            onPress: async () => {
-              try {
-                const { exportSimpleInventory } = await import('../utils/pdf-export');
-                await exportSimpleInventory(products);
-                Alert.alert('Success', 'Inventory list generated and ready to share!');
-              } catch (error) {
-                Alert.alert('Error', `Failed to export: ${error.message}`);
-              }
-            },
+        },
+        {
+          text: "Simple List",
+          onPress: async () => {
+            try {
+              const { exportSimpleInventory } = await import(
+                "../utils/pdf-export"
+              );
+              await exportSimpleInventory(products);
+              Alert.alert(
+                "Success",
+                "Inventory list generated and ready to share!",
+              );
+            } catch (error) {
+              Alert.alert("Error", `Failed to export: ${error.message}`);
+            }
           },
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-        ]
-      );
+        },
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+      ]);
     } catch (error) {
-      Alert.alert('Error', 'Failed to export inventory');
+      Alert.alert("Error", "Failed to export inventory");
     }
   };
 
   // Card Components
   const QuickActionsCard = () => (
     <View style={[styles.card, { backgroundColor: colors.card }]}>
-      <Text style={[styles.cardTitle, { color: colors.text }]}>Quick Actions</Text>
+      <Text style={[styles.cardTitle, { color: colors.text }]}>
+        Quick Actions
+      </Text>
       <View style={styles.actionGrid}>
         <TouchableOpacity
           style={[styles.actionButton, { backgroundColor: colors.accent }]}
-          onPress={() => navigation.navigate('RoomWizard')}
+          onPress={() => navigation.navigate("RoomWizard")}
         >
           <Ionicons name="compass-outline" size={24} color="#fff" />
           <Text style={styles.actionText}>WIZARD</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.actionButton, { backgroundColor: colors.primary }]}
-          onPress={() => navigation.navigate('Products', { openScanner: true })}
+          onPress={() => navigation.navigate("Products", { openScanner: true })}
         >
           <Ionicons name="barcode-outline" size={24} color="#fff" />
           <Text style={styles.actionText}>SCAN</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.actionButton, { backgroundColor: colors.primary }]}
-          onPress={() => navigation.navigate('Products', { openCamera: true })}
+          onPress={() => navigation.navigate("Products", { openCamera: true })}
         >
           <Ionicons name="camera-outline" size={24} color="#fff" />
           <Text style={styles.actionText}>CAMERA</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.actionButton, { backgroundColor: colors.primary }]}
-          onPress={() => navigation.navigate('Products')}
+          onPress={() => navigation.navigate("Products")}
         >
           <Ionicons name="home-outline" size={24} color="#fff" />
           <Text style={styles.actionText}>ROOMS</Text>
@@ -169,42 +214,42 @@ export const DashboardScreen = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.actionButton, { backgroundColor: colors.primary }]}
-          onPress={() => Alert.alert('Remove Mode', 'Bulk delete coming soon!')}
+          onPress={() => Alert.alert("Remove Mode", "Bulk delete coming soon!")}
         >
           <Ionicons name="trash-outline" size={24} color="#fff" />
           <Text style={styles.actionText}>REMOVE</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.actionButton, { backgroundColor: colors.accent }]}
-          onPress={() => navigation.navigate('MealHistory')}
+          onPress={() => navigation.navigate("MealHistory")}
         >
           <Ionicons name="book-outline" size={24} color="#fff" />
           <Text style={styles.actionText}>RECIPES</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.actionButton, { backgroundColor: colors.accent }]}
-          onPress={() => navigation.navigate('ShoppingList')}
+          onPress={() => navigation.navigate("ShoppingList")}
         >
           <Ionicons name="cart-outline" size={24} color="#fff" />
           <Text style={styles.actionText}>SHOPPING</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.actionButton, { backgroundColor: colors.primary }]}
-          onPress={() => navigation.navigate('DailyChecklist')}
+          onPress={() => navigation.navigate("DailyChecklist")}
         >
           <Ionicons name="checkbox-outline" size={24} color="#fff" />
           <Text style={styles.actionText}>DAILY</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.actionButton, { backgroundColor: colors.primary }]}
-          onPress={() => navigation.navigate('DontBuyAgain')}
+          onPress={() => navigation.navigate("DontBuyAgain")}
         >
           <Ionicons name="ban-outline" size={24} color="#fff" />
           <Text style={styles.actionText}>DON'T BUY</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.actionButton, { backgroundColor: colors.primary }]}
-          onPress={() => navigation.navigate('TimeReminders')}
+          onPress={() => navigation.navigate("TimeReminders")}
         >
           <Ionicons name="time-outline" size={24} color="#fff" />
           <Text style={styles.actionText}>TIMERS</Text>
@@ -215,25 +260,28 @@ export const DashboardScreen = ({ navigation }) => {
 
   const WarrantyAlertsCard = () => {
     if (warrantyStats.count === 0) return null;
-    
+
     return (
       <TouchableOpacity
         style={[styles.card, { backgroundColor: colors.card }]}
-        onPress={() => navigation.navigate('Products', { filter: 'expiring' })}
+        onPress={() => navigation.navigate("Products", { filter: "expiring" })}
       >
         <View style={styles.cardHeader}>
           <View style={styles.cardTitleRow}>
             <Ionicons name="alert-circle" size={20} color="#ff4444" />
-            <Text style={[styles.cardTitle, { color: colors.text }]}>Warranty Alerts</Text>
+            <Text style={[styles.cardTitle, { color: colors.text }]}>
+              Warranty Alerts
+            </Text>
           </View>
-          <View style={[styles.badge, { backgroundColor: '#ff4444' }]}>
+          <View style={[styles.badge, { backgroundColor: "#ff4444" }]}>
             <Text style={styles.badgeText}>{warrantyStats.count}</Text>
           </View>
         </View>
         <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
-          {warrantyStats.count} {warrantyStats.count === 1 ? 'product' : 'products'} expiring soon
+          {warrantyStats.count}{" "}
+          {warrantyStats.count === 1 ? "product" : "products"} expiring soon
         </Text>
-        {warrantyStats.products.slice(0, 2).map(product => (
+        {warrantyStats.products.slice(0, 2).map((product) => (
           <View key={product.id} style={styles.listItem}>
             <Text style={[styles.listItemText, { color: colors.text }]}>
               • {product.name}
@@ -247,12 +295,14 @@ export const DashboardScreen = ({ navigation }) => {
   const RemindersCard = () => (
     <TouchableOpacity
       style={[styles.card, { backgroundColor: colors.card }]}
-      onPress={() => navigation.navigate('Reminders')}
+      onPress={() => navigation.navigate("Reminders")}
     >
       <View style={styles.cardHeader}>
         <View style={styles.cardTitleRow}>
           <Ionicons name="calendar-outline" size={20} color={colors.primary} />
-          <Text style={[styles.cardTitle, { color: colors.text }]}>Reminders</Text>
+          <Text style={[styles.cardTitle, { color: colors.text }]}>
+            Reminders
+          </Text>
         </View>
       </View>
       <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
@@ -260,13 +310,13 @@ export const DashboardScreen = ({ navigation }) => {
       </Text>
       <View style={styles.reminderPreview}>
         <View style={styles.reminderItem}>
-          <View style={[styles.reminderDot, { backgroundColor: '#44dd44' }]} />
+          <View style={[styles.reminderDot, { backgroundColor: "#44dd44" }]} />
           <Text style={[styles.reminderText, { color: colors.text }]}>
             Example: Weekly trash pickup
           </Text>
         </View>
         <View style={styles.reminderItem}>
-          <View style={[styles.reminderDot, { backgroundColor: '#ffaa00' }]} />
+          <View style={[styles.reminderDot, { backgroundColor: "#ffaa00" }]} />
           <Text style={[styles.reminderText, { color: colors.text }]}>
             Example: Filter change due soon
           </Text>
@@ -283,34 +333,51 @@ export const DashboardScreen = ({ navigation }) => {
   const FixesCard = () => (
     <TouchableOpacity
       style={[styles.card, { backgroundColor: colors.card }]}
-      onPress={() => navigation.navigate('Maintenance')}
+      onPress={() => navigation.navigate("Maintenance")}
     >
       <View style={styles.cardTitleRow}>
         <Ionicons name="construct-outline" size={20} color={colors.primary} />
-        <Text style={[styles.cardTitle, { color: colors.text }]}>Home Repairs</Text>
+        <Text style={[styles.cardTitle, { color: colors.text }]}>
+          Home Repairs
+        </Text>
       </View>
       <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
         Track repairs and find trusted pros
       </Text>
       <View style={styles.repairsGrid}>
-        <View style={[styles.repairSection, { backgroundColor: colors.background }]}>
-          <Text style={[styles.repairLabel, { color: colors.text }]}>Needed Repairs</Text>
+        <View
+          style={[styles.repairSection, { backgroundColor: colors.background }]}
+        >
+          <Text style={[styles.repairLabel, { color: colors.text }]}>
+            Needed Repairs
+          </Text>
           <Text style={[styles.repairHint, { color: colors.textSecondary }]}>
             Track what needs fixing
           </Text>
         </View>
-        <View style={[styles.repairSection, { backgroundColor: colors.background }]}>
-          <Text style={[styles.repairLabel, { color: colors.text }]}>Completed Repairs</Text>
+        <View
+          style={[styles.repairSection, { backgroundColor: colors.background }]}
+        >
+          <Text style={[styles.repairLabel, { color: colors.text }]}>
+            Completed Repairs
+          </Text>
           <Text style={[styles.repairHint, { color: colors.textSecondary }]}>
             History & notes
           </Text>
         </View>
-        <View style={[styles.repairSection, { backgroundColor: colors.accent, opacity: 0.9 }]}>
+        <View
+          style={[
+            styles.repairSection,
+            { backgroundColor: colors.accent, opacity: 0.9 },
+          ]}
+        >
           <View style={styles.repairLabelRow}>
             <Ionicons name="star" size={14} color="#fff" />
-            <Text style={[styles.repairLabel, { color: '#fff' }]}>Trusted Pros</Text>
+            <Text style={[styles.repairLabel, { color: "#fff" }]}>
+              Trusted Pros
+            </Text>
           </View>
-          <Text style={[styles.repairHint, { color: 'rgba(255,255,255,0.9)' }]}>
+          <Text style={[styles.repairHint, { color: "rgba(255,255,255,0.9)" }]}>
             Your favorite contractors
           </Text>
         </View>
@@ -321,17 +388,21 @@ export const DashboardScreen = ({ navigation }) => {
   const LivingPartnersCard = () => (
     <TouchableOpacity
       style={[styles.card, { backgroundColor: colors.card }]}
-      onPress={() => navigation.navigate('Roommates')}
+      onPress={() => navigation.navigate("Roommates")}
     >
       <View style={styles.cardTitleRow}>
         <Ionicons name="people-outline" size={20} color={colors.primary} />
-        <Text style={[styles.cardTitle, { color: colors.text }]}>Roommates & Shared Tasks</Text>
+        <Text style={[styles.cardTitle, { color: colors.text }]}>
+          Roommates & Shared Tasks
+        </Text>
       </View>
       <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
         Coordinate chores, requests, and house tasks
       </Text>
       <View style={styles.roommateActions}>
-        <TouchableOpacity style={[styles.actionLink, { borderColor: colors.accent }]}>
+        <TouchableOpacity
+          style={[styles.actionLink, { borderColor: colors.accent }]}
+        >
           <Text style={[styles.actionLinkText, { color: colors.accent }]}>
             + Add Roommates & Assign Tasks
           </Text>
@@ -346,10 +417,14 @@ export const DashboardScreen = ({ navigation }) => {
   const NotesCard = () => (
     <TouchableOpacity
       style={[styles.card, { backgroundColor: colors.card }]}
-      onPress={() => navigation.navigate('Notes')}
+      onPress={() => navigation.navigate("Notes")}
     >
       <View style={styles.cardTitleRow}>
-        <Ionicons name="document-text-outline" size={20} color={colors.primary} />
+        <Ionicons
+          name="document-text-outline"
+          size={20}
+          color={colors.primary}
+        />
         <Text style={[styles.cardTitle, { color: colors.text }]}>Notes</Text>
       </View>
       <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
@@ -357,15 +432,15 @@ export const DashboardScreen = ({ navigation }) => {
       </Text>
       <View style={styles.notesPreview}>
         <View style={styles.noteCategories}>
-          <View style={[styles.noteTag, { backgroundColor: '#ff4444' }]}>
+          <View style={[styles.noteTag, { backgroundColor: "#ff4444" }]}>
             <Ionicons name="alert-circle" size={14} color="#fff" />
             <Text style={styles.noteTagText}>Urgent</Text>
           </View>
-          <View style={[styles.noteTag, { backgroundColor: '#44aaff' }]}>
+          <View style={[styles.noteTag, { backgroundColor: "#44aaff" }]}>
             <Ionicons name="bulb-outline" size={14} color="#fff" />
             <Text style={styles.noteTagText}>Ideas</Text>
           </View>
-          <View style={[styles.noteTag, { backgroundColor: '#ffaa00' }]}>
+          <View style={[styles.noteTag, { backgroundColor: "#ffaa00" }]}>
             <Ionicons name="time-outline" size={14} color="#fff" />
             <Text style={styles.noteTagText}>Waiting</Text>
           </View>
@@ -382,11 +457,13 @@ export const DashboardScreen = ({ navigation }) => {
   const HomeInfoCard = () => (
     <TouchableOpacity
       style={[styles.card, { backgroundColor: colors.card }]}
-      onPress={() => navigation.navigate('HomeInfo')}
+      onPress={() => navigation.navigate("HomeInfo")}
     >
       <View style={styles.cardTitleRow}>
         <Ionicons name="folder-outline" size={20} color={colors.primary} />
-        <Text style={[styles.cardTitle, { color: colors.text }]}>Home Info</Text>
+        <Text style={[styles.cardTitle, { color: colors.text }]}>
+          Home Info
+        </Text>
       </View>
       <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
         address, insurance, mortgage (stuff like that)
@@ -402,11 +479,13 @@ export const DashboardScreen = ({ navigation }) => {
   const BillsCard = () => (
     <TouchableOpacity
       style={[styles.card, { backgroundColor: colors.card }]}
-      onPress={() => navigation.navigate('Bills')}
+      onPress={() => navigation.navigate("Bills")}
     >
       <View style={styles.cardTitleRow}>
         <Ionicons name="cash-outline" size={20} color={colors.primary} />
-        <Text style={[styles.cardTitle, { color: colors.text }]}>Monthly Bills</Text>
+        <Text style={[styles.cardTitle, { color: colors.text }]}>
+          Monthly Bills
+        </Text>
       </View>
       <View style={styles.comingSoon}>
         <Text style={[styles.comingSoonText, { color: colors.textSecondary }]}>
@@ -418,17 +497,23 @@ export const DashboardScreen = ({ navigation }) => {
 
   const FirstScanCard = () => {
     if (products.length > 0) return null;
-    
+
     return (
       <TouchableOpacity
-        style={[styles.card, styles.highlightCard, { backgroundColor: colors.accent }]}
-        onPress={() => navigation.navigate('Products', { openScanner: true })}
+        style={[
+          styles.card,
+          styles.highlightCard,
+          { backgroundColor: colors.accent },
+        ]}
+        onPress={() => navigation.navigate("Products", { openScanner: true })}
       >
         <View style={[styles.cardTitleRow, { marginBottom: 8 }]}>
           <Ionicons name="home-outline" size={24} color="#fff" />
-          <Text style={[styles.cardTitle, { color: '#fff' }]}>First Home Scan</Text>
+          <Text style={[styles.cardTitle, { color: "#fff" }]}>
+            First Home Scan
+          </Text>
         </View>
-        <Text style={[styles.cardSubtitle, { color: 'rgba(255,255,255,0.9)' }]}>
+        <Text style={[styles.cardSubtitle, { color: "rgba(255,255,255,0.9)" }]}>
           Get started by scanning your first product!
         </Text>
       </TouchableOpacity>
@@ -439,23 +524,23 @@ export const DashboardScreen = ({ navigation }) => {
     if (!isCardVisible(cardId)) return null;
 
     switch (cardId) {
-      case 'quick-actions':
+      case "quick-actions":
         return <QuickActionsCard key={cardId} />;
-      case 'reminders':
+      case "reminders":
         return <RemindersCard key={cardId} />;
-      case 'warranty-expiring':
+      case "warranty-expiring":
         return <WarrantyAlertsCard key={cardId} />;
-      case 'notes':
+      case "notes":
         return <NotesCard key={cardId} />;
-      case 'fixes':
+      case "fixes":
         return <FixesCard key={cardId} />;
-      case 'living-partners':
+      case "living-partners":
         return <LivingPartnersCard key={cardId} />;
-      case 'home-info':
+      case "home-info":
         return <HomeInfoCard key={cardId} />;
-      case 'bills':
+      case "bills":
         return <BillsCard key={cardId} />;
-      case 'first-scan':
+      case "first-scan":
         return <FirstScanCard key={cardId} />;
       default:
         return null;
@@ -463,29 +548,61 @@ export const DashboardScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.profileButton}
-          onPress={() => navigation.navigate('Profile')}
+          onPress={() => navigation.navigate("Profile")}
         >
-          <View style={[styles.profileIcon, { backgroundColor: colors.primary }]}>
+          <View
+            style={[styles.profileIcon, { backgroundColor: colors.primary }]}
+          >
             <Ionicons name="person" size={22} color="#fff" />
           </View>
         </TouchableOpacity>
         <View style={styles.headerText}>
-          <View style={[styles.titleContainer, { backgroundColor: 'rgba(201, 169, 97, 0.12)' }]}>
-            <Text style={[styles.title, { color: colors.accent, textShadowColor: 'rgba(201, 169, 97, 0.3)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 }]}>ENGRAM</Text>
+          <View
+            style={[
+              styles.titleContainer,
+              { backgroundColor: "rgba(201, 169, 97, 0.12)" },
+            ]}
+          >
+            <Text
+              style={[
+                styles.title,
+                {
+                  color: colors.accent,
+                  textShadowColor: "rgba(201, 169, 97, 0.3)",
+                  textShadowOffset: { width: 0, height: 2 },
+                  textShadowRadius: 4,
+                },
+              ]}
+            >
+              ENGRAM
+            </Text>
           </View>
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Your Home, Elevated</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            Your Home, Elevated
+          </Text>
         </View>
         <TouchableOpacity
           style={styles.settingsButton}
-          onPress={() => navigation.navigate('Settings')}
+          onPress={() => navigation.navigate("Settings")}
         >
-          <View style={[styles.settingsIcon, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Ionicons name="settings-outline" size={22} color={colors.primary} />
+          <View
+            style={[
+              styles.settingsIcon,
+              { backgroundColor: colors.card, borderColor: colors.border },
+            ]}
+          >
+            <Ionicons
+              name="settings-outline"
+              size={22}
+              color={colors.primary}
+            />
           </View>
         </TouchableOpacity>
       </View>
@@ -496,8 +613,8 @@ export const DashboardScreen = ({ navigation }) => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {AVAILABLE_CARDS.map(card => renderCard(card.id))}
-        
+        {AVAILABLE_CARDS.map((card) => renderCard(card.id))}
+
         <View style={styles.footer}>
           <Text style={[styles.footerText, { color: colors.textSecondary }]}>
             Customize your dashboard in Settings
@@ -508,7 +625,9 @@ export const DashboardScreen = ({ navigation }) => {
       {/* Floating Quick Lookup Button */}
       <TouchableOpacity
         style={[styles.quickLookupButton, { backgroundColor: colors.primary }]}
-        onPress={() => navigation.navigate('QuickLookup', { autoCapture: true })}
+        onPress={() =>
+          navigation.navigate("QuickLookup", { autoCapture: true })
+        }
       >
         <Ionicons name="camera" size={24} color="#fff" />
       </TouchableOpacity>
@@ -516,7 +635,7 @@ export const DashboardScreen = ({ navigation }) => {
       {/* Floating Quick Add Button */}
       <TouchableOpacity
         style={[styles.quickAddButton, { backgroundColor: colors.accent }]}
-        onPress={() => navigation.navigate('QuickAdd')}
+        onPress={() => navigation.navigate("QuickAdd")}
       >
         <Ionicons name="flash" size={28} color="#fff" />
         <Text style={styles.quickAddText}>Quick Add</Text>
@@ -536,9 +655,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingTop: 40,
     paddingBottom: 20,
@@ -551,9 +670,9 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
@@ -561,43 +680,43 @@ const styles = StyleSheet.create({
   },
   headerText: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   titleContainer: {
     paddingHorizontal: 20,
     paddingVertical: 8,
     borderRadius: 16,
     borderWidth: 1.5,
-    borderColor: 'rgba(201, 169, 97, 0.25)',
+    borderColor: "rgba(201, 169, 97, 0.25)",
   },
   title: {
     fontSize: 38,
-    fontWeight: '900',        // Maximum bold weight
-    letterSpacing: 1.5,       // Reduced spacing for tighter, bolder look (was 2.5)
-    fontFamily: 'System',
+    fontWeight: "900", // Maximum bold weight
+    letterSpacing: 1.5, // Reduced spacing for tighter, bolder look (was 2.5)
+    fontFamily: "System",
   },
   subtitle: {
     fontSize: 12,
-    fontWeight: '500',        // Medium weight
-    fontStyle: 'normal',
+    fontWeight: "500", // Medium weight
+    fontStyle: "normal",
     marginTop: 4,
-    letterSpacing: 1.2,       // Wider letter spacing for elegance
-    textTransform: 'uppercase',
+    letterSpacing: 1.2, // Wider letter spacing for elegance
+    textTransform: "uppercase",
   },
   settingsButton: {
     width: 44,
     height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   settingsIcon: {
     width: 44,
     height: 44,
     borderRadius: 22,
     borderWidth: 1.5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 4,
@@ -613,7 +732,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
@@ -623,27 +742,27 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
   },
   cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 8,
   },
   cardTitle: {
-    fontSize: 18,             // Slightly smaller for modern look (was 20)
-    fontWeight: '700',
+    fontSize: 18, // Slightly smaller for modern look (was 20)
+    fontWeight: "700",
     marginBottom: 8,
-    letterSpacing: -0.3,      // Tighter for modern feel
+    letterSpacing: -0.3, // Tighter for modern feel
   },
   cardTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   cardSubtitle: {
-    fontSize: 13,             // More modern sizing (was 14)
+    fontSize: 13, // More modern sizing (was 14)
     marginBottom: 12,
     lineHeight: 18,
-    fontWeight: '400',        // Regular weight
+    fontWeight: "400", // Regular weight
   },
   badge: {
     paddingHorizontal: 12,
@@ -651,23 +770,23 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   badgeText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 14,
-    fontWeight: '800',
+    fontWeight: "800",
   },
   actionGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 12,
     marginTop: 8,
   },
   actionButton: {
-    width: '30%',
+    width: "30%",
     aspectRatio: 1,
     borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -678,17 +797,17 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   actionText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 12,
-    fontWeight: '800',
+    fontWeight: "800",
   },
   reminderPreview: {
     marginTop: 12,
     gap: 10,
   },
   reminderItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
   },
   reminderDot: {
@@ -706,7 +825,7 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   repairsGrid: {
     gap: 10,
@@ -718,12 +837,12 @@ const styles = StyleSheet.create({
   },
   repairLabel: {
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: "700",
     marginBottom: 4,
   },
   repairLabelRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
   },
   repairHint: {
@@ -737,24 +856,24 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 10,
     padding: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   actionLinkText: {
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   actionHint: {
     fontSize: 13,
-    textAlign: 'center',
+    textAlign: "center",
   },
   notesPreview: {
     marginTop: 12,
     gap: 12,
   },
   noteCategories: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
   },
   noteTag: {
     paddingHorizontal: 12,
@@ -762,9 +881,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   noteTagText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   fixesGrid: {
     gap: 8,
@@ -785,55 +904,55 @@ const styles = StyleSheet.create({
   },
   comingSoon: {
     paddingVertical: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   comingSoonText: {
     fontSize: 14,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   footer: {
     paddingVertical: 24,
-    alignItems: 'center',
+    alignItems: "center",
   },
   footerText: {
     fontSize: 13,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   quickLookupButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 24,
     left: 20,
     width: 56,
     height: 56,
     borderRadius: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
   },
   quickAddButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 24,
     right: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     paddingVertical: 14,
     paddingHorizontal: 20,
     borderRadius: 28,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
   },
   quickAddText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     letterSpacing: 0.5,
   },
 });

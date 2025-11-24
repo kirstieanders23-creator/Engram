@@ -1,11 +1,19 @@
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import levenshtein from 'fast-levenshtein';
-import React, { useState } from 'react';
-import { Button, FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import levenshtein from "fast-levenshtein";
+import React, { useState } from "react";
+import {
+  Button,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 
 function fuzzyMatch(query, items) {
-  return items.filter(item => {
+  return items.filter((item) => {
     const name = item.name.toLowerCase();
     const q = query.toLowerCase();
     return name.includes(q) || levenshtein.get(name, q) < 3;
@@ -14,8 +22,8 @@ function fuzzyMatch(query, items) {
 
 export default function ProductsScreen() {
   const [products, setProducts] = useState([]);
-  const [search, setSearch] = useState('');
-  const [name, setName] = useState('');
+  const [search, setSearch] = useState("");
+  const [name, setName] = useState("");
   const [photo, setPhoto] = useState(null);
 
   const filtered = search ? fuzzyMatch(search, products) : products;
@@ -23,7 +31,7 @@ export default function ProductsScreen() {
   const addProduct = () => {
     if (name) {
       setProducts([...products, { name, photo }]);
-      setName('');
+      setName("");
       setPhoto(null);
     }
   };
@@ -68,19 +76,19 @@ const styles = StyleSheet.create({
   input: {
     padding: 12,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 8,
     marginBottom: 12,
   },
   card: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 12,
     borderWidth: 1,
-    borderColor: '#eee',
+    borderColor: "#eee",
     borderRadius: 8,
     marginBottom: 8,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   thumbnail: {
     width: 50,

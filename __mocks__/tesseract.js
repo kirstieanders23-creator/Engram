@@ -5,12 +5,14 @@ const mockOcrText = `HOME DEPOT\n11/12/2025\nKitchenAid Stand Mixer $394.39\nTot
 const mockWorker = {
   loadLanguage: jest.fn(() => Promise.resolve()),
   initialize: jest.fn(() => Promise.resolve()),
-  recognize: jest.fn(() => Promise.resolve({
-    data: {
-      text: mockOcrText,
-      confidence: 85,
-    },
-  })),
+  recognize: jest.fn(() =>
+    Promise.resolve({
+      data: {
+        text: mockOcrText,
+        confidence: 85,
+      },
+    }),
+  ),
   terminate: jest.fn(() => Promise.resolve()),
 };
 

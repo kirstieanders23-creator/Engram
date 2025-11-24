@@ -8,18 +8,18 @@ export async function exportData() {
     let FileSystem, Sharing, storage;
     try {
       // eslint-disable-next-line global-require
-      FileSystem = require('expo-file-system');
+      FileSystem = require("expo-file-system");
       // Handle CommonJS default export
       if (FileSystem.default) FileSystem = FileSystem.default;
       // eslint-disable-next-line global-require
-      Sharing = require('expo-sharing');
+      Sharing = require("expo-sharing");
       if (Sharing.default) Sharing = Sharing.default;
       // eslint-disable-next-line global-require
-      storage = require('./storage');
+      storage = require("./storage");
     } catch (e) {
-      FileSystem = await import('expo-file-system');
-      Sharing = await import('expo-sharing');
-      storage = await import('./storage');
+      FileSystem = await import("expo-file-system");
+      Sharing = await import("expo-sharing");
+      storage = await import("./storage");
     }
 
     const data = {
@@ -38,12 +38,15 @@ export async function exportData() {
     const canShare = await Sharing.isAvailableAsync();
     if (canShare) {
       // Share the backup file
-      await Sharing.shareAsync(filePath, { mimeType: 'application/json', dialogTitle: 'Export Engram Data' });
+      await Sharing.shareAsync(filePath, {
+        mimeType: "application/json",
+        dialogTitle: "Export Engram Data",
+      });
       return filePath;
     }
     return filePath;
   } catch (e) {
-    console.warn('Export failed', e);
+    console.warn("Export failed", e);
     throw e;
   }
 }
@@ -52,13 +55,13 @@ export async function importData(fileUri) {
   try {
     let FileSystem, storage;
     try {
-      FileSystem = require('expo-file-system');
+      FileSystem = require("expo-file-system");
       // Handle CommonJS default export
       if (FileSystem.default) FileSystem = FileSystem.default;
-      storage = require('./storage');
+      storage = require("./storage");
     } catch (e) {
-      FileSystem = await import('expo-file-system');
-      storage = await import('./storage');
+      FileSystem = await import("expo-file-system");
+      storage = await import("./storage");
     }
 
     const json = await FileSystem.readAsStringAsync(fileUri);
@@ -69,9 +72,12 @@ export async function importData(fileUri) {
     if (data.settings) await storage.storage.setSettings(data.settings);
     if (data.user) await storage.storage.setUser(data.user);
 
-    return { success: true, imported: Object.keys(data).filter(k => k !== 'exportedAt') };
+    return {
+      success: true,
+      imported: Object.keys(data).filter((k) => k !== "exportedAt"),
+    };
   } catch (e) {
-    console.warn('Import failed', e);
+    console.warn("Import failed", e);
     throw e;
   }
 }

@@ -1,28 +1,32 @@
-import { initializeApp } from 'firebase/app';
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import React, { useState } from 'react';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { initializeApp } from "firebase/app";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import React, { useState } from "react";
+import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 
 const firebaseConfig = {
-  apiKey: 'YOUR_API_KEY',
-  authDomain: 'YOUR_AUTH_DOMAIN',
-  projectId: 'YOUR_PROJECT_ID',
-  storageBucket: 'YOUR_STORAGE_BUCKET',
-  messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-  appId: 'YOUR_APP_ID',
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID",
 };
 
 initializeApp(firebaseConfig);
 const auth = getAuth();
 
 export default function AuthScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleAuth = async () => {
-    setError('');
+    setError("");
     try {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
@@ -36,7 +40,7 @@ export default function AuthScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{isLogin ? 'Login' : 'Sign Up'}</Text>
+      <Text style={styles.title}>{isLogin ? "Login" : "Sign Up"}</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -53,9 +57,9 @@ export default function AuthScreen() {
         secureTextEntry
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
-      <Button title={isLogin ? 'Login' : 'Sign Up'} onPress={handleAuth} />
+      <Button title={isLogin ? "Login" : "Sign Up"} onPress={handleAuth} />
       <Button
-        title={isLogin ? 'Need an account? Sign Up' : 'Have an account? Login'}
+        title={isLogin ? "Need an account? Sign Up" : "Have an account? Login"}
         onPress={() => setIsLogin(!isLogin)}
       />
     </View>
@@ -65,25 +69,25 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 16,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 24,
   },
   input: {
-    width: '100%',
+    width: "100%",
     padding: 12,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 8,
     marginBottom: 12,
   },
   error: {
-    color: 'red',
+    color: "red",
     marginBottom: 12,
   },
 });

@@ -2,7 +2,7 @@
 // Returns { name, brand, image_url, categories } or null if not found.
 
 export async function fetchOpenFoodFacts(barcode) {
-  const code = String(barcode || '').trim();
+  const code = String(barcode || "").trim();
   if (!code) return null;
 
   try {
@@ -14,13 +14,13 @@ export async function fetchOpenFoodFacts(barcode) {
 
     const product = json.product;
     return {
-      name: product.product_name || product.product_name_en || '',
-      brand: product.brands || '',
-      image_url: product.image_url || '',
-      categories: product.categories || '',
+      name: product.product_name || product.product_name_en || "",
+      brand: product.brands || "",
+      image_url: product.image_url || "",
+      categories: product.categories || "",
     };
   } catch (e) {
-    console.warn('Open Food Facts lookup failed', e?.message);
+    console.warn("Open Food Facts lookup failed", e?.message);
     return null;
   }
 }

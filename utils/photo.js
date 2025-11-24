@@ -4,7 +4,7 @@
 
 function filenameFromUri(uri) {
   try {
-    const idx = uri.lastIndexOf('/')
+    const idx = uri.lastIndexOf("/");
     return idx >= 0 ? uri.slice(idx + 1) : `photo-${Date.now()}.jpg`;
   } catch {
     return `photo-${Date.now()}.jpg`;
@@ -13,14 +13,17 @@ function filenameFromUri(uri) {
 
 export async function persistPhoto(uri) {
   try {
-    const FileSystem = await import('expo-file-system');
-    const ext = (uri.split('.').pop() || 'jpg').toLowerCase().split('?')[0];
+    const FileSystem = await import("expo-file-system");
+    const ext = (uri.split(".").pop() || "jpg").toLowerCase().split("?")[0];
     const name = filenameFromUri(uri);
-    const dest = `${FileSystem.documentDirectory || 'file:///data/user/0/app/'}${Date.now()}-${name}`;
+    const dest = `${FileSystem.documentDirectory || "file:///data/user/0/app/"}${Date.now()}-${name}`;
     await FileSystem.copyAsync({ from: uri, to: dest });
     return dest;
   } catch (e) {
-    console.warn('persistPhoto failed, falling back to original uri', e?.message);
+    console.warn(
+      "persistPhoto failed, falling back to original uri",
+      e?.message,
+    );
     return uri;
   }
 }

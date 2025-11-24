@@ -1,79 +1,79 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Platform } from "react-native";
 
 /**
  * Monetization System - Premium subscription management
  * RevenueCat integration for subscription payments
  */
 
-const STORAGE_KEY = '@engram_premium';
+const STORAGE_KEY = "@engram_premium";
 
 // RevenueCat API keys (REPLACE WITH YOUR KEYS)
-const REVENUECAT_API_KEY_IOS = 'appl_xxxxxxxxxx'; // From RevenueCat dashboard
-const REVENUECAT_API_KEY_ANDROID = 'goog_xxxxxxxxxx'; // From RevenueCat dashboard
+const REVENUECAT_API_KEY_IOS = "appl_xxxxxxxxxx"; // From RevenueCat dashboard
+const REVENUECAT_API_KEY_ANDROID = "goog_xxxxxxxxxx"; // From RevenueCat dashboard
 
 // Subscription tiers
 export const SUBSCRIPTION_PLANS = {
   FREE: {
-    id: 'free',
-    name: 'Free',
+    id: "free",
+    name: "Free",
     price: 0,
     maxProducts: 10,
     features: [
-      'Up to 10 products',
-      'Basic warranty tracking',
-      'Manual photo upload',
-      'Local storage only',
-      'Basic search & filter',
+      "Up to 10 products",
+      "Basic warranty tracking",
+      "Manual photo upload",
+      "Local storage only",
+      "Basic search & filter",
     ],
   },
   PREMIUM_MONTHLY: {
-    id: 'premium_monthly',
-    name: 'Premium Monthly',
+    id: "premium_monthly",
+    name: "Premium Monthly",
     price: 4.99,
-    period: 'month',
+    period: "month",
     trialDays: 7,
     features: [
-      'Unlimited products',
-      'Quick Lookup Camera',
-      'Upgrade Finder & Wish List',
-      'Manual Lookup',
-      'Transfer Feature (Carfax for Homes)',
-      'CSV Import (Amazon orders)',
-      'Push Notifications',
-      'PDF Export',
-      'Cloud Sync',
-      'Family Sharing',
-      'Priority Support',
+      "Unlimited products",
+      "Quick Lookup Camera",
+      "Upgrade Finder & Wish List",
+      "Manual Lookup",
+      "Transfer Feature (Carfax for Homes)",
+      "CSV Import (Amazon orders)",
+      "Push Notifications",
+      "PDF Export",
+      "Cloud Sync",
+      "Family Sharing",
+      "Priority Support",
     ],
   },
   PREMIUM_YEARLY: {
-    id: 'premium_yearly',
-    name: 'Premium Yearly',
+    id: "premium_yearly",
+    name: "Premium Yearly",
     price: 39.99,
-    period: 'year',
+    period: "year",
     trialDays: 7,
-    savings: '33% savings',
+    savings: "33% savings",
     features: [
-      'Everything in Premium Monthly',
-      'Save $20/year',
-      'Exclusive beta features',
+      "Everything in Premium Monthly",
+      "Save $20/year",
+      "Exclusive beta features",
     ],
   },
 };
 
 // Premium feature gates
 export const PREMIUM_FEATURES = {
-  QUICK_LOOKUP: 'quick_lookup',
-  UPGRADE_FINDER: 'upgrade_finder',
-  WISH_LIST: 'wish_list',
-  MANUAL_LOOKUP: 'manual_lookup',
-  TRANSFER: 'transfer',
-  CSV_IMPORT: 'csv_import',
-  PUSH_NOTIFICATIONS: 'push_notifications',
-  PDF_EXPORT: 'pdf_export',
-  CLOUD_SYNC: 'cloud_sync',
-  FAMILY_SHARING: 'family_sharing',
+  QUICK_LOOKUP: "quick_lookup",
+  UPGRADE_FINDER: "upgrade_finder",
+  WISH_LIST: "wish_list",
+  MANUAL_LOOKUP: "manual_lookup",
+  TRANSFER: "transfer",
+  CSV_IMPORT: "csv_import",
+  PUSH_NOTIFICATIONS: "push_notifications",
+  PDF_EXPORT: "pdf_export",
+  CLOUD_SYNC: "cloud_sync",
+  FAMILY_SHARING: "family_sharing",
 };
 
 /**
@@ -85,26 +85,31 @@ export const initializeRevenueCat = async () => {
     // Check if react-native-purchases is available
     let Purchases;
     try {
-      Purchases = require('react-native-purchases');
+      Purchases = require("react-native-purchases");
     } catch (error) {
-      console.warn('RevenueCat not installed, using local premium state');
+      console.warn("RevenueCat not installed, using local premium state");
       return false;
     }
 
     // Configure RevenueCat
-    const apiKey = Platform.OS === 'ios' ? REVENUECAT_API_KEY_IOS : REVENUECAT_API_KEY_ANDROID;
-    
-    if (apiKey.includes('xxxxxxxxxx')) {
-      console.warn('RevenueCat API keys not configured, using local premium state');
+    const apiKey =
+      Platform.OS === "ios"
+        ? REVENUECAT_API_KEY_IOS
+        : REVENUECAT_API_KEY_ANDROID;
+
+    if (apiKey.includes("xxxxxxxxxx")) {
+      console.warn(
+        "RevenueCat API keys not configured, using local premium state",
+      );
       return false;
     }
 
     await Purchases.configure({ apiKey });
-    
-    console.log('RevenueCat initialized successfully');
+
+    console.log("RevenueCat initialized successfully");
     return true;
   } catch (error) {
-    console.error('Failed to initialize RevenueCat:', error);
+    console.error("Failed to initialize RevenueCat:", error);
     return false;
   }
 };
@@ -117,18 +122,21 @@ export const isPremiumUser = async () => {
     // Try RevenueCat first
     let Purchases;
     try {
-      Purchases = require('react-native-purchases');
-      
+      Purchases = require("react-native-purchases");
+
       const purchaserInfo = await Purchases.getCustomerInfo();
       const isPremium = purchaserInfo.entitlements.active.premium !== undefined;
-      
+
       // Cache premium status
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({
-        isPremium,
-        source: 'revenuecat',
-        checkedAt: Date.now(),
-      }));
-      
+      await AsyncStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          isPremium,
+          source: "revenuecat",
+          checkedAt: Date.now(),
+        }),
+      );
+
       return isPremium;
     } catch (error) {
       // Fall back to local storage
@@ -140,7 +148,7 @@ export const isPremiumUser = async () => {
       return false;
     }
   } catch (error) {
-    console.error('Failed to check premium status:', error);
+    console.error("Failed to check premium status:", error);
     return false;
   }
 };
@@ -150,12 +158,12 @@ export const isPremiumUser = async () => {
  */
 export const hasFeatureAccess = async (featureId) => {
   const isPremium = await isPremiumUser();
-  
+
   // All premium features require subscription
   if (Object.values(PREMIUM_FEATURES).includes(featureId)) {
     return isPremium;
   }
-  
+
   // Unknown feature, grant access
   return true;
 };
@@ -165,21 +173,21 @@ export const hasFeatureAccess = async (featureId) => {
  */
 export const canAddProduct = async (currentProductCount) => {
   const isPremium = await isPremiumUser();
-  
+
   if (isPremium) {
     return { allowed: true };
   }
-  
+
   const limit = SUBSCRIPTION_PLANS.FREE.maxProducts;
-  
+
   if (currentProductCount >= limit) {
     return {
       allowed: false,
       reason: `Free plan limited to ${limit} products`,
-      action: 'upgrade',
+      action: "upgrade",
     };
   }
-  
+
   return { allowed: true };
 };
 
@@ -188,27 +196,30 @@ export const canAddProduct = async (currentProductCount) => {
  */
 export const purchasePremium = async (planId) => {
   try {
-    const Purchases = require('react-native-purchases');
-    
+    const Purchases = require("react-native-purchases");
+
     const offerings = await Purchases.getOfferings();
     const premium = offerings.current?.availablePackages.find(
-      pkg => pkg.identifier === planId
+      (pkg) => pkg.identifier === planId,
     );
-    
+
     if (!premium) {
-      throw new Error('Subscription plan not found');
+      throw new Error("Subscription plan not found");
     }
-    
+
     const purchaseResult = await Purchases.purchasePackage(premium);
-    
+
     // Update local cache
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({
-      isPremium: true,
-      source: 'revenuecat',
-      purchasedAt: Date.now(),
-      planId,
-    }));
-    
+    await AsyncStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        isPremium: true,
+        source: "revenuecat",
+        purchasedAt: Date.now(),
+        planId,
+      }),
+    );
+
     return {
       success: true,
       purchaserInfo: purchaseResult.customerInfo,
@@ -220,8 +231,8 @@ export const purchasePremium = async (planId) => {
         cancelled: true,
       };
     }
-    
-    console.error('Purchase failed:', error);
+
+    console.error("Purchase failed:", error);
     return {
       success: false,
       error: error.message,
@@ -234,24 +245,27 @@ export const purchasePremium = async (planId) => {
  */
 export const restorePurchases = async () => {
   try {
-    const Purchases = require('react-native-purchases');
-    
+    const Purchases = require("react-native-purchases");
+
     const purchaserInfo = await Purchases.restorePurchases();
     const isPremium = purchaserInfo.entitlements.active.premium !== undefined;
-    
+
     // Update local cache
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({
-      isPremium,
-      source: 'revenuecat',
-      restoredAt: Date.now(),
-    }));
-    
+    await AsyncStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        isPremium,
+        source: "revenuecat",
+        restoredAt: Date.now(),
+      }),
+    );
+
     return {
       success: true,
       isPremium,
     };
   } catch (error) {
-    console.error('Restore failed:', error);
+    console.error("Restore failed:", error);
     return {
       success: false,
       error: error.message,
@@ -264,18 +278,18 @@ export const restorePurchases = async () => {
  */
 export const getSubscriptionInfo = async () => {
   try {
-    const Purchases = require('react-native-purchases');
-    
+    const Purchases = require("react-native-purchases");
+
     const purchaserInfo = await Purchases.getCustomerInfo();
     const premium = purchaserInfo.entitlements.active.premium;
-    
+
     if (!premium) {
       return {
         isPremium: false,
-        plan: 'free',
+        plan: "free",
       };
     }
-    
+
     return {
       isPremium: true,
       plan: premium.productIdentifier,
@@ -285,10 +299,10 @@ export const getSubscriptionInfo = async () => {
       store: premium.store,
     };
   } catch (error) {
-    console.error('Failed to get subscription info:', error);
+    console.error("Failed to get subscription info:", error);
     return {
       isPremium: false,
-      plan: 'free',
+      plan: "free",
     };
   }
 };
@@ -298,14 +312,14 @@ export const getSubscriptionInfo = async () => {
  */
 export const showManageSubscription = async () => {
   try {
-    const Purchases = require('react-native-purchases');
-    
+    const Purchases = require("react-native-purchases");
+
     // Open platform-specific subscription management
     await Purchases.showManagementUI();
-    
+
     return { success: true };
   } catch (error) {
-    console.error('Failed to show manage UI:', error);
+    console.error("Failed to show manage UI:", error);
     return {
       success: false,
       error: error.message,
@@ -318,23 +332,23 @@ export const showManageSubscription = async () => {
  */
 export const getOfferings = async () => {
   try {
-    const Purchases = require('react-native-purchases');
-    
+    const Purchases = require("react-native-purchases");
+
     const offerings = await Purchases.getOfferings();
-    
+
     if (!offerings.current) {
       return {
         success: false,
-        error: 'No offerings available',
+        error: "No offerings available",
       };
     }
-    
+
     return {
       success: true,
       packages: offerings.current.availablePackages,
     };
   } catch (error) {
-    console.error('Failed to get offerings:', error);
+    console.error("Failed to get offerings:", error);
     return {
       success: false,
       error: error.message,
@@ -347,14 +361,17 @@ export const getOfferings = async () => {
  */
 export const setLocalPremiumStatus = async (isPremium) => {
   try {
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({
-      isPremium,
-      source: 'local',
-      setAt: Date.now(),
-    }));
+    await AsyncStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        isPremium,
+        source: "local",
+        setAt: Date.now(),
+      }),
+    );
     return true;
   } catch (error) {
-    console.error('Failed to set premium status:', error);
+    console.error("Failed to set premium status:", error);
     return false;
   }
 };
@@ -378,7 +395,7 @@ export const calculateYearlySavings = () => {
   const yearly = SUBSCRIPTION_PLANS.PREMIUM_YEARLY.price;
   const savings = monthly - yearly;
   const percent = Math.round((savings / monthly) * 100);
-  
+
   return {
     amount: savings,
     percent,

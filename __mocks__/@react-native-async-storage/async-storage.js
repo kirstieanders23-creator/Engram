@@ -17,7 +17,7 @@ const mockStorage = {
     return Array.from(storage.keys());
   }),
   multiGet: jest.fn(async (keys) => {
-    return keys.map(key => [key, storage.get(key)]);
+    return keys.map((key) => [key, storage.get(key)]);
   }),
   multiSet: jest.fn(async (keyValuePairs) => {
     keyValuePairs.forEach(([key, value]) => {
@@ -25,7 +25,7 @@ const mockStorage = {
     });
   }),
   multiRemove: jest.fn(async (keys) => {
-    keys.forEach(key => {
+    keys.forEach((key) => {
       storage.delete(key);
     });
   }),

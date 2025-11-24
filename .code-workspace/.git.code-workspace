@@ -1,13 +1,13 @@
 {
-	"folders": [
-		{
-			"path": "../.git"
-		},
-		{
-			"path": ".."
-		}
-	],
-	"settings": {
-		"powershell.cwd": "Engram"
-	}
+  "folders": [
+    {
+      "path": "../.git",
+    },
+    {
+      "path": "..",
+    },
+  ],
+  "settings": {
+    "powershell.cwd": "Engram",
+  },
 }

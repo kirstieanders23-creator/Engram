@@ -1,17 +1,22 @@
-import React from 'react';
-import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
-import PropTypes from 'prop-types';
-import { useTheme } from '../providers/ThemeProvider';
+import React from "react";
+import { SafeAreaView, View, Text, StyleSheet } from "react-native";
+import PropTypes from "prop-types";
+import { useTheme } from "../providers/ThemeProvider";
 
 export const MaintenanceScreen = ({ navigation }) => {
   const { colors } = useTheme();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <View style={styles.content}>
-        <Text style={[styles.title, { color: colors.text }]}>🔧 Home Repairs</Text>
+        <Text style={[styles.title, { color: colors.text }]}>
+          🔧 Home Repairs
+        </Text>
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-          Coming soon: Track repairs, assign tasks to rooms, and save your trusted pros!
+          Coming soon: Track repairs, assign tasks to rooms, and save your
+          trusted pros!
         </Text>
         <View style={styles.featureList}>
           <Text style={[styles.feature, { color: colors.text }]}>
@@ -44,23 +49,23 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 24,
   },
   featureList: {
-    alignSelf: 'stretch',
+    alignSelf: "stretch",
     paddingHorizontal: 40,
   },
   feature: {

@@ -1,13 +1,13 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { Alert } from 'react-native';
-import PropTypes from 'prop-types';
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { Alert } from "react-native";
+import PropTypes from "prop-types";
 import {
   isPremiumUser,
   hasFeatureAccess,
   canAddProduct,
   initializeRevenueCat,
   PREMIUM_FEATURES,
-} from '../utils/monetization';
+} from "../utils/monetization";
 
 const PremiumContext = createContext();
 
@@ -23,14 +23,14 @@ export const PremiumProvider = ({ children }) => {
     try {
       // Initialize RevenueCat
       await initializeRevenueCat();
-      
+
       // Check premium status
       const premium = await isPremiumUser();
       setIsPremium(premium);
-      
+
       setIsLoading(false);
     } catch (error) {
-      console.error('Failed to initialize premium:', error);
+      console.error("Failed to initialize premium:", error);
       setIsLoading(false);
     }
   };
@@ -43,37 +43,34 @@ export const PremiumProvider = ({ children }) => {
 
   const checkFeatureAccess = async (featureId, navigation) => {
     const hasAccess = await hasFeatureAccess(featureId);
-    
+
     if (!hasAccess) {
       // Show paywall
-      navigation?.navigate('Paywall', { feature: featureId });
+      navigation?.navigate("Paywall", { feature: featureId });
       return false;
     }
-    
+
     return true;
   };
 
   const checkProductLimit = async (currentCount, navigation) => {
     const result = await canAddProduct(currentCount);
-    
+
     if (!result.allowed) {
-      Alert.alert(
-        'Upgrade to Premium',
-        result.reason,
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: 'Upgrade',
-            onPress: () => navigation?.navigate('Paywall', { feature: 'unlimited' }),
-          },
-        ]
-      );
+      Alert.alert("Upgrade to Premium", result.reason, [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Upgrade",
+          onPress: () =>
+            navigation?.navigate("Paywall", { feature: "unlimited" }),
+        },
+      ]);
       return false;
     }
-    
+
     return true;
   };
 
@@ -87,9 +84,7 @@ export const PremiumProvider = ({ children }) => {
   };
 
   return (
-    <PremiumContext.Provider value={value}>
-      {children}
-    </PremiumContext.Provider>
+    <PremiumContext.Provider value={value}>{children}</PremiumContext.Provider>
   );
 };
 
@@ -100,7 +95,7 @@ PremiumProvider.propTypes = {
 export const usePremium = () => {
   const context = useContext(PremiumContext);
   if (!context) {
-    throw new Error('usePremium must be used within PremiumProvider');
+    throw new Error("usePremium must be used within PremiumProvider");
   }
   return context;
 };

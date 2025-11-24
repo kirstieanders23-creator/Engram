@@ -1,5 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { STORAGE_KEYS } from '../constants';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { STORAGE_KEYS } from "../constants";
 
 export const storage = {
   // User Management
@@ -50,9 +50,9 @@ export const storage = {
 
   async updateProduct(id, updates) {
     const products = await this.getProducts();
-    const index = products.findIndex(p => p.id === id);
-    if (index === -1) throw new Error('Product not found');
-    
+    const index = products.findIndex((p) => p.id === id);
+    if (index === -1) throw new Error("Product not found");
+
     products[index] = {
       ...products[index],
       ...updates,
@@ -64,13 +64,13 @@ export const storage = {
 
   async deleteProduct(id) {
     const products = await this.getProducts();
-    const filtered = products.filter(p => p.id !== id);
+    const filtered = products.filter((p) => p.id !== id);
     await this.setProducts(filtered);
   },
 
   async getProductById(id) {
     const products = await this.getProducts();
-    return products.find(p => p.id === id);
+    return products.find((p) => p.id === id);
   },
 
   // Settings

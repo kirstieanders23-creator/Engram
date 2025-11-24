@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { storage } from '../utils/storage';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { storage } from "../utils/storage";
 
 // Firebase is disabled for local-only mode
 // Uncomment and configure Firebase when ready for cloud features
@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }) => {
         }
         setIsLoading(false);
       } catch (err) {
-        console.error('Error checking auth state:', err);
+        console.error("Error checking auth state:", err);
         setIsLoading(false);
       }
     };
@@ -69,7 +69,9 @@ export const AuthProvider = ({ children }) => {
 
   const validatePassword = (password) => {
     // Min 6 chars, at least one letter and one number
-    return password.length >= 6 && /[a-zA-Z]/.test(password) && /\d/.test(password);
+    return (
+      password.length >= 6 && /[a-zA-Z]/.test(password) && /\d/.test(password)
+    );
   };
 
   const handleSignup = async (email, password) => {
@@ -78,21 +80,27 @@ export const AuthProvider = ({ children }) => {
 
     try {
       if (!validateEmail(email)) {
-        throw new Error('Invalid email format');
+        throw new Error("Invalid email format");
       }
       if (!validatePassword(password)) {
-        throw new Error('Password must be at least 6 characters with letters and numbers');
+        throw new Error(
+          "Password must be at least 6 characters with letters and numbers",
+        );
       }
 
       // Always use local fallback for now (Firebase not configured)
-      const userData = { id: `local-${Date.now()}`, email, displayName: email.split('@')[0] };
+      const userData = {
+        id: `local-${Date.now()}`,
+        email,
+        displayName: email.split("@")[0],
+      };
       setUser(userData);
       await storage.setUser(userData);
-      console.log('User signed up locally:', userData);
+      console.log("User signed up locally:", userData);
     } catch (err) {
-      const errorMsg = err.message || 'Signup failed';
+      const errorMsg = err.message || "Signup failed";
       setError(errorMsg);
-      console.error('Signup error:', err);
+      console.error("Signup error:", err);
       throw err;
     } finally {
       setIsLoading(false);
@@ -105,21 +113,25 @@ export const AuthProvider = ({ children }) => {
 
     try {
       if (!validateEmail(email)) {
-        throw new Error('Invalid email format');
+        throw new Error("Invalid email format");
       }
       if (!password) {
-        throw new Error('Password is required');
+        throw new Error("Password is required");
       }
 
       // Always use local fallback for now (Firebase not configured)
-      const userData = { id: `local-${Date.now()}`, email, displayName: email.split('@')[0] };
+      const userData = {
+        id: `local-${Date.now()}`,
+        email,
+        displayName: email.split("@")[0],
+      };
       setUser(userData);
       await storage.setUser(userData);
-      console.log('User logged in locally:', userData);
+      console.log("User logged in locally:", userData);
     } catch (err) {
-      const errorMsg = err.message || 'Login failed';
+      const errorMsg = err.message || "Login failed";
       setError(errorMsg);
-      console.error('Login error:', err);
+      console.error("Login error:", err);
       throw err;
     } finally {
       setIsLoading(false);
@@ -135,9 +147,9 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       await storage.setUser(null);
     } catch (err) {
-      const errorMsg = err.message || 'Logout failed';
+      const errorMsg = err.message || "Logout failed";
       setError(errorMsg);
-      console.error('Logout error:', err);
+      console.error("Logout error:", err);
       throw err;
     } finally {
       setIsLoading(false);
@@ -153,17 +165,13 @@ export const AuthProvider = ({ children }) => {
     handleSignup,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

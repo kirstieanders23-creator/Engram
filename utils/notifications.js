@@ -3,15 +3,15 @@
  * Schedules push notifications for products with warranties expiring soon
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const NOTIFICATIONS_KEY = '@warranty_notifications';
-const NOTIFICATIONS_ENABLED_KEY = '@notifications_enabled';
+const NOTIFICATIONS_KEY = "@warranty_notifications";
+const NOTIFICATIONS_ENABLED_KEY = "@notifications_enabled";
 
 // Dynamic import pattern for Jest compatibility
 let Notifications;
 try {
-  Notifications = require('expo-notifications');
+  Notifications = require("expo-notifications");
   if (Notifications.default) Notifications = Notifications.default;
 } catch (e) {
   // Fallback for test environment
@@ -42,17 +42,18 @@ export const requestNotificationPermissions = async () => {
   if (!Notifications) return false;
 
   try {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
 
-    if (existingStatus !== 'granted') {
+    if (existingStatus !== "granted") {
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
 
-    return finalStatus === 'granted';
+    return finalStatus === "granted";
   } catch (error) {
-    console.error('Error requesting notification permissions:', error);
+    console.error("Error requesting notification permissions:", error);
     return false;
   }
 };
@@ -64,9 +65,9 @@ export const requestNotificationPermissions = async () => {
 export const areNotificationsEnabled = async () => {
   try {
     const enabled = await AsyncStorage.getItem(NOTIFICATIONS_ENABLED_KEY);
-    return enabled !== 'false'; // Default to true
+    return enabled !== "false"; // Default to true
   } catch (error) {
-    console.error('Error checking notification settings:', error);
+    console.error("Error checking notification settings:", error);
     return true;
   }
 };
@@ -83,7 +84,7 @@ export const setNotificationsEnabled = async (enabled) => {
       await cancelAllNotifications();
     }
   } catch (error) {
-    console.error('Error saving notification settings:', error);
+    console.error("Error saving notification settings:", error);
   }
 };
 
@@ -97,17 +98,29 @@ const getNotificationDates = (warrantyDate) => {
 
   const warranty = new Date(warrantyDate);
   const now = new Date();
-  
+
   // Calculate dates for 90, 60, and 30 days before expiration
   const notifications = [
-    { daysRemaining: 90, date: new Date(warranty.getTime() - 90 * 24 * 60 * 60 * 1000) },
-    { daysRemaining: 60, date: new Date(warranty.getTime() - 60 * 24 * 60 * 60 * 1000) },
-    { daysRemaining: 30, date: new Date(warranty.getTime() - 30 * 24 * 60 * 60 * 1000) },
-    { daysRemaining: 7, date: new Date(warranty.getTime() - 7 * 24 * 60 * 60 * 1000) },
+    {
+      daysRemaining: 90,
+      date: new Date(warranty.getTime() - 90 * 24 * 60 * 60 * 1000),
+    },
+    {
+      daysRemaining: 60,
+      date: new Date(warranty.getTime() - 60 * 24 * 60 * 60 * 1000),
+    },
+    {
+      daysRemaining: 30,
+      date: new Date(warranty.getTime() - 30 * 24 * 60 * 60 * 1000),
+    },
+    {
+      daysRemaining: 7,
+      date: new Date(warranty.getTime() - 7 * 24 * 60 * 60 * 1000),
+    },
   ];
 
   // Only schedule notifications for future dates
-  return notifications.filter(n => n.date > now);
+  return notifications.filter((n) => n.date > now);
 };
 
 /**
@@ -128,12 +141,12 @@ export const scheduleWarrantyNotifications = async (product) => {
     for (const { date, daysRemaining } of notificationDates) {
       const trigger = {
         date,
-        channelId: 'warranty-alerts',
+        channelId: "warranty-alerts",
       };
 
       const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
-          title: '⚠️ Warranty Expiring Soon',
+          title: "⚠️ Warranty Expiring Soon",
           body: `${product.name} warranty expires in ${daysRemaining} days`,
           data: { productId: product.id, daysRemaining },
           sound: true,
@@ -150,7 +163,7 @@ export const scheduleWarrantyNotifications = async (product) => {
 
     return notificationIds;
   } catch (error) {
-    console.error('Error scheduling notifications:', error);
+    console.error("Error scheduling notifications:", error);
     return [];
   }
 };
@@ -163,9 +176,12 @@ const saveProductNotifications = async (productId, notificationIds) => {
     const stored = await AsyncStorage.getItem(NOTIFICATIONS_KEY);
     const notifications = stored ? JSON.parse(stored) : {};
     notifications[productId] = notificationIds;
-    await AsyncStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(notifications));
+    await AsyncStorage.setItem(
+      NOTIFICATIONS_KEY,
+      JSON.stringify(notifications),
+    );
   } catch (error) {
-    console.error('Error saving notification IDs:', error);
+    console.error("Error saving notification IDs:", error);
   }
 };
 
@@ -190,9 +206,12 @@ export const cancelProductNotifications = async (productId) => {
 
     // Remove from storage
     delete notifications[productId];
-    await AsyncStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(notifications));
+    await AsyncStorage.setItem(
+      NOTIFICATIONS_KEY,
+      JSON.stringify(notifications),
+    );
   } catch (error) {
-    console.error('Error canceling product notifications:', error);
+    console.error("Error canceling product notifications:", error);
   }
 };
 
@@ -206,7 +225,7 @@ export const cancelAllNotifications = async () => {
     await Notifications.cancelAllScheduledNotificationsAsync();
     await AsyncStorage.removeItem(NOTIFICATIONS_KEY);
   } catch (error) {
-    console.error('Error canceling all notifications:', error);
+    console.error("Error canceling all notifications:", error);
   }
 };
 
@@ -228,7 +247,7 @@ export const getAllScheduledNotifications = async () => {
   try {
     return await Notifications.getAllScheduledNotificationsAsync();
   } catch (error) {
-    console.error('Error getting scheduled notifications:', error);
+    console.error("Error getting scheduled notifications:", error);
     return [];
   }
 };

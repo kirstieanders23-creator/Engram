@@ -1,5 +1,5 @@
-import * as FileSystem from 'expo-file-system';
-import { createWorker } from 'tesseract.js';
+import * as FileSystem from "expo-file-system";
+import { createWorker } from "tesseract.js";
 
 // Enhanced date patterns - covers most receipt formats
 const DATE_PATTERNS = [
@@ -48,22 +48,37 @@ const parseDate = (dateStr) => {
   try {
     // Try different parsing strategies
     const cleanDate = dateStr.trim();
-    
+
     // Handle "Month DD, YYYY" format
-    const monthMatch = cleanDate.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*[\s,]+(\d{1,2})[\s,]+(\d{4})/i);
+    const monthMatch = cleanDate.match(
+      /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*[\s,]+(\d{1,2})[\s,]+(\d{4})/i,
+    );
     if (monthMatch) {
-      const months = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+      const months = {
+        jan: 0,
+        feb: 1,
+        mar: 2,
+        apr: 3,
+        may: 4,
+        jun: 5,
+        jul: 6,
+        aug: 7,
+        sep: 8,
+        oct: 9,
+        nov: 10,
+        dec: 11,
+      };
       const month = months[monthMatch[1].toLowerCase().substring(0, 3)];
       const day = parseInt(monthMatch[2]);
       const year = parseInt(monthMatch[3]);
-      return new Date(year, month, day).toISOString().split('T')[0];
+      return new Date(year, month, day).toISOString().split("T")[0];
     }
-    
+
     // Handle numeric formats
     const numMatch = cleanDate.match(/(\d{1,4})[\/\-](\d{1,2})[\/\-](\d{1,4})/);
     if (numMatch) {
       let year, month, day;
-      
+
       // YYYY-MM-DD format
       if (numMatch[1].length === 4) {
         year = parseInt(numMatch[1]);
@@ -83,10 +98,10 @@ const parseDate = (dateStr) => {
         year = parseInt(numMatch[3]);
         year = year < 50 ? 2000 + year : 1900 + year; // Assume 2000s for < 50
       }
-      
-      return new Date(year, month, day).toISOString().split('T')[0];
+
+      return new Date(year, month, day).toISOString().split("T")[0];
     }
-    
+
     return null;
   } catch (e) {
     return null;
@@ -100,7 +115,7 @@ const calculateWarranty = (purchaseDate, warrantyYears = 1) => {
   try {
     const date = new Date(purchaseDate);
     date.setFullYear(date.getFullYear() + warrantyYears);
-    return date.toISOString().split('T')[0];
+    return date.toISOString().split("T")[0];
   } catch (e) {
     return null;
   }
@@ -112,7 +127,7 @@ const calculateWarranty = (purchaseDate, warrantyYears = 1) => {
 const parsePrice = (priceStr) => {
   try {
     // Remove currency symbols, commas, and extra spaces
-    const cleaned = priceStr.replace(/[$,\s]/g, '');
+    const cleaned = priceStr.replace(/[$,\s]/g, "");
     const price = parseFloat(cleaned);
     return !isNaN(price) && price > 0 ? price.toFixed(2) : null;
   } catch (e) {
@@ -132,11 +147,13 @@ export async function parseReceipt(imageUri) {
 
     // Initialize Tesseract worker
     const worker = await createWorker();
-    await worker.loadLanguage('eng');
-    await worker.initialize('eng');
+    await worker.loadLanguage("eng");
+    await worker.initialize("eng");
 
     // Recognize text with higher precision
-    const { data: { text, confidence } } = await worker.recognize(`data:image/jpeg;base64,${base64}`);
+    const {
+      data: { text, confidence },
+    } = await worker.recognize(`data:image/jpeg;base64,${base64}`);
     await worker.terminate();
 
     // Extract structured data
@@ -154,11 +171,14 @@ export async function parseReceipt(imageUri) {
       products: [],
     };
 
-    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    const lines = text
+      .split("\n")
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0);
 
     // Extract dates
-    lines.forEach(line => {
-      DATE_PATTERNS.forEach(pattern => {
+    lines.forEach((line) => {
+      DATE_PATTERNS.forEach((pattern) => {
         const match = line.match(pattern);
         if (match) {
           const parsed = parseDate(match[0]);
@@ -170,8 +190,8 @@ export async function parseReceipt(imageUri) {
     });
 
     // Extract prices
-    lines.forEach(line => {
-      PRICE_PATTERNS.forEach(pattern => {
+    lines.forEach((line) => {
+      PRICE_PATTERNS.forEach((pattern) => {
         const match = line.match(pattern);
         if (match && match[1]) {
           const parsed = parsePrice(match[1]);
@@ -183,8 +203,8 @@ export async function parseReceipt(imageUri) {
     });
 
     // Extract store names
-    lines.forEach(line => {
-      STORE_PATTERNS.forEach(pattern => {
+    lines.forEach((line) => {
+      STORE_PATTERNS.forEach((pattern) => {
         const match = line.match(pattern);
         if (match) {
           const storeName = match[1] ? match[1].trim() : match[0].trim();
@@ -196,10 +216,12 @@ export async function parseReceipt(imageUri) {
     });
 
     // Extract product names
-    lines.forEach(line => {
-      PRODUCT_PATTERNS.forEach(pattern => {
-        const matches = pattern.global ? [...line.matchAll(pattern)] : [line.match(pattern)];
-        matches.forEach(match => {
+    lines.forEach((line) => {
+      PRODUCT_PATTERNS.forEach((pattern) => {
+        const matches = pattern.global
+          ? [...line.matchAll(pattern)]
+          : [line.match(pattern)];
+        matches.forEach((match) => {
           if (match && match[1]) {
             const productName = match[1].trim();
             if (productName.length > 3 && productName.length < 100) {
@@ -213,20 +235,29 @@ export async function parseReceipt(imageUri) {
     // Select best candidates
     if (extracted.dates.length > 0) {
       // Pre-parse date strings to Date objects for efficient sorting
-      extracted.dates.forEach(d => { d._parsedDate = new Date(d.parsed); });
+      extracted.dates.forEach((d) => {
+        d._parsedDate = new Date(d.parsed);
+      });
       // Use the most recent date (likely purchase date)
       extracted.dates.sort((a, b) => b._parsedDate - a._parsedDate);
       extracted.purchaseDate = extracted.dates[0].parsed;
-      
+
       // Calculate warranty (1 year default)
-      extracted.warrantyExpiration = calculateWarranty(extracted.purchaseDate, 1);
+      extracted.warrantyExpiration = calculateWarranty(
+        extracted.purchaseDate,
+        1,
+      );
       // Clean up temporary _parsedDate property
-      extracted.dates.forEach(d => { delete d._parsedDate; });
+      extracted.dates.forEach((d) => {
+        delete d._parsedDate;
+      });
     }
 
     if (extracted.prices.length > 0) {
       // Use the highest price (likely total)
-      extracted.prices.sort((a, b) => parseFloat(b.parsed) - parseFloat(a.parsed));
+      extracted.prices.sort(
+        (a, b) => parseFloat(b.parsed) - parseFloat(a.parsed),
+      );
       extracted.purchasePrice = extracted.prices[0].parsed;
     }
 
@@ -241,16 +272,20 @@ export async function parseReceipt(imageUri) {
     }
 
     // Remove duplicates from arrays
-    extracted.dates = [...new Map(extracted.dates.map(d => [d.parsed, d])).values()];
-    extracted.prices = [...new Map(extracted.prices.map(p => [p.parsed, p])).values()];
+    extracted.dates = [
+      ...new Map(extracted.dates.map((d) => [d.parsed, d])).values(),
+    ];
+    extracted.prices = [
+      ...new Map(extracted.prices.map((p) => [p.parsed, p])).values(),
+    ];
     extracted.stores = [...new Set(extracted.stores)];
     extracted.products = [...new Set(extracted.products)];
 
     return extracted;
   } catch (e) {
-    console.warn('Receipt parsing failed:', e);
+    console.warn("Receipt parsing failed:", e);
     return {
-      text: '',
+      text: "",
       confidence: 0,
       purchaseDate: null,
       purchasePrice: null,

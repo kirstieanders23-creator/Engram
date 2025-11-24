@@ -1,11 +1,20 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, RefreshControl, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../providers/ThemeProvider';
-import { useFocusEffect } from '@react-navigation/native';
-import { usePremium } from '../providers/PremiumProvider';
-import { PREMIUM_FEATURES } from '../utils/monetization';
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  RefreshControl,
+  TextInput,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../providers/ThemeProvider";
+import { useFocusEffect } from "@react-navigation/native";
+import { usePremium } from "../providers/PremiumProvider";
+import { PREMIUM_FEATURES } from "../utils/monetization";
 
 /**
  * Wish List - Manage saved upgrade items with price tracking
@@ -19,12 +28,15 @@ export const WishListScreen = ({ navigation }) => {
   const [stats, setStats] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
-  const [targetPrice, setTargetPrice] = useState('');
+  const [targetPrice, setTargetPrice] = useState("");
 
   // Check premium access on mount
   useEffect(() => {
     const verifyAccess = async () => {
-      const hasAccess = await checkFeatureAccess(PREMIUM_FEATURES.WISH_LIST, navigation);
+      const hasAccess = await checkFeatureAccess(
+        PREMIUM_FEATURES.WISH_LIST,
+        navigation,
+      );
       if (!hasAccess) return;
     };
     verifyAccess();
@@ -33,20 +45,22 @@ export const WishListScreen = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       loadWishList();
-    }, [])
+    }, []),
   );
 
   const loadWishList = async () => {
     try {
-      const { getWishListSorted, getWishListStats } = await import('../utils/wishlist-storage');
+      const { getWishListSorted, getWishListStats } = await import(
+        "../utils/wishlist-storage"
+      );
       const items = await getWishListSorted();
       const statistics = await getWishListStats();
-      
+
       setWishlist(items);
       setStats(statistics);
     } catch (error) {
-      console.error('Failed to load wish list:', error);
-      Alert.alert('Error', 'Failed to load wish list');
+      console.error("Failed to load wish list:", error);
+      Alert.alert("Error", "Failed to load wish list");
     }
   };
 
@@ -58,99 +72,116 @@ export const WishListScreen = ({ navigation }) => {
 
   const handleRemove = async (itemId) => {
     Alert.alert(
-      'Remove Item',
-      'Are you sure you want to remove this from your wish list?',
+      "Remove Item",
+      "Are you sure you want to remove this from your wish list?",
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: "Cancel", style: "cancel" },
         {
-          text: 'Remove',
-          style: 'destructive',
+          text: "Remove",
+          style: "destructive",
           onPress: async () => {
             try {
-              const { removeFromWishList } = await import('../utils/wishlist-storage');
+              const { removeFromWishList } = await import(
+                "../utils/wishlist-storage"
+              );
               await removeFromWishList(itemId);
               await loadWishList();
             } catch (error) {
-              Alert.alert('Error', 'Failed to remove item');
+              Alert.alert("Error", "Failed to remove item");
             }
           },
         },
-      ]
+      ],
     );
   };
 
   const handleSetPriceAlert = async (item) => {
     setEditingItem(item);
-    setTargetPrice(item.targetPrice?.toString() || '');
+    setTargetPrice(item.targetPrice?.toString() || "");
   };
 
   const handleSavePriceAlert = async () => {
     if (!editingItem) return;
-    
+
     try {
-      const { updateWishListItem } = await import('../utils/wishlist-storage');
+      const { updateWishListItem } = await import("../utils/wishlist-storage");
       const price = parseFloat(targetPrice);
-      
+
       if (isNaN(price) || price <= 0) {
-        Alert.alert('Invalid Price', 'Please enter a valid price');
+        Alert.alert("Invalid Price", "Please enter a valid price");
         return;
       }
-      
+
       await updateWishListItem(editingItem.id, {
         targetPrice: price,
       });
-      
-      Alert.alert('Price Alert Set! 📉', `You'll be notified if the price drops to $${price.toFixed(2)} or lower.`);
+
+      Alert.alert(
+        "Price Alert Set! 📉",
+        `You'll be notified if the price drops to $${price.toFixed(2)} or lower.`,
+      );
       setEditingItem(null);
-      setTargetPrice('');
+      setTargetPrice("");
       await loadWishList();
     } catch (error) {
-      Alert.alert('Error', 'Failed to set price alert');
+      Alert.alert("Error", "Failed to set price alert");
     }
   };
 
   const handleChangePriority = async (item, newPriority) => {
     try {
-      const { updateWishListItem } = await import('../utils/wishlist-storage');
+      const { updateWishListItem } = await import("../utils/wishlist-storage");
       await updateWishListItem(item.id, { priority: newPriority });
       await loadWishList();
     } catch (error) {
-      Alert.alert('Error', 'Failed to update priority');
+      Alert.alert("Error", "Failed to update priority");
     }
   };
 
   const handleViewProduct = (currentProductId) => {
     if (currentProductId) {
-      navigation.navigate('ProductDetail', { productId: currentProductId });
+      navigation.navigate("ProductDetail", { productId: currentProductId });
     }
   };
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'high': return '#FF5252';
-      case 'medium': return '#FF9800';
-      case 'low': return '#4CAF50';
-      default: return '#9E9E9E';
+      case "high":
+        return "#FF5252";
+      case "medium":
+        return "#FF9800";
+      case "low":
+        return "#4CAF50";
+      default:
+        return "#9E9E9E";
     }
   };
 
   const getPriorityIcon = (priority) => {
     switch (priority) {
-      case 'high': return 'flash';
-      case 'medium': return 'star';
-      case 'low': return 'time';
-      default: return 'ellipse';
+      case "high":
+        return "flash";
+      case "medium":
+        return "star";
+      case "low":
+        return "time";
+      default:
+        return "ellipse";
     }
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={28} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Wish List</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>
+          Wish List
+        </Text>
         <View style={{ width: 28 }} />
       </View>
 
@@ -176,7 +207,7 @@ export const WishListScreen = ({ navigation }) => {
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
-            <Text style={[styles.statNumber, { color: '#FF5252' }]}>
+            <Text style={[styles.statNumber, { color: "#FF5252" }]}>
               {stats.highPriority}
             </Text>
             <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
@@ -194,10 +225,22 @@ export const WishListScreen = ({ navigation }) => {
         {wishlist.length > 0 ? (
           <View style={styles.wishlistContainer}>
             {wishlist.map((item) => (
-              <View key={item.id} style={[styles.wishCard, { backgroundColor: colors.card }]}>
+              <View
+                key={item.id}
+                style={[styles.wishCard, { backgroundColor: colors.card }]}
+              >
                 {/* Priority Badge */}
-                <View style={[styles.priorityBadge, { backgroundColor: getPriorityColor(item.priority) }]}>
-                  <Ionicons name={getPriorityIcon(item.priority)} size={12} color="#fff" />
+                <View
+                  style={[
+                    styles.priorityBadge,
+                    { backgroundColor: getPriorityColor(item.priority) },
+                  ]}
+                >
+                  <Ionicons
+                    name={getPriorityIcon(item.priority)}
+                    size={12}
+                    color="#fff"
+                  />
                 </View>
 
                 {/* Item Info */}
@@ -206,7 +249,12 @@ export const WishListScreen = ({ navigation }) => {
                     <Text style={[styles.wishName, { color: colors.text }]}>
                       {item.model}
                     </Text>
-                    <Text style={[styles.wishProduct, { color: colors.textSecondary }]}>
+                    <Text
+                      style={[
+                        styles.wishProduct,
+                        { color: colors.textSecondary },
+                      ]}
+                    >
                       For: {item.productName}
                     </Text>
                   </View>
@@ -219,8 +267,17 @@ export const WishListScreen = ({ navigation }) => {
                 {item.features && item.features.length > 0 && (
                   <View style={styles.featuresList}>
                     {item.features.slice(0, 2).map((feature, index) => (
-                      <View key={index} style={[styles.featureChip, { backgroundColor: colors.background }]}>
-                        <Text style={[styles.featureText, { color: colors.text }]} numberOfLines={1}>
+                      <View
+                        key={index}
+                        style={[
+                          styles.featureChip,
+                          { backgroundColor: colors.background },
+                        ]}
+                      >
+                        <Text
+                          style={[styles.featureText, { color: colors.text }]}
+                          numberOfLines={1}
+                        >
                           {feature}
                         </Text>
                       </View>
@@ -230,9 +287,20 @@ export const WishListScreen = ({ navigation }) => {
 
                 {/* Price Alert */}
                 {item.targetPrice && (
-                  <View style={[styles.priceAlert, { backgroundColor: colors.background }]}>
-                    <Ionicons name="notifications" size={16} color={colors.primary} />
-                    <Text style={[styles.priceAlertText, { color: colors.text }]}>
+                  <View
+                    style={[
+                      styles.priceAlert,
+                      { backgroundColor: colors.background },
+                    ]}
+                  >
+                    <Ionicons
+                      name="notifications"
+                      size={16}
+                      color={colors.primary}
+                    />
+                    <Text
+                      style={[styles.priceAlertText, { color: colors.text }]}
+                    >
                       Alert at ${item.targetPrice}
                     </Text>
                   </View>
@@ -244,34 +312,38 @@ export const WishListScreen = ({ navigation }) => {
                     style={styles.actionIcon}
                     onPress={() => handleSetPriceAlert(item)}
                   >
-                    <Ionicons name="notifications-outline" size={22} color={colors.primary} />
+                    <Ionicons
+                      name="notifications-outline"
+                      size={22}
+                      color={colors.primary}
+                    />
                   </TouchableOpacity>
-                  
+
                   <TouchableOpacity
                     style={styles.actionIcon}
                     onPress={() => {
-                      Alert.alert(
-                        'Set Priority',
-                        'Choose priority level',
-                        [
-                          {
-                            text: 'Low',
-                            onPress: () => handleChangePriority(item, 'low'),
-                          },
-                          {
-                            text: 'Medium',
-                            onPress: () => handleChangePriority(item, 'medium'),
-                          },
-                          {
-                            text: 'High',
-                            onPress: () => handleChangePriority(item, 'high'),
-                          },
-                          { text: 'Cancel', style: 'cancel' },
-                        ]
-                      );
+                      Alert.alert("Set Priority", "Choose priority level", [
+                        {
+                          text: "Low",
+                          onPress: () => handleChangePriority(item, "low"),
+                        },
+                        {
+                          text: "Medium",
+                          onPress: () => handleChangePriority(item, "medium"),
+                        },
+                        {
+                          text: "High",
+                          onPress: () => handleChangePriority(item, "high"),
+                        },
+                        { text: "Cancel", style: "cancel" },
+                      ]);
                     }}
                   >
-                    <Ionicons name="flag-outline" size={22} color={getPriorityColor(item.priority)} />
+                    <Ionicons
+                      name="flag-outline"
+                      size={22}
+                      color={getPriorityColor(item.priority)}
+                    />
                   </TouchableOpacity>
 
                   {item.currentProductId && (
@@ -279,10 +351,14 @@ export const WishListScreen = ({ navigation }) => {
                       style={styles.actionIcon}
                       onPress={() => handleViewProduct(item.currentProductId)}
                     >
-                      <Ionicons name="eye-outline" size={22} color={colors.text} />
+                      <Ionicons
+                        name="eye-outline"
+                        size={22}
+                        color={colors.text}
+                      />
                     </TouchableOpacity>
                   )}
-                  
+
                   <TouchableOpacity
                     style={styles.actionIcon}
                     onPress={() => handleRemove(item.id)}
@@ -300,7 +376,8 @@ export const WishListScreen = ({ navigation }) => {
               No Items Yet
             </Text>
             <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-              Find upgrades from your product details to add items to your wish list
+              Find upgrades from your product details to add items to your wish
+              list
             </Text>
           </View>
         )}
@@ -308,22 +385,27 @@ export const WishListScreen = ({ navigation }) => {
 
       {/* Price Alert Modal */}
       {editingItem && (
-        <View style={[styles.modal, { backgroundColor: 'rgba(0,0,0,0.5)' }]}>
+        <View style={[styles.modal, { backgroundColor: "rgba(0,0,0,0.5)" }]}>
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
             <Text style={[styles.modalTitle, { color: colors.text }]}>
               Set Price Alert
             </Text>
-            <Text style={[styles.modalSubtitle, { color: colors.textSecondary }]}>
+            <Text
+              style={[styles.modalSubtitle, { color: colors.textSecondary }]}
+            >
               {editingItem.model}
             </Text>
             <Text style={[styles.modalLabel, { color: colors.text }]}>
               Current Price: ${editingItem.price}
             </Text>
-            
+
             <View style={styles.priceInput}>
               <Text style={[styles.dollarSign, { color: colors.text }]}>$</Text>
               <TextInput
-                style={[styles.input, { color: colors.text, borderColor: colors.border }]}
+                style={[
+                  styles.input,
+                  { color: colors.text, borderColor: colors.border },
+                ]}
                 value={targetPrice}
                 onChangeText={setTargetPrice}
                 keyboardType="decimal-pad"
@@ -334,10 +416,13 @@ export const WishListScreen = ({ navigation }) => {
 
             <View style={styles.modalActions}>
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: colors.background }]}
+                style={[
+                  styles.modalButton,
+                  { backgroundColor: colors.background },
+                ]}
                 onPress={() => {
                   setEditingItem(null);
-                  setTargetPrice('');
+                  setTargetPrice("");
                 }}
               >
                 <Text style={[styles.modalButtonText, { color: colors.text }]}>
@@ -348,7 +433,7 @@ export const WishListScreen = ({ navigation }) => {
                 style={[styles.modalButton, { backgroundColor: colors.accent }]}
                 onPress={handleSavePriceAlert}
               >
-                <Text style={[styles.modalButtonText, { color: '#fff' }]}>
+                <Text style={[styles.modalButtonText, { color: "#fff" }]}>
                   Save Alert
                 </Text>
               </TouchableOpacity>
@@ -365,23 +450,23 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: "#E0E0E0",
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   statsCard: {
-    flexDirection: 'row',
+    flexDirection: "row",
     margin: 16,
     padding: 20,
     borderRadius: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -389,11 +474,11 @@ const styles = StyleSheet.create({
   },
   statItem: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   statNumber: {
     fontSize: 28,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   statLabel: {
     fontSize: 12,
@@ -401,7 +486,7 @@ const styles = StyleSheet.create({
   },
   statDivider: {
     width: 1,
-    backgroundColor: '#E0E0E0',
+    backgroundColor: "#E0E0E0",
     marginHorizontal: 12,
   },
   wishlistContainer: {
@@ -411,7 +496,7 @@ const styles = StyleSheet.create({
   wishCard: {
     padding: 16,
     borderRadius: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -419,19 +504,19 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   priorityBadge: {
-    position: 'absolute',
+    position: "absolute",
     top: 12,
     right: 12,
     width: 24,
     height: 24,
     borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   wishHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     paddingRight: 32,
   },
   wishInfo: {
@@ -439,7 +524,7 @@ const styles = StyleSheet.create({
   },
   wishName: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     marginBottom: 4,
   },
   wishProduct: {
@@ -447,11 +532,11 @@ const styles = StyleSheet.create({
   },
   wishPrice: {
     fontSize: 20,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   featuresList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
   },
   featureChip: {
@@ -463,8 +548,8 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   priceAlert: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -472,42 +557,42 @@ const styles = StyleSheet.create({
   },
   priceAlertText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   wishActions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 16,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
+    borderTopColor: "#E0E0E0",
   },
   actionIcon: {
     padding: 8,
   },
   emptyState: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     padding: 48,
     gap: 16,
   },
   emptyTitle: {
     fontSize: 20,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   emptyText: {
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 20,
   },
   modal: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   modalContent: {
-    width: '100%',
+    width: "100%",
     maxWidth: 400,
     padding: 24,
     borderRadius: 16,
@@ -515,23 +600,23 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   modalSubtitle: {
     fontSize: 14,
   },
   modalLabel: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   priceInput: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   dollarSign: {
     fontSize: 24,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   input: {
     flex: 1,
@@ -541,17 +626,17 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   modalActions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
   },
   modalButton: {
     flex: 1,
     paddingVertical: 14,
     borderRadius: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   modalButtonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

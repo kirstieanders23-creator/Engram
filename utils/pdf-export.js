@@ -7,9 +7,9 @@
 let Print;
 let Sharing;
 try {
-  Print = require('expo-print');
+  Print = require("expo-print");
   if (Print.default) Print = Print.default;
-  Sharing = require('expo-sharing');
+  Sharing = require("expo-sharing");
   if (Sharing.default) Sharing = Sharing.default;
 } catch (e) {
   Print = null;
@@ -20,10 +20,10 @@ try {
  * Format currency for display
  */
 const formatCurrency = (value) => {
-  if (!value) return '$0.00';
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  if (!value) return "$0.00";
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
   }).format(value);
 };
 
@@ -31,12 +31,12 @@ const formatCurrency = (value) => {
  * Format date for display
  */
 const formatDate = (dateStr) => {
-  if (!dateStr) return 'N/A';
+  if (!dateStr) return "N/A";
   try {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   } catch {
     return dateStr;
@@ -47,16 +47,18 @@ const formatDate = (dateStr) => {
  * Calculate warranty status
  */
 const getWarrantyStatus = (warrantyDate) => {
-  if (!warrantyDate) return { status: 'No Warranty', color: '#999' };
-  
+  if (!warrantyDate) return { status: "No Warranty", color: "#999" };
+
   const now = new Date();
   const warranty = new Date(warrantyDate);
   const daysRemaining = Math.ceil((warranty - now) / (1000 * 60 * 60 * 24));
-  
-  if (daysRemaining < 0) return { status: 'Expired', color: '#999' };
-  if (daysRemaining <= 30) return { status: `${daysRemaining} days left`, color: '#ff4444' };
-  if (daysRemaining <= 90) return { status: `${daysRemaining} days left`, color: '#FFA500' };
-  return { status: `Active (${daysRemaining} days)`, color: '#8A9A5B' };
+
+  if (daysRemaining < 0) return { status: "Expired", color: "#999" };
+  if (daysRemaining <= 30)
+    return { status: `${daysRemaining} days left`, color: "#ff4444" };
+  if (daysRemaining <= 90)
+    return { status: `${daysRemaining} days left`, color: "#FFA500" };
+  return { status: `Active (${daysRemaining} days)`, color: "#8A9A5B" };
 };
 
 /**
@@ -64,31 +66,34 @@ const getWarrantyStatus = (warrantyDate) => {
  */
 const generateHTML = (products, options = {}) => {
   const {
-    title = 'Home Inventory Report',
+    title = "Home Inventory Report",
     includePhotos = true,
     includeWarranties = true,
     includeValues = false,
     groupByRoom = true,
   } = options;
 
-  const now = new Date().toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  const now = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
   // Calculate total value if requested
   let totalValue = 0;
   if (includeValues) {
-    totalValue = products.reduce((sum, p) => sum + (parseFloat(p.purchasePrice) || 0), 0);
+    totalValue = products.reduce(
+      (sum, p) => sum + (parseFloat(p.purchasePrice) || 0),
+      0,
+    );
   }
 
   // Group products by room if requested
-  let productGroups = [{ room: 'All Items', products }];
+  let productGroups = [{ room: "All Items", products }];
   if (groupByRoom) {
     const roomMap = {};
-    products.forEach(p => {
-      const room = p.room || 'Uncategorized';
+    products.forEach((p) => {
+      const room = p.room || "Uncategorized";
       if (!roomMap[room]) roomMap[room] = [];
       roomMap[room].push(p);
     });
@@ -270,60 +275,89 @@ const generateHTML = (products, options = {}) => {
             <span class="summary-label">Total Items:</span>
             <span class="summary-value">${products.length}</span>
           </div>
-          ${groupByRoom ? `
+          ${
+            groupByRoom
+              ? `
           <div class="summary-row">
             <span class="summary-label">Rooms/Locations:</span>
             <span class="summary-value">${productGroups.length}</span>
           </div>
-          ` : ''}
-          ${includeValues ? `
+          `
+              : ""
+          }
+          ${
+            includeValues
+              ? `
           <div class="summary-row">
             <span class="summary-label">Total Estimated Value:</span>
             <span class="summary-value">${formatCurrency(totalValue)}</span>
           </div>
-          ` : ''}
+          `
+              : ""
+          }
           <div class="summary-row">
             <span class="summary-label">Report Type:</span>
             <span class="summary-value">Comprehensive Home Inventory</span>
           </div>
         </div>
 
-        ${productGroups.map(group => `
-          ${groupByRoom ? `<div class="room-section">
-            <h2 class="room-title">📍 ${group.room}</h2>` : ''}
+        ${productGroups
+          .map(
+            (group) => `
+          ${
+            groupByRoom
+              ? `<div class="room-section">
+            <h2 class="room-title">📍 ${group.room}</h2>`
+              : ""
+          }
             
-            ${group.products.map(product => {
-              const warranty = getWarrantyStatus(product.warranty);
-              
-              return `
+            ${group.products
+              .map((product) => {
+                const warranty = getWarrantyStatus(product.warranty);
+
+                return `
                 <div class="product">
                   <div class="product-header">
                     <div>
-                      <div class="product-name">${product.name || 'Unnamed Product'}</div>
-                      ${product.category ? `<div class="product-category">${product.category}</div>` : ''}
+                      <div class="product-name">${product.name || "Unnamed Product"}</div>
+                      ${product.category ? `<div class="product-category">${product.category}</div>` : ""}
                     </div>
                   </div>
 
-                  ${includePhotos && product.photos && product.photos.length > 0 ? `
+                  ${
+                    includePhotos && product.photos && product.photos.length > 0
+                      ? `
                     <img src="${product.photos[0]}" class="product-photo" />
-                  ` : ''}
+                  `
+                      : ""
+                  }
 
                   <div class="product-details">
-                    ${product.room ? `
+                    ${
+                      product.room
+                        ? `
                     <div class="detail-row">
                       <span class="detail-label">Location:</span>
                       <span class="detail-value">${product.room}</span>
                     </div>
-                    ` : ''}
+                    `
+                        : ""
+                    }
                     
-                    ${includeValues && product.purchasePrice ? `
+                    ${
+                      includeValues && product.purchasePrice
+                        ? `
                     <div class="detail-row">
                       <span class="detail-label">Purchase Price:</span>
                       <span class="detail-value">${formatCurrency(product.purchasePrice)}</span>
                     </div>
-                    ` : ''}
+                    `
+                        : ""
+                    }
                     
-                    ${includeWarranties && product.warranty ? `
+                    ${
+                      includeWarranties && product.warranty
+                        ? `
                     <div class="detail-row">
                       <span class="detail-label">Warranty Status:</span>
                       <span class="detail-value">
@@ -333,35 +367,52 @@ const generateHTML = (products, options = {}) => {
                         <span style="margin-left: 8px; color: #666;">(Expires: ${formatDate(product.warranty)})</span>
                       </span>
                     </div>
-                    ` : ''}
+                    `
+                        : ""
+                    }
                     
-                    ${product.careInstructions ? `
+                    ${
+                      product.careInstructions
+                        ? `
                     <div class="detail-row">
                       <span class="detail-label">Care Instructions:</span>
                       <span class="detail-value">${product.careInstructions}</span>
                     </div>
-                    ` : ''}
+                    `
+                        : ""
+                    }
                     
-                    ${product.manualUrl ? `
+                    ${
+                      product.manualUrl
+                        ? `
                     <div class="detail-row">
                       <span class="detail-label">Manual:</span>
                       <span class="detail-value">${product.manualUrl}</span>
                     </div>
-                    ` : ''}
+                    `
+                        : ""
+                    }
 
-                    ${product.specifications ? `
+                    ${
+                      product.specifications
+                        ? `
                     <div class="detail-row">
                       <span class="detail-label">Specifications:</span>
                       <span class="detail-value">${product.specifications}</span>
                     </div>
-                    ` : ''}
+                    `
+                        : ""
+                    }
                   </div>
                 </div>
               `;
-            }).join('')}
+              })
+              .join("")}
             
-          ${groupByRoom ? '</div>' : ''}
-        `).join('')}
+          ${groupByRoom ? "</div>" : ""}
+        `,
+          )
+          .join("")}
 
         <div class="footer">
           <p><strong>⚠️ DISCLAIMER:</strong> This report is for personal record-keeping purposes only.</p>
@@ -382,16 +433,16 @@ const generateHTML = (products, options = {}) => {
  */
 export const exportToPDF = async (products, options = {}) => {
   if (!Print) {
-    throw new Error('PDF export not available in this environment');
+    throw new Error("PDF export not available in this environment");
   }
 
   if (!products || products.length === 0) {
-    throw new Error('No products to export');
+    throw new Error("No products to export");
   }
 
   try {
     const html = generateHTML(products, options);
-    
+
     const { uri } = await Print.printToFileAsync({
       html,
       base64: false,
@@ -399,7 +450,7 @@ export const exportToPDF = async (products, options = {}) => {
 
     return uri;
   } catch (error) {
-    console.error('Error generating PDF:', error);
+    console.error("Error generating PDF:", error);
     throw new Error(`Failed to generate PDF: ${error.message}`);
   }
 };
@@ -411,7 +462,7 @@ export const exportToPDF = async (products, options = {}) => {
  */
 export const exportAndSharePDF = async (products, options = {}) => {
   if (!Sharing) {
-    throw new Error('Sharing not available in this environment');
+    throw new Error("Sharing not available in this environment");
   }
 
   const uri = await exportToPDF(products, options);
@@ -422,9 +473,9 @@ export const exportAndSharePDF = async (products, options = {}) => {
   }
 
   await Sharing.shareAsync(uri, {
-    mimeType: 'application/pdf',
-    dialogTitle: 'Share Home Inventory Report',
-    UTI: 'com.adobe.pdf',
+    mimeType: "application/pdf",
+    dialogTitle: "Share Home Inventory Report",
+    UTI: "com.adobe.pdf",
   });
 
   return uri;
@@ -435,7 +486,7 @@ export const exportAndSharePDF = async (products, options = {}) => {
  */
 export const exportInsuranceReport = async (products) => {
   return await exportAndSharePDF(products, {
-    title: 'Home Inventory - Insurance Documentation',
+    title: "Home Inventory - Insurance Documentation",
     includePhotos: true,
     includeWarranties: true,
     includeValues: true,
@@ -448,7 +499,7 @@ export const exportInsuranceReport = async (products) => {
  */
 export const exportSimpleInventory = async (products) => {
   return await exportAndSharePDF(products, {
-    title: 'Home Inventory List',
+    title: "Home Inventory List",
     includePhotos: false,
     includeWarranties: false,
     includeValues: false,

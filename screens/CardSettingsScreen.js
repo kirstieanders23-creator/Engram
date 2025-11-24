@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -8,29 +8,74 @@ import {
   ScrollView,
   Switch,
   Alert,
-} from 'react-native';
-import PropTypes from 'prop-types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTheme } from '../providers/ThemeProvider';
+} from "react-native";
+import PropTypes from "prop-types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTheme } from "../providers/ThemeProvider";
 
 const AVAILABLE_CARDS = [
-  { id: 'quick-actions', title: 'Quick Actions', description: 'Scan, Camera, Rooms, Remove, Share', canDisable: false },
-  { id: 'reminders', title: 'Reminders', description: 'Upcoming tasks and notifications', canDisable: true },
-  { id: 'warranty-expiring', title: 'Warranty Alerts', description: 'Products with expiring warranties', canDisable: true },
-  { id: 'notes', title: 'Notes', description: 'Quick notes and ideas for your home', canDisable: true },
-  { id: 'fixes', title: 'Home Repairs', description: 'Track repairs and trusted pros', canDisable: true },
-  { id: 'living-partners', title: 'Roommates & Shared Tasks', description: 'Coordinate with housemates', canDisable: true },
-  { id: 'home-info', title: 'Home Info', description: 'Documents and information', canDisable: true },
-  { id: 'bills', title: 'Monthly Bills', description: 'Track and split expenses', canDisable: true },
-  { id: 'first-scan', title: 'First Home Scan', description: 'Get started guide', canDisable: true },
+  {
+    id: "quick-actions",
+    title: "Quick Actions",
+    description: "Scan, Camera, Rooms, Remove, Share",
+    canDisable: false,
+  },
+  {
+    id: "reminders",
+    title: "Reminders",
+    description: "Upcoming tasks and notifications",
+    canDisable: true,
+  },
+  {
+    id: "warranty-expiring",
+    title: "Warranty Alerts",
+    description: "Products with expiring warranties",
+    canDisable: true,
+  },
+  {
+    id: "notes",
+    title: "Notes",
+    description: "Quick notes and ideas for your home",
+    canDisable: true,
+  },
+  {
+    id: "fixes",
+    title: "Home Repairs",
+    description: "Track repairs and trusted pros",
+    canDisable: true,
+  },
+  {
+    id: "living-partners",
+    title: "Roommates & Shared Tasks",
+    description: "Coordinate with housemates",
+    canDisable: true,
+  },
+  {
+    id: "home-info",
+    title: "Home Info",
+    description: "Documents and information",
+    canDisable: true,
+  },
+  {
+    id: "bills",
+    title: "Monthly Bills",
+    description: "Track and split expenses",
+    canDisable: true,
+  },
+  {
+    id: "first-scan",
+    title: "First Home Scan",
+    description: "Get started guide",
+    canDisable: true,
+  },
 ];
 
-const STORAGE_KEY = '@dashboard_cards';
+const STORAGE_KEY = "@dashboard_cards";
 
 export const CardSettingsScreen = ({ navigation }) => {
   const { colors } = useTheme();
   const [visibleCards, setVisibleCards] = useState(
-    AVAILABLE_CARDS.map(card => card.id)
+    AVAILABLE_CARDS.map((card) => card.id),
   );
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -45,7 +90,7 @@ export const CardSettingsScreen = ({ navigation }) => {
         setVisibleCards(JSON.parse(saved));
       }
     } catch (error) {
-      console.log('Error loading card preferences:', error);
+      console.log("Error loading card preferences:", error);
     }
   };
 
@@ -53,25 +98,28 @@ export const CardSettingsScreen = ({ navigation }) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(visibleCards));
       setHasChanges(false);
-      Alert.alert('Success', 'Dashboard customized!', [
-        { text: 'OK', onPress: () => navigation.goBack() }
+      Alert.alert("Success", "Dashboard customized!", [
+        { text: "OK", onPress: () => navigation.goBack() },
       ]);
     } catch (error) {
-      Alert.alert('Error', 'Failed to save preferences');
+      Alert.alert("Error", "Failed to save preferences");
     }
   };
 
   const toggleCard = (cardId) => {
-    const card = AVAILABLE_CARDS.find(c => c.id === cardId);
+    const card = AVAILABLE_CARDS.find((c) => c.id === cardId);
     if (!card.canDisable) {
-      Alert.alert('Cannot Disable', 'Quick Actions is required and cannot be disabled');
+      Alert.alert(
+        "Cannot Disable",
+        "Quick Actions is required and cannot be disabled",
+      );
       return;
     }
 
     setHasChanges(true);
-    setVisibleCards(prev => {
+    setVisibleCards((prev) => {
       if (prev.includes(cardId)) {
-        return prev.filter(id => id !== cardId);
+        return prev.filter((id) => id !== cardId);
       } else {
         return [...prev, cardId];
       }
@@ -79,24 +127,22 @@ export const CardSettingsScreen = ({ navigation }) => {
   };
 
   const resetToDefault = () => {
-    Alert.alert(
-      'Reset to Default',
-      'Show all dashboard cards?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Reset',
-          onPress: () => {
-            setVisibleCards(AVAILABLE_CARDS.map(card => card.id));
-            setHasChanges(true);
-          }
-        }
-      ]
-    );
+    Alert.alert("Reset to Default", "Show all dashboard cards?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Reset",
+        onPress: () => {
+          setVisibleCards(AVAILABLE_CARDS.map((card) => card.id));
+          setHasChanges(true);
+        },
+      },
+    ]);
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={[styles.title, { color: colors.text }]}>
           Customize Dashboard
@@ -106,7 +152,7 @@ export const CardSettingsScreen = ({ navigation }) => {
         </Text>
 
         <View style={styles.cardList}>
-          {AVAILABLE_CARDS.map(card => {
+          {AVAILABLE_CARDS.map((card) => {
             const isVisible = visibleCards.includes(card.id);
             return (
               <View
@@ -117,11 +163,18 @@ export const CardSettingsScreen = ({ navigation }) => {
                   <Text style={[styles.cardTitle, { color: colors.text }]}>
                     {card.title}
                   </Text>
-                  <Text style={[styles.cardDescription, { color: colors.textSecondary }]}>
+                  <Text
+                    style={[
+                      styles.cardDescription,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
                     {card.description}
                   </Text>
                   {!card.canDisable && (
-                    <Text style={[styles.requiredText, { color: colors.accent }]}>
+                    <Text
+                      style={[styles.requiredText, { color: colors.accent }]}
+                    >
                       Required
                     </Text>
                   )}
@@ -129,8 +182,8 @@ export const CardSettingsScreen = ({ navigation }) => {
                 <Switch
                   value={isVisible}
                   onValueChange={() => toggleCard(card.id)}
-                  trackColor={{ false: '#ccc', true: colors.accent }}
-                  thumbColor={isVisible ? '#fff' : '#f4f3f4'}
+                  trackColor={{ false: "#ccc", true: colors.accent }}
+                  thumbColor={isVisible ? "#fff" : "#f4f3f4"}
                   disabled={!card.canDisable}
                 />
               </View>
@@ -140,7 +193,11 @@ export const CardSettingsScreen = ({ navigation }) => {
 
         <View style={styles.buttonGroup}>
           <TouchableOpacity
-            style={[styles.button, styles.resetButton, { backgroundColor: colors.card }]}
+            style={[
+              styles.button,
+              styles.resetButton,
+              { backgroundColor: colors.card },
+            ]}
             onPress={resetToDefault}
           >
             <Text style={[styles.buttonText, { color: colors.text }]}>
@@ -150,10 +207,14 @@ export const CardSettingsScreen = ({ navigation }) => {
 
           {hasChanges && (
             <TouchableOpacity
-              style={[styles.button, styles.saveButton, { backgroundColor: colors.accent }]}
+              style={[
+                styles.button,
+                styles.saveButton,
+                { backgroundColor: colors.accent },
+              ]}
               onPress={saveCardPreferences}
             >
-              <Text style={[styles.buttonText, { color: '#fff' }]}>
+              <Text style={[styles.buttonText, { color: "#fff" }]}>
                 Save Changes
               </Text>
             </TouchableOpacity>
@@ -179,7 +240,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
   },
   subtitle: {
@@ -191,12 +252,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   cardItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 16,
     borderRadius: 12,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
@@ -208,7 +269,7 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 4,
   },
   cardDescription: {
@@ -217,7 +278,7 @@ const styles = StyleSheet.create({
   },
   requiredText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
     marginTop: 4,
   },
   buttonGroup: {
@@ -226,8 +287,8 @@ const styles = StyleSheet.create({
   button: {
     padding: 16,
     borderRadius: 12,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -235,13 +296,13 @@ const styles = StyleSheet.create({
   },
   resetButton: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
   },
   saveButton: {
     // accent color applied inline
   },
   buttonText: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
   },
 });

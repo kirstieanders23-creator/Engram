@@ -8,11 +8,11 @@
  */
 export const parseAmazonCSV = (csvText) => {
   try {
-    const lines = csvText.split('\n').filter(line => line.trim());
+    const lines = csvText.split("\n").filter((line) => line.trim());
     if (lines.length < 2) {
       return {
         success: false,
-        error: 'CSV file is empty or invalid',
+        error: "CSV file is empty or invalid",
       };
     }
 
@@ -23,7 +23,7 @@ export const parseAmazonCSV = (csvText) => {
     if (!headerMap.title) {
       return {
         success: false,
-        error: 'CSV missing required column: Title or Product Name',
+        error: "CSV missing required column: Title or Product Name",
       };
     }
 
@@ -35,7 +35,7 @@ export const parseAmazonCSV = (csvText) => {
       try {
         const values = parseCSVLine(lines[i]);
         const product = parseAmazonRow(values, headerMap);
-        
+
         if (product) {
           products.push(product);
         }
@@ -56,10 +56,10 @@ export const parseAmazonCSV = (csvText) => {
       errors: errors.length > 0 ? errors : undefined,
     };
   } catch (error) {
-    console.error('CSV parse error:', error);
+    console.error("CSV parse error:", error);
     return {
       success: false,
-      error: 'Failed to parse CSV file',
+      error: "Failed to parse CSV file",
     };
   }
 };
@@ -69,7 +69,7 @@ export const parseAmazonCSV = (csvText) => {
  */
 const parseCSVLine = (line) => {
   const values = [];
-  let current = '';
+  let current = "";
   let inQuotes = false;
 
   for (let i = 0; i < line.length; i++) {
@@ -83,10 +83,10 @@ const parseCSVLine = (line) => {
     } else if (char === '"') {
       // Toggle quote mode
       inQuotes = !inQuotes;
-    } else if (char === ',' && !inQuotes) {
+    } else if (char === "," && !inQuotes) {
       // Field separator
       values.push(current.trim());
-      current = '';
+      current = "";
     } else {
       current += char;
     }
@@ -107,21 +107,33 @@ const mapAmazonHeaders = (headers) => {
   headers.forEach((header, index) => {
     const lower = header.toLowerCase();
 
-    if (lower.includes('order date') || lower.includes('orderdate')) {
+    if (lower.includes("order date") || lower.includes("orderdate")) {
       map.orderDate = index;
-    } else if (lower.includes('order id') || lower.includes('orderid')) {
+    } else if (lower.includes("order id") || lower.includes("orderid")) {
       map.orderId = index;
-    } else if (lower.includes('title') || lower.includes('product name') || lower.includes('item')) {
+    } else if (
+      lower.includes("title") ||
+      lower.includes("product name") ||
+      lower.includes("item")
+    ) {
       map.title = index;
-    } else if (lower.includes('category')) {
+    } else if (lower.includes("category")) {
       map.category = index;
-    } else if (lower.includes('asin') || lower.includes('isbn')) {
+    } else if (lower.includes("asin") || lower.includes("isbn")) {
       map.asin = index;
-    } else if (lower.includes('price') || lower.includes('total') || lower.includes('amount')) {
+    } else if (
+      lower.includes("price") ||
+      lower.includes("total") ||
+      lower.includes("amount")
+    ) {
       map.price = index;
-    } else if (lower.includes('seller') || lower.includes('vendor') || lower.includes('brand')) {
+    } else if (
+      lower.includes("seller") ||
+      lower.includes("vendor") ||
+      lower.includes("brand")
+    ) {
       map.seller = index;
-    } else if (lower.includes('quantity')) {
+    } else if (lower.includes("quantity")) {
       map.quantity = index;
     }
   });
@@ -134,14 +146,14 @@ const mapAmazonHeaders = (headers) => {
  */
 const parseAmazonRow = (values, headerMap) => {
   const title = values[headerMap.title];
-  if (!title || title.trim() === '') {
+  if (!title || title.trim() === "") {
     return null; // Skip empty rows
   }
 
   const product = {
     name: cleanProductName(title),
     originalTitle: title,
-    source: 'amazon',
+    source: "amazon",
   };
 
   // Order date → purchase date
@@ -204,15 +216,18 @@ const parseAmazonRow = (values, headerMap) => {
  */
 const cleanProductName = (name) => {
   // Remove parenthetical info at end
-  let cleaned = name.replace(/\s*\([^)]*\)\s*$/g, '');
-  
+  let cleaned = name.replace(/\s*\([^)]*\)\s*$/g, "");
+
   // Remove common suffixes
-  cleaned = cleaned.replace(/,\s*(Black|White|Silver|Red|Blue|Gray).*$/i, '');
-  cleaned = cleaned.replace(/\s*-\s*(Black|White|Silver|Red|Blue|Gray).*$/i, '');
-  
+  cleaned = cleaned.replace(/,\s*(Black|White|Silver|Red|Blue|Gray).*$/i, "");
+  cleaned = cleaned.replace(
+    /\s*-\s*(Black|White|Silver|Red|Blue|Gray).*$/i,
+    "",
+  );
+
   // Trim
   cleaned = cleaned.trim();
-  
+
   return cleaned;
 };
 
@@ -226,14 +241,14 @@ const parseAmazonDate = (dateStr) => {
   try {
     // Try ISO format first
     if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) {
-      return dateStr.split('T')[0]; // Return just YYYY-MM-DD
+      return dateStr.split("T")[0]; // Return just YYYY-MM-DD
     }
 
     // Try MM/DD/YYYY
     const slashMatch = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
     if (slashMatch) {
       const [, month, day, year] = slashMatch;
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
     }
 
     // Try Month DD, YYYY
@@ -242,13 +257,13 @@ const parseAmazonDate = (dateStr) => {
       const [, monthName, day, year] = monthMatch;
       const month = parseMonthName(monthName);
       if (month) {
-        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
       }
     }
 
     return null;
   } catch (error) {
-    console.error('Date parse error:', error);
+    console.error("Date parse error:", error);
     return null;
   }
 };
@@ -258,18 +273,29 @@ const parseAmazonDate = (dateStr) => {
  */
 const parseMonthName = (name) => {
   const months = {
-    jan: '01', january: '01',
-    feb: '02', february: '02',
-    mar: '03', march: '03',
-    apr: '04', april: '04',
-    may: '05',
-    jun: '06', june: '06',
-    jul: '07', july: '07',
-    aug: '08', august: '08',
-    sep: '09', september: '09',
-    oct: '10', october: '10',
-    nov: '11', november: '11',
-    dec: '12', december: '12',
+    jan: "01",
+    january: "01",
+    feb: "02",
+    february: "02",
+    mar: "03",
+    march: "03",
+    apr: "04",
+    april: "04",
+    may: "05",
+    jun: "06",
+    june: "06",
+    jul: "07",
+    july: "07",
+    aug: "08",
+    august: "08",
+    sep: "09",
+    september: "09",
+    oct: "10",
+    october: "10",
+    nov: "11",
+    november: "11",
+    dec: "12",
+    december: "12",
   };
 
   return months[name.toLowerCase()];
@@ -284,7 +310,7 @@ const parsePrice = (priceStr) => {
 
   try {
     // Remove currency symbols and commas
-    const cleaned = priceStr.replace(/[$,]/g, '');
+    const cleaned = priceStr.replace(/[$,]/g, "");
     const price = parseFloat(cleaned);
 
     if (isNaN(price) || price < 0) {
@@ -305,36 +331,56 @@ const mapAmazonCategory = (amazonCategory) => {
   const lower = amazonCategory.toLowerCase();
 
   // Kitchen
-  if (lower.includes('kitchen') || lower.includes('cookware') || lower.includes('appliance')) {
-    if (lower.includes('cookware') || lower.includes('pan') || lower.includes('pot')) {
-      return 'Cookware';
+  if (
+    lower.includes("kitchen") ||
+    lower.includes("cookware") ||
+    lower.includes("appliance")
+  ) {
+    if (
+      lower.includes("cookware") ||
+      lower.includes("pan") ||
+      lower.includes("pot")
+    ) {
+      return "Cookware";
     }
-    if (lower.includes('utensil') || lower.includes('tool')) {
-      return 'Kitchen Tool';
+    if (lower.includes("utensil") || lower.includes("tool")) {
+      return "Kitchen Tool";
     }
-    if (lower.includes('dinnerware') || lower.includes('plate') || lower.includes('bowl')) {
-      return 'Dinnerware';
+    if (
+      lower.includes("dinnerware") ||
+      lower.includes("plate") ||
+      lower.includes("bowl")
+    ) {
+      return "Dinnerware";
     }
-    return 'Appliance';
+    return "Appliance";
   }
 
   // Electronics
-  if (lower.includes('electronic') || lower.includes('computer') || lower.includes('tv')) {
-    return 'Electronics';
+  if (
+    lower.includes("electronic") ||
+    lower.includes("computer") ||
+    lower.includes("tv")
+  ) {
+    return "Electronics";
   }
 
   // Home & Garden
-  if (lower.includes('furniture') || lower.includes('home') || lower.includes('garden')) {
-    return 'Furniture';
+  if (
+    lower.includes("furniture") ||
+    lower.includes("home") ||
+    lower.includes("garden")
+  ) {
+    return "Furniture";
   }
 
   // Tools
-  if (lower.includes('tool') || lower.includes('hardware')) {
-    return 'Tool';
+  if (lower.includes("tool") || lower.includes("hardware")) {
+    return "Tool";
   }
 
   // Default
-  return 'Other';
+  return "Other";
 };
 
 /**
@@ -343,13 +389,24 @@ const mapAmazonCategory = (amazonCategory) => {
  */
 export const isLikelyStillOwned = (product) => {
   const name = product.name.toLowerCase();
-  const category = (product.category || '').toLowerCase();
+  const category = (product.category || "").toLowerCase();
 
   // Consumables (unlikely to still own)
   const consumableKeywords = [
-    'batteries', 'filter', 'bag', 'cartridge', 'refill',
-    'paper', 'food', 'supplement', 'vitamin', 'snack',
-    'shampoo', 'soap', 'lotion', 'cream',
+    "batteries",
+    "filter",
+    "bag",
+    "cartridge",
+    "refill",
+    "paper",
+    "food",
+    "supplement",
+    "vitamin",
+    "snack",
+    "shampoo",
+    "soap",
+    "lotion",
+    "cream",
   ];
 
   for (const keyword of consumableKeywords) {
@@ -360,9 +417,19 @@ export const isLikelyStillOwned = (product) => {
 
   // Durables (likely to still own)
   const durableKeywords = [
-    'mixer', 'blender', 'toaster', 'vacuum', 'tv',
-    'chair', 'table', 'desk', 'lamp', 'speaker',
-    'coffee maker', 'air fryer', 'microwave',
+    "mixer",
+    "blender",
+    "toaster",
+    "vacuum",
+    "tv",
+    "chair",
+    "table",
+    "desk",
+    "lamp",
+    "speaker",
+    "coffee maker",
+    "air fryer",
+    "microwave",
   ];
 
   for (const keyword of durableKeywords) {
@@ -380,7 +447,13 @@ export const isLikelyStillOwned = (product) => {
   }
 
   // Default: assume durable if from relevant categories
-  const durableCategories = ['appliance', 'electronics', 'furniture', 'tool', 'cookware'];
+  const durableCategories = [
+    "appliance",
+    "electronics",
+    "furniture",
+    "tool",
+    "cookware",
+  ];
   for (const cat of durableCategories) {
     if (category.includes(cat)) {
       return true;
@@ -394,7 +467,7 @@ export const isLikelyStillOwned = (product) => {
  * Generate warranty estimate based on product type and category
  */
 export const estimateWarranty = (product) => {
-  const category = (product.category || '').toLowerCase();
+  const category = (product.category || "").toLowerCase();
   const purchaseDate = product.purchaseDate;
 
   if (!purchaseDate) return null;
@@ -402,12 +475,12 @@ export const estimateWarranty = (product) => {
   let warrantyYears = 1; // Default
 
   // Electronics typically have 1-2 year warranties
-  if (category.includes('electronics') || category.includes('appliance')) {
+  if (category.includes("electronics") || category.includes("appliance")) {
     warrantyYears = 1;
   }
 
   // Furniture may have longer warranties
-  if (category.includes('furniture')) {
+  if (category.includes("furniture")) {
     warrantyYears = 2;
   }
 
@@ -416,5 +489,5 @@ export const estimateWarranty = (product) => {
   const warranty = new Date(purchase);
   warranty.setFullYear(warranty.getFullYear() + warrantyYears);
 
-  return warranty.toISOString().split('T')[0];
+  return warranty.toISOString().split("T")[0];
 };

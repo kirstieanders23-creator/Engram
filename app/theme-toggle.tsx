@@ -1,9 +1,9 @@
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import React, { useState } from 'react';
-import { StyleSheet, Switch, Text, View } from 'react-native';
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import React, { useState } from "react";
+import { StyleSheet, Switch, Text, View } from "react-native";
 
 export default function ThemeToggleScreen() {
-  const [isDark, setIsDark] = useState(useColorScheme() === 'dark');
+  const [isDark, setIsDark] = useState(useColorScheme() === "dark");
 
   const toggleTheme = () => {
     setIsDark(!isDark);
@@ -25,18 +25,18 @@ export default function ThemeToggleScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 16,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 24,
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
   },
 });

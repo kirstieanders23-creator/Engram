@@ -1,17 +1,22 @@
-import React from 'react';
-import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
-import PropTypes from 'prop-types';
-import { useTheme } from '../providers/ThemeProvider';
+import React from "react";
+import { SafeAreaView, View, Text, StyleSheet } from "react-native";
+import PropTypes from "prop-types";
+import { useTheme } from "../providers/ThemeProvider";
 
 export const RoommatesScreen = ({ navigation }) => {
   const { colors } = useTheme();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <View style={styles.content}>
-        <Text style={[styles.title, { color: colors.text }]}>👥 Roommates & Shared Tasks</Text>
+        <Text style={[styles.title, { color: colors.text }]}>
+          👥 Roommates & Shared Tasks
+        </Text>
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-          Coming soon: Invite roommates, assign chores, send requests, and coordinate house tasks!
+          Coming soon: Invite roommates, assign chores, send requests, and
+          coordinate house tasks!
         </Text>
       </View>
     </SafeAreaView>
@@ -30,17 +35,17 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 16,
   },
   subtitle: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

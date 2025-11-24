@@ -1,6 +1,5 @@
 {
   "expo": {
-<<<<<<< HEAD
     "name": "Engram",
     "slug": "Engram",
     "version": "1.0.0",
@@ -12,9 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "y",
@@ -33,31 +30,7 @@
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE"
-      ]
-    },
-    "extra": {
-      "eas": {
-        "projectId": "b9164248-306b-40a1-bc89-324a1de437c8"
-      }
-=======
-    "name": "engram2",
-    "slug": "engram2",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "engram2",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
-      },
+      ],
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
@@ -83,7 +56,11 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
->>>>>>> 840c995 (Setup Engram app, fix test dependency, initial build)
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b9164248-306b-40a1-bc89-324a1de437c8"
+      }
     }
   }
 }

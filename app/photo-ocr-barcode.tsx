@@ -1,20 +1,22 @@
-import { BarCodeScanner } from 'expo-barcode-scanner';
-import * as ImagePicker from 'expo-image-picker';
-import React, { useState } from 'react';
-import { Button, Image, StyleSheet, Text, View } from 'react-native';
-import Tesseract from 'tesseract.js';
+import { BarCodeScanner } from "expo-barcode-scanner";
+import * as ImagePicker from "expo-image-picker";
+import React, { useState } from "react";
+import { Button, Image, StyleSheet, Text, View } from "react-native";
+import Tesseract from "tesseract.js";
 
 export default function PhotoOCRBarcodeScreen() {
   const [image, setImage] = useState(null);
-  const [ocrText, setOcrText] = useState('');
-  const [barcode, setBarcode] = useState('');
+  const [ocrText, setOcrText] = useState("");
+  const [barcode, setBarcode] = useState("");
   const [scanned, setScanned] = useState(false);
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images });
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    });
     if (!result.cancelled) {
       setImage(result.uri);
-      const text = await Tesseract.recognize(result.uri, 'eng');
+      const text = await Tesseract.recognize(result.uri, "eng");
       setOcrText(text.data.text);
     }
   };
@@ -34,7 +36,9 @@ export default function PhotoOCRBarcodeScreen() {
         style={styles.barcode}
       />
       {barcode ? <Text>Barcode: {barcode}</Text> : null}
-      {scanned && <Button title="Scan Again" onPress={() => setScanned(false)} />}
+      {scanned && (
+        <Button title="Scan Again" onPress={() => setScanned(false)} />
+      )}
     </View>
   );
 }
@@ -42,8 +46,8 @@ export default function PhotoOCRBarcodeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     padding: 16,
   },
   image: {

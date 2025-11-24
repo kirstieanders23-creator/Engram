@@ -10,13 +10,17 @@ const MAX_DISTANCE_FOR_MATCH = 6; // max edit distance for consideration
 const MIN_CONFIDENCE_SCORE = 0.5; // composite threshold
 
 function normalize(str) {
-  return (str || '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  return (str || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 async function levenshtein(a, b) {
   // Dynamic import attempt; fallback simple implementation if module missing
   try {
-    const mod = await import('fast-levenshtein');
+    const mod = await import("fast-levenshtein");
     return mod.get(a, b);
   } catch (e) {
     // Fallback minimal Levenshtein
@@ -35,7 +39,7 @@ async function levenshtein(a, b) {
         d[i][j] = Math.min(
           d[i - 1][j] + 1,
           d[i][j - 1] + 1,
-          d[i - 1][j - 1] + cost
+          d[i - 1][j - 1] + cost,
         );
       }
     }
@@ -73,11 +77,18 @@ export async function findBestProductMatch(products, rawText) {
 
     const lenFactor = Math.min(nameNorm.length / Math.max(text.length, 1), 1);
     // Convert distance to similarity [0,1]
-    const similarity = substring ? 1 : 1 - distance / Math.max(nameNorm.length, distance || 1);
-    const score = similarity * 0.6 + lenFactor * 0.2 + (substring ? SUBSTRING_WEIGHT : 0);
+    const similarity = substring
+      ? 1
+      : 1 - distance / Math.max(nameNorm.length, distance || 1);
+    const score =
+      similarity * 0.6 + lenFactor * 0.2 + (substring ? SUBSTRING_WEIGHT : 0);
 
     if (!best || score > best.score) {
-      best = { product, score, method: substring ? 'substring' : 'levenshtein-window' };
+      best = {
+        product,
+        score,
+        method: substring ? "substring" : "levenshtein-window",
+      };
     }
   }
 
